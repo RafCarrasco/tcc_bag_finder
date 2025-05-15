@@ -1,0 +1,41 @@
+{   
+    "landingPageFirstTitle" : "Track Your Luggage",
+    "landingPageSecondTitle" : "Real Time Tracking",
+    "landingPageThirdTitle" : "Safely Retrieve",
+    "landingPageButtonTextNext" : "Next",
+    "landingPageButtonTextStart" : "Previous",
+    "landingPageFirstText" : "Connect your baggage ID to the BagFinder app and track your luggage throughout the entire trip!",
+    "landingPageSecondText" : "Receive location updates for your luggage, ensuring peace of mind from check-in to arrival!",
+    "landingPageThirdText" : "Get notified when your bag is near the pickup area and follow the app's directions to retrieve it quickly!",
+
+    "loginPageTitle" : "Sign in!",
+    "loginPageTitle2" : "Welcome!",
+    "loginPageTitle2SecondLine" : "Sign up",
+    "loginPageTitle3" : "Need help?",
+    "loginPageTitle4": "Forgot Password?",
+    "loginPageTitle5": "Find your account",
+    "loginPageDoesntHaveAccount" : "Don't have an account?Sign-up",
+    "loginPageForgotPassword" : "Find your account",
+    "loginPageRememberMe" : "Remember Me",
+    "comeBackToHomepage" : "Come back to Homepage",
+
+    "loginPageButtonLogin" : "Login",
+    "signUpPageButtonSignUp" : "Sign-up",
+    "needHelpPageSend": "Send",
+    "loginPageContactSupport": "Contact Support!",
+    "forgotEmailPageButtonSendEmail": "Send",
+
+    "emailPlaceholder": "E-mail",
+    "sendEmailForConfimationPlaceholder": "Tell your e-mail for confirmation",
+    "sendEmailPlaceholder": "Send E-Mail",
+    "passwordPlaceholder": "Password",
+    "fullNamePlaceholder": "Full Name",
+    "emailForContactPlaceholder": "E-mail for Contact",
+    "contactUsYourProblemPlaceholder": "Contact us your problem",
+
+    "loginPageAlreadyHaveAccount": "Already have an account?",
+    "loginPageClickHere": "Click here",
+
+    "helloUserHomepage": "Hello!,",
+    "greetingsFromBagFinder": "BagFinder wishes you a great trip!"
+}

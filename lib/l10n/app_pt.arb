@@ -1,0 +1,42 @@
+ {
+    "landingPageFirstTitle" : "Rastreie sua bagagem",
+    "landingPageSecondTitle" : "Localização em tempo",
+    "landingPageThirdTitle" : "Retire em segurança",
+    "landingPageButtonTextNext" : "Próximo",
+    "landingPageButtonTextStart" : "Começar",    
+    "landingPageFirstText" : "Conecte o ID da sua bagagem ao aplicativo BagFinder e acompanhe suas malas durante toda a viagem!",
+    "landingPageSecondText" : "Receba atualizações da localização da sua bagagem, garantindo tranquilidade desde o check-in até a chegada!",
+    "landingPageThirdText" : "Seja notificado quando sua mala estiver perto da retirada e siga as direções do app para recuperá-la rapidamente!",
+     
+    "loginPageTitle" : "Realize seu login!",
+    "loginPageTitle2" : "Seja bem-vindo!",
+    "loginPageTitle2SecondLine" : "Realize seu cadastro!",
+    "loginPageTitle3" : "Precisa de ajuda?",
+    "loginPageTitle4": "Esqueceu a sua senha?",
+    "loginPageTitle5": "Encontre a sua conta",
+    "loginPageDoesntHaveAccount" : "Não possui conta?",
+    "loginPageForgotPassword" : "Encontre sua conta",
+    "loginPageRememberMe" : "Lembrar-me",
+    "comeBackToHomepage": "Voltar para a Página Inicial",
+
+    "loginPageButtonLogin" : "Realizar login",
+    "signUpPageButtonSignUp" : "Cadastre-se",
+    "needHelpPageSend": "Enviar",
+    "loginPageContactSupport": "Contate o suporte!",
+    "forgotEmailPageButtonSendEmail": "Enviar",
+
+    "emailPlaceholder": "E-mail",
+    "sendEmailForConfimationPlaceholder": "Informe seu e-mail para confirmação",
+    "sendEmailPlaceholder": "Enviar E-mail",
+    "passwordPlaceholder": "Senha",
+    "fullNamePlaceholder": "Nome completo",
+    "emailForContactPlaceholder": "E-mail para contato",
+    "contactUsYourProblemPlaceholder": "Conte-nos o seu problema",
+
+    "loginPageAlreadyHaveAccount": "Ja possui uma conta?",
+    "loginPageClickHere": "Clique aqui",
+
+    "helloUserHomepage": "Olá!,",
+    "greetingsFromBagFinder": "BagFinder te deseja uma ótima viagem!"
+ }
+    

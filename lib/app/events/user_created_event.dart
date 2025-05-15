@@ -1,0 +1,9 @@
+import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
+
+class UserCreatedEvent {
+  final UserEntity user;
+
+  UserCreatedEvent({
+    required this.user,
+  });
+}
