@@ -6,6 +6,8 @@ import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'app/data/firebase_options.dart';
 
 late Box userStorage;
 
@@ -15,6 +17,9 @@ late Box tripStorage;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await Hive.initFlutter();
 
   userStorage = await Hive.openBox<UserEntity>(
