@@ -23,6 +23,9 @@ class UserEntity {
   final String fullName;
 
   @HiveField(4)
+  final String dateOfBirth;
+
+  @HiveField(4)
   final String phone;
 
   @HiveField(5)
@@ -42,6 +45,7 @@ class UserEntity {
     required this.email,
     required this.password,
     required this.fullName,
+    required this.dateOfBirth,
     required this.phone,
     this.avatar,
     this.role = UserRoleEnum.OTHER,
@@ -65,6 +69,7 @@ class UserEntity {
       email: email ?? this.email,
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       phone: phone ?? this.phone,
       avatar: avatar ?? this.avatar,
       role: role ?? this.role,
@@ -79,6 +84,7 @@ class UserEntity {
       email: '',
       password: '',
       fullName: '',
+      dateOfBirth: '',
       phone: '',
       avatar: null,
       role: UserRoleEnum.OTHER,

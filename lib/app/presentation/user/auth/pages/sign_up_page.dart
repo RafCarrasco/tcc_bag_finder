@@ -25,7 +25,8 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
   SignUpController signUpController = Modular.get<SignUpController>();
   UserProvider provider = Modular.get<UserProvider>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formPersonalKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formAccessKey = GlobalKey<FormState>();
 
   bool isFormValid = false;
 
@@ -37,28 +38,63 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const SizedBox(
-              width: 300,
-              height: 200,
-            ),
-            Text(
-              AppLocalizations.of(context)!.loginPageTitle2,
-              style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppBar(
+                  title: const Text(
+                    'CADASTRE-SE',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () {
+                    Modular.to.navigate(
+                      '/login/sign-in',
+                    );
+                  },
+                  ),
+                  backgroundColor: Colors.white,
+                  elevation: 0, 
+                ),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Colors.grey,
+                ),
+              ],
             ),
             Text(
-              AppLocalizations.of(context)!.loginPageTitle2SecondLine,
+              AppLocalizations.of(context)!.signUpPagePersonalDataField,
               style: Theme.of(context).textTheme.displayLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             Form(
-              key: _formKey,
+              key: _formPersonalKey,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  LoginTextField(
+                    suffixIcon: AppIconsSecondaryGrey.personIcon,
+                    hint: AppLocalizations.of(context)!.cpfIdentificationPlaceholder,
+                    isPassword: false,
+                    fieldType: 'cpf',
+                    onChanged: (value) {
+                      signUpController.setCpfId(
+                        value,
+                      );
+                    },
+                    isRequired: true,
+                  ),
+                  const SizedBox(
+                    height: AppDimensions.verticalSpaceLarge,
+                  ),
                   LoginTextField(
                     suffixIcon: AppIconsSecondaryGrey.personIcon,
                     hint: AppLocalizations.of(context)!.fullNamePlaceholder,
@@ -74,6 +110,48 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                   const SizedBox(
                     height: AppDimensions.verticalSpaceLarge,
                   ),
+                  LoginTextField(
+                    suffixIcon: AppIconsSecondaryGrey.personIcon,
+                    hint: AppLocalizations.of(context)!.dateOfBirthPlaceholder,
+                    isPassword: false,
+                    onChanged: (value) {
+                      signUpController.setDateOfBirth(
+                        value,
+                      );
+                    },
+                    fieldType: 'dateOfBirth',
+                    isRequired: true,
+                  ),
+                  const SizedBox(
+                    height: AppDimensions.verticalSpaceLarge,
+                  ),
+                  LoginTextField(
+                    suffixIcon: AppIconsSecondaryGrey.personIcon,
+                    hint: AppLocalizations.of(context)!.cellphonePlaceholder,
+                    isPassword: false,
+                    onChanged: (value) {
+                      signUpController.setCellPhone(
+                        value,
+                      );
+                    },
+                    fieldType: 'cellPhone',
+                    isRequired: true,
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              AppLocalizations.of(context)!.signUpPageAccessDataField,
+              style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            Form(
+              key: _formAccessKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   LoginTextField(
                     suffixIcon: AppIconsSecondaryGrey.emailIcon,
                     hint: AppLocalizations.of(context)!.emailPlaceholder,
@@ -120,11 +198,12 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                 ),
                 onPressed: () async {
                   UserEntity result;
-                  if (_formKey.currentState!.validate()) {
+                  if (_formPersonalKey.currentState!.validate() && _formAccessKey.currentState!.validate()) {
                     result = await provider.createUser(
                       user: TravelerEntity(
                         avatar: UserAvatarEntity.empty(),
                         fullName: signUpController.fullName!,
+                        dateOfBirth: signUpController.dateOfBirth!,
                         email: signUpController.email!,
                         role: UserRoleEnum.TRAVELER,
                         password: signUpController.password!,
@@ -149,9 +228,6 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -171,7 +247,6 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                     AppLocalizations.of(context)!.loginPageClickHere,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
                           decorationColor: AppColors.primary,
                           decorationThickness: 2,
                         ),

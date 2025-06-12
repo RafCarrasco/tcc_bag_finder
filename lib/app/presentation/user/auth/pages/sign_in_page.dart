@@ -156,7 +156,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Column(
@@ -164,6 +164,30 @@ class _SignInPageState extends State<SignInPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Row(
+                children: [
+                  const Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                      endIndent: 10,
+                    ),
+                  ),
+                  Text(
+                    'ou',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: AppColors.secondaryGrey,
+                        ),
+                  ),
+                  const Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                      indent: 10,
+                    ),
+                  ),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -199,7 +223,9 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Modular.to.navigate('/login/contact-us');
+                      Modular.to.navigate(
+                        '/login/find-your-account',
+                      );
                     },
                     child: Text(
                       AppLocalizations.of(context)!.loginPageRecoverPassword,

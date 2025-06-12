@@ -204,6 +204,7 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                                     email: addCollaboratorController.email!,
                                     password:
                                         addCollaboratorController.password!,
+                                    dateOfBirth: '',
                                     phone: '',
                                     updatedAt: null,
                                     company:

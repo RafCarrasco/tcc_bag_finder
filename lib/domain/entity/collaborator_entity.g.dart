@@ -21,14 +21,15 @@ class CollaboratorEntityAdapter extends TypeAdapter<CollaboratorEntity> {
       email: fields[1] as String,
       password: fields[2] as String,
       fullName: fields[3] as String,
-      phone: fields[4] as String,
-      company: fields[9] as String,
-      isActive: fields[10] as bool,
+      dateOfBirth: fields[4] as String,
+      phone: fields[5] as String,
+      company: fields[10] as String,
+      isActive: fields[11] as bool,
       responsibleId: fields[12] as String,
-      avatar: fields[5] as UserAvatarEntity?,
-      role: fields[6] as UserRoleEnum,
-      createdAt: fields[7] as DateTime?,
-      updatedAt: fields[8] as DateTime?,
+      avatar: fields[6] as UserAvatarEntity?,
+      role: fields[7] as UserRoleEnum,
+      createdAt: fields[8] as DateTime?,
+      updatedAt: fields[9] as DateTime?,
     );
   }
 
@@ -36,9 +37,9 @@ class CollaboratorEntityAdapter extends TypeAdapter<CollaboratorEntity> {
   void write(BinaryWriter writer, CollaboratorEntity obj) {
     writer
       ..writeByte(12)
-      ..writeByte(9)
-      ..write(obj.company)
       ..writeByte(10)
+      ..write(obj.company)
+      ..writeByte(11)
       ..write(obj.isActive)
       ..writeByte(12)
       ..write(obj.responsibleId)
@@ -51,14 +52,16 @@ class CollaboratorEntityAdapter extends TypeAdapter<CollaboratorEntity> {
       ..writeByte(3)
       ..write(obj.fullName)
       ..writeByte(4)
-      ..write(obj.phone)
+      ..write(obj.dateOfBirth)
       ..writeByte(5)
-      ..write(obj.avatar)
+      ..write(obj.phone)
       ..writeByte(6)
-      ..write(obj.role)
+      ..write(obj.avatar)
       ..writeByte(7)
-      ..write(obj.createdAt)
+      ..write(obj.role)
       ..writeByte(8)
+      ..write(obj.createdAt)
+      ..writeByte(9)
       ..write(obj.updatedAt);
   }
 

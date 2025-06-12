@@ -21,20 +21,21 @@ class AdminEntityAdapter extends TypeAdapter<AdminEntity> {
       email: fields[1] as String,
       password: fields[2] as String,
       fullName: fields[3] as String,
-      phone: fields[4] as String,
-      avatar: fields[5] as UserAvatarEntity?,
-      role: fields[6] as UserRoleEnum,
-      createdAt: fields[7] as DateTime?,
-      updatedAt: fields[8] as DateTime?,
-      company: fields[9] as String,
+      dateOfBirth: fields[4] as String,
+      phone: fields[5] as String,
+      avatar: fields[6] as UserAvatarEntity?,
+      role: fields[7] as UserRoleEnum,
+      createdAt: fields[8] as DateTime?,
+      updatedAt: fields[9] as DateTime?,
+      company: fields[10] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, AdminEntity obj) {
     writer
+      ..writeByte(11)
       ..writeByte(10)
-      ..writeByte(9)
       ..write(obj.company)
       ..writeByte(0)
       ..write(obj.id)
@@ -45,14 +46,16 @@ class AdminEntityAdapter extends TypeAdapter<AdminEntity> {
       ..writeByte(3)
       ..write(obj.fullName)
       ..writeByte(4)
-      ..write(obj.phone)
+      ..write(obj.dateOfBirth)
       ..writeByte(5)
-      ..write(obj.avatar)
+      ..write(obj.phone)
       ..writeByte(6)
-      ..write(obj.role)
+      ..write(obj.avatar)
       ..writeByte(7)
-      ..write(obj.createdAt)
+      ..write(obj.role)
       ..writeByte(8)
+      ..write(obj.createdAt)
+      ..writeByte(9)
       ..write(obj.updatedAt);
   }
 

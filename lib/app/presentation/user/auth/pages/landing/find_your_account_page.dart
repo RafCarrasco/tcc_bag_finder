@@ -66,7 +66,6 @@ class FindYourAccountPage extends StatelessWidget {
                     AppLocalizations.of(context)!.comeBackToHomepage,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
                           decorationColor: AppColors.primary,
                         ),
                   ),

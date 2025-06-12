@@ -33,7 +33,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
             ),
             Text(
-              AppLocalizations.of(context)!.loginPageTitle2SecondLine,
+              AppLocalizations.of(context)!.signUpPageButtonSignUp,
               style: Theme.of(context).textTheme.displayLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

@@ -5,6 +5,7 @@ import 'package:tcc_bag_finder/app/shared/themes/app_dimensions.dart';
 import 'package:tcc_bag_finder/app/presentation/user/stores/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -19,102 +20,104 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final provider = Modular.get<UserProvider>();
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            IconButton(
-              onPressed: () {
-                Modular.to.pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Meu Perfil',
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondaryBlack,
-                      ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingMedium,
-            ),
-            child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: 
+            Column(
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ProfileBannerWidget(
-                    user: provider.user!,
+                AppBar(
+                  title: const Text(
+                    'MEU PERFIL',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () {
+                      Modular.to.navigate(
+                        '/login/sign-in',
+                      );
+                    },
+                  ),
+                  backgroundColor: Colors.white,
+                  elevation: 0, 
+                ),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Colors.grey,
+                ),
+                Text(
+                    AppLocalizations.of(context)!.signUpPagePersonalDataField,
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      InfoField(
-                        title: 'E-mail',
-                        content: provider.user!.email,
-                      ),
-                      InfoField(
-                        title: 'Número de celular',
-                        content: provider.user!.phone.isEmpty
-                            ? 'Não informado'
-                            : provider.user!.phone,
-                      ),
-                    ],
+                InfoField(
+                  title: 'CPF',
+                  content: provider.user!.id.isEmpty
+                    ? 'Não informado'
+                    : provider.user!.id,
+                ),
+                InfoField(
+                  title: 'Nome Completo',
+                  content: provider.user!.fullName.isEmpty
+                    ? 'Não informado'
+                    : provider.user!.fullName,
+                ),
+                InfoField(
+                  title: 'Data de Nascimento',
+                  content: provider.user!.dateOfBirth.isEmpty
+                    ? 'Não informado'
+                    : provider.user!.dateOfBirth,
+                ),
+                InfoField(
+                  title: 'Número de celular',
+                  content: provider.user!.phone.isEmpty
+                    ? 'Não informado'
+                    : provider.user!.phone,
+                ),
+                const SizedBox(
+                  height: AppDimensions.verticalSpaceLarge,
+                ),
+                Text(
+                  AppLocalizations.of(context)!.signUpPageAccessDataField,
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Modular.to.pushNamed(
-                                  '/profile/edit',
-                                );
-                              },
-                              child: Text(
-                                'Editar Perfil',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color: AppColors.secondary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                InfoField(
+                  title: 'E-mail',
+                  content: provider.user!.email,
+                ),
+                InfoField(
+                  title: 'Senha',
+                  content: '•' * provider.user!.password.length,
+                ),
+                const SizedBox(
+                    height: AppDimensions.verticalSpaceLarge,
+                  ),
+                ElevatedButton(
+                      onPressed: () {
+                        Modular.to.pushNamed(
+                        '/profile/edit',
+                      );
+                    },
+                    child: Text(
+                      'Editar Perfil',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: AppColors.secondary,
+                        fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
         ),
-      ],
-    );
+      );                      
   }
 }

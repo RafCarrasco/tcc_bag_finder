@@ -9,6 +9,7 @@ class UserEntityAdapter {
       email: json['email'],
       password: json['password'],
       fullName: json['fullName'],
+      dateOfBirth: json['dateOfBirth'],
       phone: json['phone'],
       avatar: json['avatar'] != null
           ? UserAvatarEntityAdapter.fromJson(
