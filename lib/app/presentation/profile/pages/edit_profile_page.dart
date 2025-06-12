@@ -24,6 +24,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   UserProvider provider = Modular.get<UserProvider>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  bool _showPassword = false;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -57,7 +59,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Expanded(
                 child: Center(
                   child: Text(
-                    'Salvar Perfil',
+                    'EDITAR PERFIL',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: AppColors.secondary,
@@ -70,6 +72,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ],
           ),
         ),
+        const SizedBox(
+          height: 100,
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -79,15 +84,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Center(
-                      child: UserAvatarWidget(
-                        name: provider.user!.fullName,
-                        isLarge: true,
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: Center(
+                  //     child: UserAvatarWidget(
+                  //       name: provider.user!.fullName,
+                  //       isLarge: true,
+                  //     ),
+                  //   ),
+                  // ),
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
@@ -107,6 +112,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           isRequired: false,
                         ),
                         CustomTextFormField(
+                          hintText: provider.user!.phone,
+                          prefixIcon: AppIconsSecondaryGrey.phoneIcon,
+                          isPassword: false,
+                          fieldType: 'phone',
+                          onChanged: (value) {
+                            updateController.setPhone(
+                              phone: value,
+                            );
+                          },
+                          isRequired: false,
+                        ),
+                        CustomTextFormField(
                           hintText: provider.user!.email,
                           onChanged: (value) {
                             updateController.setEmail(
@@ -119,15 +136,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           isRequired: false,
                         ),
                         CustomTextFormField(
-                          hintText: provider.user!.phone,
-                          prefixIcon: AppIconsSecondaryGrey.phoneIcon,
-                          isPassword: false,
-                          fieldType: 'phone',
+                          hintText: provider.user!.password.isNotEmpty
+                            ? '•' * provider.user!.password.length
+                            : '',
                           onChanged: (value) {
-                            updateController.setPhone(
-                              phone: value,
+                            updateController.setPassword(
+                              password: value,
                             );
                           },
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
+                          ),
+                          prefixIcon: AppIconsSecondaryGrey.passwordIcon,
+                          isPassword: false,
+                          fieldType: 'password',
                           isRequired: false,
                         ),
                       ],
@@ -148,17 +178,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       user: user.copyWith(
                                         fullName: updateController.fullName,
                                         email: updateController.email,
+                                        password: updateController.password,
                                         phone: updateController.phone,
-                                        gender: updateController.gender,
                                         updatedAt: DateTime.now(),
                                       ),
                                     );
                                     GlobalSnackBar.info(
                                       'Perfil atualizado com sucesso!',
                                     );
-
-                                    Modular.to.navigate(
-                                      '/user/profile',
+                                    Modular.to.pushNamed(
+                                      '/profile/${provider.user!.id}',
                                     );
                                   } else {
                                     GlobalSnackBar.error(
@@ -191,22 +220,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    provider.logout();
-                                    GlobalSnackBar.info(
-                                      'Logout realizado com sucesso!',
-                                    );
+                                    // provider.logout();
+                                    // GlobalSnackBar.info(
+                                    //   'Logout realizado com sucesso!',
+                                    // );
 
-                                    Modular.to.navigate(
-                                      '/login/sign-in',
+                                    Modular.to.pushNamed(
+                                      '/profile/${provider.user!.id}',
                                     );
                                   } else {
                                     GlobalSnackBar.error(
-                                      'Erro ao sair. Por favor, tente novamente',
+                                      'Erro ao cancelar. Por favor, tente novamente',
                                     );
                                   }
                                 },
                                 child: Text(
-                                  'Logout',
+                                  'Cancelar',
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme

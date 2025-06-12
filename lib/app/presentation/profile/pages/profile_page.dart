@@ -42,6 +42,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                   ),
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.logout, color: AppColors.error),
+                      tooltip: 'Sair',
+                      onPressed: () {
+                        // Coloque aqui sua lógica de logout
+                        Modular.to.navigate('/login/sign-in'); // por exemplo
+                      },
+                    ),
+                  ],
                   backgroundColor: Colors.white,
                   elevation: 0, 
                 ),
