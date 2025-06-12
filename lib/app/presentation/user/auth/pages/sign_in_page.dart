@@ -40,9 +40,11 @@ class _SignInPageState extends State<SignInPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
+            height: 350,
             child: Image.asset(
-              'images/luggage-two-persons.png',
+              'images/bagfinder-login.jpg',
               filterQuality: FilterQuality.high,
+              fit: BoxFit.fitWidth,
             ),
           ),
           Text(
@@ -65,7 +67,7 @@ class _SignInPageState extends State<SignInPage> {
                       value,
                     );
                   },
-                  prefixIcon: AppIconsSecondaryGrey.emailIcon,
+                  suffixIcon: AppIconsSecondaryGrey.emailIcon,
                   hint: AppLocalizations.of(context)!.emailPlaceholder,
                   isPassword: false,
                   fieldType: 'email',
@@ -80,7 +82,7 @@ class _SignInPageState extends State<SignInPage> {
                       value,
                     );
                   },
-                  prefixIcon: AppIconsSecondaryGrey.passwordIcon,
+                  suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                   hint: AppLocalizations.of(context)!.passwordPlaceholder,
                   isPassword: true,
                   fieldType: '',
@@ -89,48 +91,48 @@ class _SignInPageState extends State<SignInPage> {
               ],
             ),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Checkbox(
-                    value: signInController.rememberMe,
-                    onChanged: (value) {
-                      setState(() {
-                        signInController.setRememberMe(
-                          value,
-                        );
-                      });
-                    },
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.loginPageRememberMe,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () {
-                  Modular.to.navigate(
-                    '/login/find-your-account',
-                  );
-                },
-                child: Text(
-                  AppLocalizations.of(context)!.loginPageForgotPassword,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.primary,
-                        decorationThickness: 2,
-                      ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisSize: MainAxisSize.max,
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Row(
+          //       children: [
+          //         Checkbox(
+          //           value: signInController.rememberMe,
+          //           onChanged: (value) {
+          //             setState(() {
+          //               signInController.setRememberMe(
+          //                 value,
+          //               );
+          //             });
+          //           },
+          //         ),
+          //         Text(
+          //           AppLocalizations.of(context)!.loginPageRememberMe,
+          //           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+          //                 color: AppColors.secondaryGrey,
+          //               ),
+          //         ),
+          //       ],
+          //     ),
+          //     TextButton(
+          //       onPressed: () {
+          //         Modular.to.navigate(
+          //           '/login/find-your-account',
+          //         );
+          //       },
+          //       child: Text(
+          //         AppLocalizations.of(context)!.loginPageForgotPassword,
+          //         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+          //               fontWeight: FontWeight.bold,
+          //               decoration: TextDecoration.underline,
+          //               decorationColor: AppColors.primary,
+          //               decorationThickness: 2,
+          //             ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -154,7 +156,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 5,
           ),
           Column(
@@ -179,7 +181,6 @@ class _SignInPageState extends State<SignInPage> {
                       AppLocalizations.of(context)!.signUpPageButtonSignUp,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
                             decorationColor: AppColors.primary,
                             decorationThickness: 2,
                           ),
@@ -187,7 +188,7 @@ class _SignInPageState extends State<SignInPage> {
                   )
                 ],
               ),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
@@ -201,10 +202,9 @@ class _SignInPageState extends State<SignInPage> {
                       Modular.to.navigate('/login/contact-us');
                     },
                     child: Text(
-                      AppLocalizations.of(context)!.loginPageContactSupport,
+                      AppLocalizations.of(context)!.loginPageRecoverPassword,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
                             decorationColor: AppColors.primary,
                             decorationThickness: 2,
                           ),

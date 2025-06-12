@@ -42,7 +42,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 LoginTextField(
-                  prefixIcon: AppIconsSecondaryGrey.emailIcon,
+                  suffixIcon: AppIconsSecondaryGrey.emailIcon,
                   hint:
                       AppLocalizations.of(context)!.emailForContactPlaceholder,
                   isPassword: false,
@@ -53,7 +53,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   height: AppDimensions.verticalSpaceLarge,
                 ),
                 LoginTextField(
-                  prefixIcon: AppIconsSecondaryGrey.messageIcon,
+                  suffixIcon: AppIconsSecondaryGrey.messageIcon,
                   hint: AppLocalizations.of(context)!
                       .contactUsYourProblemPlaceholder,
                   isPassword: false,

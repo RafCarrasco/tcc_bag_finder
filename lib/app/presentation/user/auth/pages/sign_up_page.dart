@@ -60,7 +60,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   LoginTextField(
-                    prefixIcon: AppIconsSecondaryGrey.personIcon,
+                    suffixIcon: AppIconsSecondaryGrey.personIcon,
                     hint: AppLocalizations.of(context)!.fullNamePlaceholder,
                     isPassword: false,
                     onChanged: (value) {
@@ -75,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                     height: AppDimensions.verticalSpaceLarge,
                   ),
                   LoginTextField(
-                    prefixIcon: AppIconsSecondaryGrey.emailIcon,
+                    suffixIcon: AppIconsSecondaryGrey.emailIcon,
                     hint: AppLocalizations.of(context)!.emailPlaceholder,
                     isPassword: false,
                     fieldType: 'email',
@@ -90,7 +90,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                     height: AppDimensions.verticalSpaceLarge,
                   ),
                   LoginTextField(
-                    prefixIcon: AppIconsSecondaryGrey.passwordIcon,
+                    suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                     hint: AppLocalizations.of(context)!.passwordPlaceholder,
                     isPassword: true,
                     onChanged: (value) {

@@ -7,7 +7,7 @@ class AppColors {
   static Color get secondaryBlack => Colors.black;
   static Color get error => Colors.red;
   static Color get textFieldBackground =>
-      const Color(0xFF49B18C).withOpacity(0.15);
+      const Color.fromARGB(255, 255, 255, 255).withOpacity(0.15);
 
   static Color get green => const Color(0xFF6ABF8B); 
   static Color get red => const Color(0xFFE57373); 

@@ -50,7 +50,9 @@ flutter:
     - images/group-interrogation.png
     - images/luggage-two-persons.png
     - images/paper-macute.png
+    - images/bagfinder-login.jpg
     - images/two-persons.png
+
 
 flutter_intl:
   enabled: true
