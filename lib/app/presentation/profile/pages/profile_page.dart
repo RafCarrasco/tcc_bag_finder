@@ -96,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 100,
+                  height: 50,
                 ),
                 Text(
                   AppLocalizations.of(context)!.signUpPageAccessDataField,
@@ -119,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(
-                    height: 75,
+                    height: 50,
                   ),
                 ElevatedButton(
                       onPressed: () {
