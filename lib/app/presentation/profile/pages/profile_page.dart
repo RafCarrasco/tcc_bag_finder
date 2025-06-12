@@ -50,38 +50,53 @@ class _ProfilePageState extends State<ProfilePage> {
                   thickness: 1,
                   color: Colors.grey,
                 ),
+                const SizedBox(
+                  height: 100,
+                ),
                 Text(
                     AppLocalizations.of(context)!.signUpPagePersonalDataField,
                     style: Theme.of(context).textTheme.displayLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                   ),
                 ),
-                InfoField(
-                  title: 'CPF',
-                  content: provider.user!.id.isEmpty
-                    ? 'Não informado'
-                    : provider.user!.id,
+                Padding(
+                  padding: EdgeInsets.all(16.0), 
+                  child: InfoField(
+                    title: 'CPF',
+                    content: provider.user!.id.isEmpty
+                      ? 'Não informado'
+                      : provider.user!.id,
+                  ),
                 ),
-                InfoField(
-                  title: 'Nome Completo',
-                  content: provider.user!.fullName.isEmpty
-                    ? 'Não informado'
-                    : provider.user!.fullName,
+                Padding(
+                  padding: EdgeInsets.all(16.0), 
+                  child: InfoField(
+                    title: 'Nome Completo',
+                    content: provider.user!.fullName.isEmpty
+                      ? 'Não informado'
+                      : provider.user!.fullName,
+                  ),
                 ),
-                InfoField(
-                  title: 'Data de Nascimento',
-                  content: provider.user!.dateOfBirth.isEmpty
-                    ? 'Não informado'
-                    : provider.user!.dateOfBirth,
+                Padding(
+                  padding: EdgeInsets.all(16.0), 
+                  child: InfoField(
+                    title: 'Data de Nascimento',
+                    content: provider.user!.dateOfBirth.isEmpty
+                      ? 'Não informado'
+                      : provider.user!.dateOfBirth,
+                  ),
                 ),
-                InfoField(
-                  title: 'Número de celular',
-                  content: provider.user!.phone.isEmpty
-                    ? 'Não informado'
-                    : provider.user!.phone,
+                Padding(
+                  padding: EdgeInsets.all(16.0), 
+                  child: InfoField(
+                    title: 'Número de celular',
+                    content: provider.user!.phone.isEmpty
+                      ? 'Não informado'
+                      : provider.user!.phone,
+                  ),
                 ),
                 const SizedBox(
-                  height: AppDimensions.verticalSpaceLarge,
+                  height: 100,
                 ),
                 Text(
                   AppLocalizations.of(context)!.signUpPageAccessDataField,
@@ -89,16 +104,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                InfoField(
-                  title: 'E-mail',
-                  content: provider.user!.email,
+                Padding(
+                  padding: EdgeInsets.all(16.0), 
+                  child: InfoField(
+                    title: 'E-mail',
+                    content: provider.user!.email,
+                  ),
                 ),
-                InfoField(
-                  title: 'Senha',
-                  content: '•' * provider.user!.password.length,
+                Padding(
+                  padding: EdgeInsets.all(16.0), 
+                  child: InfoField(
+                    title: 'Senha',
+                    content: '•' * provider.user!.password.length,
+                  ),
                 ),
                 const SizedBox(
-                    height: AppDimensions.verticalSpaceLarge,
+                    height: 75,
                   ),
                 ElevatedButton(
                       onPressed: () {
