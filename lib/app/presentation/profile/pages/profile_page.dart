@@ -37,9 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () {
-                      Modular.to.navigate(
-                        '/login/sign-in',
-                      );
+                      Modular.to.pop();
                     },
                   ),
                   actions: [
