@@ -1,26 +1,14 @@
-import 'package:tcc_bag_finder/domain/entity/user_avatar_entity.dart';
-import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
-import 'package:tcc_bag_finder/domain/enums/user_gender_enum.dart';
-import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
-import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
+import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-part 'collaborator_entity.g.dart';
-
-@HiveType(typeId: 2)
 class CollaboratorEntity extends UserEntity {
   static const Uuid _uuid = Uuid();
 
-  @HiveField(9)
   final String company;
-
-  @HiveField(10)
   final bool isActive;
-
-  @HiveField(12)
   final String responsibleId;
-
-  @HiveField(13)
   final int tripsCreated;
 
   CollaboratorEntity({
@@ -29,11 +17,11 @@ class CollaboratorEntity extends UserEntity {
     required super.password,
     required super.fullName,
     required super.phone,
+    required super.cpf,
     required this.company,
     this.isActive = false,
     this.tripsCreated = 0,
     required this.responsibleId,
-    super.avatar,
     super.role = UserRoleEnum.COLLABORATOR,
     super.createdAt,
     super.updatedAt,
@@ -44,9 +32,8 @@ class CollaboratorEntity extends UserEntity {
     String? email,
     String? password,
     String? fullName,
-    UserGenderEnum? gender,
     String? phone,
-    UserAvatarEntity? avatar,
+    String? cpf,
     UserRoleEnum? role,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -61,7 +48,7 @@ class CollaboratorEntity extends UserEntity {
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
       phone: phone ?? this.phone,
-      avatar: avatar ?? this.avatar,
+      cpf: cpf ?? this.cpf,
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -78,7 +65,7 @@ class CollaboratorEntity extends UserEntity {
       password: '',
       fullName: '',
       phone: '',
-      avatar: null,
+      cpf: '',
       role: UserRoleEnum.COLLABORATOR,
       createdAt: DateTime.now(),
       updatedAt: null,
@@ -87,5 +74,47 @@ class CollaboratorEntity extends UserEntity {
       tripsCreated: 0,
       responsibleId: '',
     );
+  }
+
+  factory CollaboratorEntity.fromMap(Map<String, dynamic> map, {String? id}) {
+    DateTime? _parseDateTime(dynamic date) {
+      if (date == null) return null;
+      if (date is Timestamp) return date.toDate();
+      if (date is DateTime) return date;
+      if (date is String) return DateTime.parse(date);
+      throw FormatException('Formato de data inválido: $date');
+  }
+    return CollaboratorEntity(
+      id: id,
+      email: map['email'] ?? '',
+      password: map['password'] ?? '',
+      fullName: map['fullName'] ?? '',
+      phone: map['phone'] ?? '',
+      cpf: map['cpf'] ?? '',
+      role: UserRoleEnum.values.byName(map['role'] ?? 'COLLABORATOR'),
+      createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+      updatedAt: _parseDateTime(map['updatedAt']),
+      company: map['company'] ?? '',
+      isActive: map['isActive'] ?? false,
+      tripsCreated: map['tripsCreated'] ?? 0,
+      responsibleId: map['responsibleId'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'email': email,
+      'password': password,
+      'fullName': fullName,
+      'phone': phone,
+      'cpf':cpf,
+      'role': role.name,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'company': company,
+      'isActive': isActive,
+      'tripsCreated': tripsCreated,
+      'responsibleId': responsibleId,
+    };
   }
 }

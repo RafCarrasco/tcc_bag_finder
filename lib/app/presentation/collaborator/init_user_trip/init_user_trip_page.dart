@@ -214,10 +214,13 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                               if (_formKey.currentState!.validate()) {
                                 await tripProvider.addTrip(
                                   trip: TripEntity(
+                                    id: uuid.v4(),
                                     responsibleCollaboratorId:
                                         userProvider.user!.id,
                                     travelerEntity: _controller.user,
+                                    isDone: false,
                                     description: TripDescriptionEntity(
+                                      tripId: uuid.v4(),
                                       airportOrigin: _controller.airportOrigin,
                                       airportDestination:
                                           _controller.airportDestination,
@@ -225,12 +228,13 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                     bags: List.generate(
                                       _controller.bagageQuantity ?? 0,
                                       (index) => BagEntity(
-                                        description: null,
+                                        id: uuid.v4(),
+                                        description: '',
                                         status: BagStatusEnum.CHECKED_IN,
                                         ownerId: _controller.user.id,
                                       ),
                                     ),
-                                    time: DateTime.now(),
+                                    createdAt: DateTime.now(),
                                   ),
                                 );
 

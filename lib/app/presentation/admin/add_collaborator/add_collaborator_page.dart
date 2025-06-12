@@ -198,13 +198,13 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                               if (_formKey.currentState!.validate()) {
                                 await provider.createUser(
                                   user: CollaboratorEntity(
-                                    avatar: UserAvatarEntity.empty(),
                                     fullName:
                                         addCollaboratorController.fullName!,
                                     email: addCollaboratorController.email!,
                                     password:
                                         addCollaboratorController.password!,
                                     phone: '',
+                                    cpf: '',
                                     updatedAt: null,
                                     company:
                                         (provider.user! as AdminEntity).company,

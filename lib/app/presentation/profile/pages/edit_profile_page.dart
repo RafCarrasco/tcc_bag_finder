@@ -149,7 +149,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         fullName: updateController.fullName,
                                         email: updateController.email,
                                         phone: updateController.phone,
-                                        gender: updateController.gender,
                                         updatedAt: DateTime.now(),
                                       ),
                                     );

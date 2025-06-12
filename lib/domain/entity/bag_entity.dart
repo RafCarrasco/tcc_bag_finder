@@ -1,46 +1,52 @@
 import 'package:tcc_bag_finder/domain/enums/bag_status_enum.dart';
-import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
 
-part 'bag_entity.g.dart';
-
-@HiveType(typeId: 1)
 class BagEntity {
-  static const Uuid _uuid = Uuid();
-
-  @HiveField(0)
   final String id;
-
-  @HiveField(1)
-  final String? description;
-
-  @HiveField(2)
   final String ownerId;
-
-  @HiveField(3)
+  final String description;
   final BagStatusEnum status;
-
-  @HiveField(4)
   final DateTime createdAt;
-
-  @HiveField(5)
   final DateTime? updatedAt;
 
   BagEntity({
-    String? id,
     required this.ownerId,
     required this.description,
     required this.status,
     DateTime? createdAt,
     this.updatedAt,
-  })  : id = id ?? _uuid.v4(),
+    required String id,
+  })  : id = id ,
         createdAt = createdAt ?? DateTime.now();
+
+  factory BagEntity.empty() {
+    return BagEntity(
+      id:'',
+      ownerId: '',
+      description: '',
+      status: BagStatusEnum.CHECKED_IN,
+      createdAt: DateTime.now(),
+      updatedAt: null,
+    );
+  }
+
+  factory BagEntity.fromMap(Map<String, dynamic> map, {String? id}) {
+    return BagEntity(
+      id: id ?? map['id'] ?? '',
+      ownerId: map['ownerId'] ?? '',
+      description: map['description'] ?? '',
+      status: BagStatusEnum.values.byName(map['status']),
+      createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.parse(map['updatedAt'])
+          : null,
+    );
+  }
 
   BagEntity copyWith({
     String? id,
+    String? ownerId,
     String? description,
     BagStatusEnum? status,
-    String? ownerId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -54,14 +60,13 @@ class BagEntity {
     );
   }
 
-  static BagEntity empty() {
-    return BagEntity(
-      id: '',
-      ownerId: '',
-      description: '',
-      status: BagStatusEnum.UNKNOWN,
-      createdAt: DateTime.now(),
-      updatedAt: null,
-    );
+  Map<String, dynamic> toMap() {
+    return {
+      'ownerId': ownerId,
+      'description': description,
+      'status': status.name,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
   }
 }

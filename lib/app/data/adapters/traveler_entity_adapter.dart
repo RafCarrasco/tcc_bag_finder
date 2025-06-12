@@ -31,7 +31,7 @@ class TravelerEntityAdapter {
       password: baseUser.password,
       fullName: baseUser.fullName,
       phone: baseUser.phone,
-      avatar: baseUser.avatar,
+      cpf: baseUser.cpf,
       role: baseUser.role,
       createdAt: baseUser.createdAt,
       updatedAt: baseUser.updatedAt,

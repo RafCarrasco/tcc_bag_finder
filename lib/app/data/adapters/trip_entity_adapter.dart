@@ -17,8 +17,9 @@ class TripEntityAdapter {
       responsibleCollaboratorId: json['responsibleCollaboratorId'],
       travelerEntity: TravelerEntityAdapter.fromJson(json['travelerEntity']),
       description: TripDescriptionEntityAdapter.fromJson(json['description']),
-      time: DateTime.parse(json['time']),
-      bags: bags,
+      bags: (json['bags'] as List<dynamic>? ?? [])
+        .map((e) => BagEntity.fromMap(e as Map<String, dynamic>))
+        .toList(),
       isDone: json['isDone'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt:
@@ -32,7 +33,6 @@ class TripEntityAdapter {
       'responsibleCollaboratorId': trip.responsibleCollaboratorId,
       'travelerEntity': TravelerEntityAdapter.toJson(trip.travelerEntity),
       'description': TripDescriptionEntityAdapter.toJson(trip.description),
-      'time': trip.time.toIso8601String(),
       'bags': trip.bags
           ?.map((bag) => bag_adapter.BagEntityAdapter.toJson(bag))
           .toList(),

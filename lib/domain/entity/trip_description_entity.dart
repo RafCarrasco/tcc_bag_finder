@@ -1,20 +1,10 @@
-import 'package:hive/hive.dart';
-
-part 'trip_description_entity.g.dart';
-
-@HiveType(typeId: 6)
 class TripDescriptionEntity {
-  @HiveField(0)
-  String tripId;
-
-  @HiveField(1)
+  final String tripId;
   final String airportOrigin;
-  
-  @HiveField(2)
   final String airportDestination;
 
   TripDescriptionEntity({
-    this.tripId = '',
+    required this.tripId,
     required this.airportOrigin,
     required this.airportDestination,
   });
@@ -38,4 +28,21 @@ class TripDescriptionEntity {
       airportDestination: '',
     );
   }
+
+  factory TripDescriptionEntity.fromMap(Map<String, dynamic> map) {
+    return TripDescriptionEntity(
+      tripId: map['tripId'] ?? '',
+      airportOrigin: map['airportOrigin'] ?? '',
+      airportDestination: map['airportDestination'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'tripId': tripId,
+      'airportOrigin': airportOrigin,
+      'airportDestination': airportDestination,
+    };
+  }
 }
+

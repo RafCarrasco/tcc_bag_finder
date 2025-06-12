@@ -8,12 +8,12 @@ import 'package:tcc_bag_finder/app/shared/themes/app_text_styles.dart';
 import 'package:tcc_bag_finder/app/shared/themes/functions/global_snackbar.dart';
 import 'package:tcc_bag_finder/app/presentation/user/stores/user_provider.dart';
 import 'package:tcc_bag_finder/domain/entity/traveler_entity.dart';
-import 'package:tcc_bag_finder/domain/entity/user_avatar_entity.dart';
 import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
 import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:uuid/uuid.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -119,16 +119,18 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                         ),
                 ),
                 onPressed: () async {
+                  final Uuid _uuid = Uuid();
                   UserEntity result;
                   if (_formKey.currentState!.validate()) {
                     result = await provider.createUser(
                       user: TravelerEntity(
-                        avatar: UserAvatarEntity.empty(),
+                        id: _uuid.v4(),
                         fullName: signUpController.fullName!,
                         email: signUpController.email!,
                         role: UserRoleEnum.TRAVELER,
                         password: signUpController.password!,
                         phone: '',
+                        cpf: '',
                         updatedAt: null,
                       ),
                       isSignUp: true,

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "707908197295",
+    "firebase_url": "https://bagfinder-b7b52-default-rtdb.firebaseio.com",
+    "project_id": "bagfinder-b7b52",
+    "storage_bucket": "bagfinder-b7b52.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707908197295:android:0259f1dc8604819afcad5a",
+        "android_client_info": {
+          "package_name": "com.example.bag_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3Xdy4w1rpA5QhITIvLG2aGkxSBRkKumg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707908197295:android:1b2b643386fbac3dfcad5a",
+        "android_client_info": {
+          "package_name": "com.example.bag_finder_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3Xdy4w1rpA5QhITIvLG2aGkxSBRkKumg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707908197295:android:fe05010b2aeed57ffcad5a",
+        "android_client_info": {
+          "package_name": "com.example.tcc_bag_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3Xdy4w1rpA5QhITIvLG2aGkxSBRkKumg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

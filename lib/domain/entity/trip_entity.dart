@@ -1,86 +1,95 @@
-import 'package:tcc_bag_finder/domain/entity/bag_entity.dart';
-import 'package:tcc_bag_finder/domain/entity/traveler_entity.dart';
-import 'package:tcc_bag_finder/domain/entity/trip_description_entity.dart';
-import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'trip_description_entity.dart';
+import 'bag_entity.dart';
+import 'traveler_entity.dart';
 
-part 'trip_entity.g.dart';
-
-@HiveType(typeId: 7)
 class TripEntity {
-  static const Uuid _uuid = Uuid();
-
-  @HiveField(0)
   final String id;
-
-  final TravelerEntity travelerEntity;
-
-  @HiveField(1)
   final String responsibleCollaboratorId;
-
-  @HiveField(2)
   final TripDescriptionEntity description;
-
-  @HiveField(3)
-  final DateTime time;
-
-  @HiveField(4)
-  final List<BagEntity>? bags;
-
-  @HiveField(5)
   final bool isDone;
-
-  @HiveField(6)
+  final List<BagEntity> bags;
+  final TravelerEntity travelerEntity;
   final DateTime createdAt;
-
-  @HiveField(7)
   final DateTime? updatedAt;
 
   TripEntity({
-    String? id,
     required this.responsibleCollaboratorId,
-    TravelerEntity? travelerEntity,
-    required TripDescriptionEntity description,
+    required this.description,
+    required this.isDone,
     required this.bags,
-    required this.time,
-    this.isDone = false,
-    DateTime? createdAt,
+    required this.travelerEntity,
+    required this.createdAt,
     this.updatedAt,
-  })  : id = id ?? _uuid.v4(),
-        description = description..tripId = (id ?? _uuid.v4()),
-        travelerEntity = travelerEntity ?? TravelerEntity.empty(),
-        createdAt = createdAt ?? DateTime.now();
+    String? id,
+  }) : id = id ?? const Uuid().v4();
+
+factory TripEntity.fromMap(
+  Map<String, dynamic> map, {
+  String? id,
+  List<BagEntity>? bags,
+}) {
+  return TripEntity(
+    id: id,
+    responsibleCollaboratorId: map['responsibleCollaboratorId'] ?? '',
+    description: TripDescriptionEntity.fromMap(map['description']),
+    isDone: map['isDone'] ?? false,
+    bags: bags ??
+        ((map['bags'] as Map<String, dynamic>? ?? {})
+            .values
+            .map((e) => BagEntity.fromMap(e as Map<String, dynamic>))
+            .toList()),
+    travelerEntity: TravelerEntity.fromMap(map['travelerEntity'] ?? <String, dynamic>{}),
+    createdAt: DateTime.parse(map['createdAt']),
+    updatedAt: map['updatedAt'] != null
+        ? DateTime.parse(map['updatedAt'])
+        : null,
+  );
+}
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'responsibleCollaboratorId': responsibleCollaboratorId,
+      'description': description.toMap(),
+      'isDone': isDone,
+      'bags': bags.map((e) => e.toMap()).toList(),
+      'travelerEntity': travelerEntity.toMap(),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
+  }
+
+  factory TripEntity.empty() {
+    return TripEntity(
+      responsibleCollaboratorId: '',
+      description: TripDescriptionEntity.empty(),
+      isDone: false,
+      bags: [],
+      travelerEntity: TravelerEntity.empty(),
+      createdAt: DateTime.now(),
+    );
+  }
 
   TripEntity copyWith({
     String? responsibleCollaboratorId,
     TripDescriptionEntity? description,
-    List<BagEntity>? bags,
-    DateTime? time,
     bool? isDone,
+    List<BagEntity>? bags,
+    TravelerEntity? travelerEntity,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return TripEntity(
+      id: id,
       responsibleCollaboratorId:
           responsibleCollaboratorId ?? this.responsibleCollaboratorId,
       description: description ?? this.description,
-      bags: bags ?? this.bags,
-      time: time ?? this.time,
       isDone: isDone ?? this.isDone,
+      bags: bags ?? this.bags,
+      travelerEntity: travelerEntity ?? this.travelerEntity,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  static TripEntity empty() {
-    return TripEntity(
-      responsibleCollaboratorId: '',
-      description: TripDescriptionEntity.empty(),
-      bags: [],
-      time: DateTime.now(),
-      isDone: false,
-      createdAt: DateTime.now(),
-      updatedAt: null,
     );
   }
 }

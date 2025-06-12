@@ -1,40 +1,17 @@
-import 'package:tcc_bag_finder/domain/entity/user_avatar_entity.dart';
-import 'package:tcc_bag_finder/domain/enums/user_gender_enum.dart';
 import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
-import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
-part 'user_entity.g.dart';
-
-@HiveType(typeId: 9)
 class UserEntity {
   static const Uuid _uuid = Uuid();
 
-  @HiveField(0)
   final String id;
-
-  @HiveField(1)
   final String email;
-
-  @HiveField(2)
   final String password;
-
-  @HiveField(3)
   final String fullName;
-
-  @HiveField(4)
   final String phone;
-
-  @HiveField(5)
-  final UserAvatarEntity? avatar;
-
-  @HiveField(6)
+  final String cpf; 
   final UserRoleEnum role;
-
-  @HiveField(7)
   final DateTime createdAt;
-
-  @HiveField(8)
   final DateTime? updatedAt;
 
   UserEntity({
@@ -43,7 +20,7 @@ class UserEntity {
     required this.password,
     required this.fullName,
     required this.phone,
-    this.avatar,
+    required this.cpf, 
     this.role = UserRoleEnum.OTHER,
     DateTime? createdAt,
     this.updatedAt,
@@ -53,9 +30,8 @@ class UserEntity {
     String? email,
     String? password,
     String? fullName,
-    UserGenderEnum? gender,
     String? phone,
-    UserAvatarEntity? avatar,
+    String? cpf,
     UserRoleEnum? role,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -66,7 +42,7 @@ class UserEntity {
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
       phone: phone ?? this.phone,
-      avatar: avatar ?? this.avatar,
+      cpf: cpf ?? this.cpf, 
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -80,10 +56,40 @@ class UserEntity {
       password: '',
       fullName: '',
       phone: '',
-      avatar: null,
+      cpf: '', 
       role: UserRoleEnum.OTHER,
       createdAt: DateTime.now(),
       updatedAt: null,
     );
+  }
+
+  factory UserEntity.fromMap(Map<String, dynamic> map, {String? id}) {
+    return UserEntity(
+      id: id ?? map['id'] ?? _uuid.v4(),
+      email: map['email'] ?? '',
+      password: map['password'] ?? '',
+      fullName: map['fullName'] ?? '',
+      phone: map['phone'] ?? '',
+      cpf: map['cpf'] ?? '', 
+      role: UserRoleEnum.values.byName(map['role'] ?? 'OTHER'),
+      createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.tryParse(map['updatedAt'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'email': email,
+      'password': password,
+      'fullName': fullName,
+      'phone': phone,
+      'cpf': cpf, 
+      'role': role.name,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
   }
 }

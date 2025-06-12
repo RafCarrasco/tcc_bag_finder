@@ -75,7 +75,7 @@ class _TripPaginationWidgetState extends State<TripPaginationWidget> {
                     width: 5,
                   ),
                   Text(
-                    trip.time.toString(),
+                    trip.createdAt.toString(),
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: AppColors.secondaryGrey,
                         ),

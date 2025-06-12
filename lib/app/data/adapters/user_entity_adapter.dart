@@ -10,11 +10,7 @@ class UserEntityAdapter {
       password: json['password'],
       fullName: json['fullName'],
       phone: json['phone'],
-      avatar: json['avatar'] != null
-          ? UserAvatarEntityAdapter.fromJson(
-              json['avatar'],
-            )
-          : null,
+      cpf: json['cpf'],
       role: UserRoleEnum.values.firstWhere((e) => e.name == json['role'],
           orElse: () => UserRoleEnum.OTHER),
       createdAt: DateTime.parse(json['createdAt']),
@@ -34,7 +30,7 @@ class UserEntityAdapter {
       'password': user.password,
       'fullName': user.fullName,
       'phone': user.phone,
-      'avatar': UserAvatarEntityAdapter.toJson(user.avatar!),
+      'cpf':user.cpf,
       'role': user.role.name,
       'createdAt': user.createdAt.toIso8601String(),
       'updatedAt': user.updatedAt?.toIso8601String(),
