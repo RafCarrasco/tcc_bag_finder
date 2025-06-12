@@ -223,8 +223,7 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                               }
                             },
                             child: Text(
-                              AppLocalizations.of(context)!
-                                  .signUpPageButtonSignUp,
+                              'Cadastre',
                               style: AppTextStyles.button,
                             ),
                           ),
