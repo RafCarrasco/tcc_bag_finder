@@ -1,3 +1,5 @@
+// ignore_for_file: unused_catch_stack
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import '../../repositories/user_repository.dart';

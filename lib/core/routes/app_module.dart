@@ -63,7 +63,7 @@ class AppModule extends Module {
     i.addLazySingleton<UserProvider>(() => UserProvider(i(), i()));
 
     // Controllers
-    i.addLazySingleton<SignInController>(() => SignInController(i()));
+    i.addLazySingleton<SignInController>(() => SignInController(i(), i()));
     i.addLazySingleton<SignUpController>(() => SignUpController(i(), i()));
     i.addLazySingleton<LandingPageStepProgess>(LandingPageStepProgess.new);
   }
