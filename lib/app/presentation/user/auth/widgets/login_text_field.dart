@@ -5,7 +5,7 @@ import 'package:tcc_bag_finder/app/shared/themes/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class LoginTextField extends StatefulWidget {
-  final Icon prefixIcon;
+  final Icon suffixIcon;
   final String hint;
   final bool isPassword;
   final String fieldType;
@@ -14,7 +14,7 @@ class LoginTextField extends StatefulWidget {
 
   const LoginTextField({
     super.key,
-    required this.prefixIcon,
+    required this.suffixIcon,
     required this.hint,
     this.onChanged,
     required this.isPassword,
@@ -58,7 +58,7 @@ class _LoginTextFieldState extends State<LoginTextField> with ValidationMixin {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppDimensions.paddingSmall,
-          vertical: AppDimensions.paddingLarge,
+          vertical: AppDimensions.paddingSmall,
         ),
         fillColor: AppColors.textFieldBackground,
         filled: true,
@@ -68,25 +68,34 @@ class _LoginTextFieldState extends State<LoginTextField> with ValidationMixin {
           color: AppColors.secondaryGrey,
           fontSize: AppDimensions.fontMedium,
         ),
-        prefixIcon: widget.prefixIcon,
-        prefixIconColor: AppColors.secondaryGrey,
+        suffixIcon: widget.suffixIcon,
+        suffixIconColor: AppColors.secondaryGrey,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             AppDimensions.radiusMedium,
           ),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: AppColors.secondaryGrey, // Cor de erro
+            width: 1.5,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             AppDimensions.radiusMedium,
           ),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: AppColors.primary, // Cor de erro
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             AppDimensions.radiusMedium,
           ),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: AppColors.error, // Cor de erro
+            width: 1.5,
+          ),
         ),
       ),
       style: AppTextStyles.titleMedium.copyWith(

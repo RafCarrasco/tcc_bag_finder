@@ -1,7 +1,26 @@
 class SignUpController {
+  String? cpf;
+  String? fullName;
+  String? dateOfBirth;
+  String? cellPhone;
   String? email;
   String? password;
-  String? fullName;
+
+  void setCpfId(String? value) {
+    cpf = value;
+  }
+
+  void setFullName(String? value) {
+    fullName = value;
+  }
+
+  void setDateOfBirth(String? value) {
+    dateOfBirth = value;
+  }
+
+  void setCellPhone(String? value) {
+    cellPhone = value;
+  }
 
   void setEmail(String? value) {
     email = value;
@@ -9,10 +28,6 @@ class SignUpController {
 
   void setPassword(String? value) {
     password = value;
-  }
-
-  void setFullName(String? value) {
-    fullName = value;
   }
 
   void resetFields() {
@@ -24,4 +39,6 @@ class SignUpController {
   bool areFieldsValid() {
     return email != null && password != null && fullName != null;
   }
+
+  void setCPF(String value) {}
 }

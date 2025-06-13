@@ -13,6 +13,7 @@ class TravelerEntity extends UserEntity {
     required super.email,
     required super.password,
     required super.fullName,
+    required super.dateOfBirth,
     required super.phone,
     required super.cpf,
     super.role = UserRoleEnum.TRAVELER,
@@ -48,6 +49,36 @@ TravelerEntity copyWith({
   );
 }
 
+<<<<<<< HEAD
+=======
+  @override
+  TravelerEntity copyWith({
+    String? email,
+    String? password,
+    String? fullName,
+    UserGenderEnum? gender,
+    String? phone,
+    UserAvatarEntity? avatar,
+    UserRoleEnum? role,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<TripEntity>? bags,
+  }) {
+    return TravelerEntity(
+      id: id,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      fullName: fullName ?? this.fullName,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      phone: phone ?? this.phone,
+      avatar: avatar ?? this.avatar,
+      role: role ?? this.role,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      bags: bags ?? this.bags,
+    );
+  }
+>>>>>>> feature_design
 
   factory TravelerEntity.empty() {
     return TravelerEntity(
@@ -55,6 +86,7 @@ TravelerEntity copyWith({
       email: '',
       password: '',
       fullName: '',
+      dateOfBirth: '',
       phone: '',
       cpf: '',
       role: UserRoleEnum.TRAVELER,

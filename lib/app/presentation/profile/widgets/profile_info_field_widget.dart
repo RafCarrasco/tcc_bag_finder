@@ -33,9 +33,6 @@ class InfoField extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
         ),
-        const SizedBox(
-          height: 8,
-        ),
         Divider(
           indent: 0,
           color: AppColors.secondaryGrey,

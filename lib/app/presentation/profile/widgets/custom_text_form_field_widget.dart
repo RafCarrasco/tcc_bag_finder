@@ -10,6 +10,8 @@ class CustomTextFormField extends StatefulWidget {
   final bool isPassword;
   final String fieldType;
   final bool isRequired;
+  final bool obscureText;
+  final Widget? suffixIcon;
   final void Function(String)? onChanged;
 
   const CustomTextFormField({
@@ -20,6 +22,8 @@ class CustomTextFormField extends StatefulWidget {
     required this.isPassword,
     required this.fieldType,
     required this.isRequired,
+    this.obscureText = false,
+    this.suffixIcon,
   });
 
   @override
@@ -36,6 +40,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField>
         top: AppDimensions.paddingSmall,
       ),
       child: TextFormField(
+        obscureText: widget.obscureText,
         validator: (value) {
           final error = validateField(
             value,
@@ -58,6 +63,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField>
         ),
         decoration: InputDecoration(
           hintText: widget.hintText,
+          suffixIcon: widget.suffixIcon,
           fillColor: AppColors.primary.withOpacity(
             0.3,
           ),

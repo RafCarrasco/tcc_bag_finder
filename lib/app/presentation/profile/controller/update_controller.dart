@@ -2,15 +2,20 @@ import 'package:tcc_bag_finder/domain/enums/user_gender_enum.dart';
 
 class UpdateController {
   String? email;
+  String? password;
   String? fullName;
   String? phone;
   String? date;
-  UserGenderEnum? gender;
 
   void setEmail({
     required String? email,
   }) {
     email = email;
+  }
+  void setPassword({
+    required String? password,
+  }) {
+    password = password;
   }
 
   void setFullName({
@@ -31,15 +36,9 @@ class UpdateController {
     date = date;
   }
 
-  void setGender({
-    required UserGenderEnum? gender,
-  }) {
-    gender = gender;
-  }
-
   void resetFields() {
     email = null;
-    gender = null;
+    password = null;
     date = null;
     fullName = null;
     phone = null;
@@ -50,6 +49,6 @@ class UpdateController {
         fullName != null &&
         phone != null &&
         date != null &&
-        gender != null;
+        password != null;
   }
 }

@@ -35,7 +35,7 @@ class FindYourAccountPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 LoginTextField(
-                  prefixIcon: AppIconsSecondaryGrey.emailIcon,
+                  suffixIcon: AppIconsSecondaryGrey.emailIcon,
                   hint:
                       AppLocalizations.of(context)!.emailForContactPlaceholder,
                   isPassword: false,
@@ -66,7 +66,6 @@ class FindYourAccountPage extends StatelessWidget {
                     AppLocalizations.of(context)!.comeBackToHomepage,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
                           decorationColor: AppColors.primary,
                         ),
                   ),

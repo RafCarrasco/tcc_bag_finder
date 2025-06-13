@@ -30,12 +30,13 @@ class TravelerEntityAdapter {
       email: baseUser.email,
       password: baseUser.password,
       fullName: baseUser.fullName,
+      dateOfBirth: baseUser.dateOfBirth,
       phone: baseUser.phone,
       cpf: baseUser.cpf,
       role: baseUser.role,
       createdAt: baseUser.createdAt,
       updatedAt: baseUser.updatedAt,
-      bags: bags,
+      bags: bags, 
     );
   }
 

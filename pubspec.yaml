@@ -41,6 +41,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.0
   build_runner: ^2.4.13
+  intl_utils: ^2.8.0
 
 
 flutter:
@@ -51,4 +52,11 @@ flutter:
     - images/group-interrogation.png
     - images/luggage-two-persons.png
     - images/paper-macute.png
+    - images/bagfinder-login.jpg
     - images/two-persons.png
+
+
+flutter_intl:
+  enabled: true
+  arb_dir: lib/l10n
+  output_dir: lib/generated

@@ -16,6 +16,7 @@ class CollaboratorEntity extends UserEntity {
     required super.email,
     required super.password,
     required super.fullName,
+    required super.dateOfBirth,
     required super.phone,
     required super.cpf,
     required this.company,
@@ -32,6 +33,11 @@ class CollaboratorEntity extends UserEntity {
     String? email,
     String? password,
     String? fullName,
+<<<<<<< HEAD
+=======
+    String? dateOfBirth,
+    UserGenderEnum? gender,
+>>>>>>> feature_design
     String? phone,
     String? cpf,
     UserRoleEnum? role,
@@ -47,6 +53,7 @@ class CollaboratorEntity extends UserEntity {
       email: email ?? this.email,
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       phone: phone ?? this.phone,
       cpf: cpf ?? this.cpf,
       role: role ?? this.role,
@@ -64,6 +71,7 @@ class CollaboratorEntity extends UserEntity {
       email: '',
       password: '',
       fullName: '',
+      dateOfBirth: '',
       phone: '',
       cpf: '',
       role: UserRoleEnum.COLLABORATOR,

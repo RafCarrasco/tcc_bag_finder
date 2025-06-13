@@ -15,6 +15,7 @@ import 'package:uuid/uuid.dart';
 //   final List<BagEntity> bags;
 //   final List<TripEntity> trips;
 
+<<<<<<< HEAD
 //   MockDatabase()
 //       : users = [],
 //         trips = [],
@@ -60,6 +61,57 @@ import 'package:uuid/uuid.dart';
 //       avatar: UserAvatarEntity.empty(),
 //       updatedAt: null,
 //     );
+=======
+  MockDatabase()
+      : users = [],
+        trips = [],
+        bags = [] {
+    AdminEntity admin = AdminEntity(
+      email: 'admin@example.com',
+      password: 'admin',
+      fullName: 'Admin',
+      dateOfBirth: '',
+      phone: '(11) 99999-9999',
+      avatar: UserAvatarEntity.empty(),
+      role: UserRoleEnum.ADMIN,
+      updatedAt: null,
+      createdAt: DateTime.now(),
+      company: 'LATAM',
+    );
+
+    CollaboratorEntity specialCollaborator = CollaboratorEntity(
+      fullName: 'Yuji Miguel Arima',
+      dateOfBirth: '',
+      email: 'yujiarima@example.com',
+      avatar: UserAvatarEntity.empty(),
+      password: 'yujiarima',
+      isActive: true,
+      responsibleId: admin.id,
+      company: 'LATAM',
+      tripsCreated: 4,
+      phone: '1111111111',
+    );
+
+    TravelerEntity specialTraveler = TravelerEntity(
+      phone: '(11) 99999-9999',
+      email: 'traveler@gmail.com',
+      password: 't',
+      fullName: 'Traveler Admin',
+      dateOfBirth: '',
+      avatar: UserAvatarEntity.empty(),
+      updatedAt: null,
+    );
+
+    TravelerEntity secondSpecialTraveler = TravelerEntity(
+      phone: '(11) 99999-9999',
+      email: 'traveler2@gmail.com',
+      password: 'traveler2',
+      fullName: 'Traveler Admin 2',
+      dateOfBirth: '',
+      avatar: UserAvatarEntity.empty(),
+      updatedAt: null,
+    );
+>>>>>>> feature_design
 
 //     users.add(
 //       admin,
@@ -73,6 +125,7 @@ import 'package:uuid/uuid.dart';
 //       specialTraveler,
 //     );
 
+<<<<<<< HEAD
 //     users.addAll([
 //       CollaboratorEntity(
 //         fullName: 'Ana Silva',
@@ -152,6 +205,95 @@ import 'package:uuid/uuid.dart';
 //         updatedAt: null,
 //       ),
 //     ]);
+=======
+    users.addAll([
+      CollaboratorEntity(
+        fullName: 'Ana Silva',
+        email: 'collaborator@example.com',
+        avatar: UserAvatarEntity.empty(),
+        dateOfBirth: '',
+        password: 'collaborator',
+        isActive: true,
+        responsibleId: admin.id,
+        company: 'LATAM',
+        phone: '1111111111',
+      ),
+      CollaboratorEntity(
+        fullName: 'Carlos Gomes',
+        email: 'carlos.gomes@example.com',
+        avatar: UserAvatarEntity.empty(),
+        dateOfBirth: '',
+        password: '12345',
+        isActive: true,
+        responsibleId: admin.id,
+        company: 'LATAM',
+        phone: '1111111111',
+      ),
+      CollaboratorEntity(
+        fullName: 'Fernanda Oliveira',
+        email: 'fernanda.oliveira@example.com',
+        avatar: UserAvatarEntity.empty(),
+        dateOfBirth: '',
+        password: '12345',
+        isActive: true,
+        responsibleId: admin.id,
+        company: 'LATAM',
+        phone: '1111111111',
+      ),
+      CollaboratorEntity(
+        fullName: 'Roberto Souza',
+        email: 'roberto.souza@example.com',
+        avatar: UserAvatarEntity.empty(),
+        dateOfBirth: '',
+        password: '12345',
+        isActive: true,
+        responsibleId: admin.id,
+        company: 'LATAM',
+        phone: '1111111111',
+      ),
+      CollaboratorEntity(
+        fullName: 'Luciana Martins',
+        email: 'luciana.martins@example.com',
+        avatar: UserAvatarEntity.empty(),
+        dateOfBirth: '',
+        password: '12345',
+        isActive: true,
+        responsibleId: admin.id,
+        company: 'LATAM',
+        phone: '1111111111',
+      ),
+    ]);
+
+    users.addAll([
+      TravelerEntity(
+        phone: '(11) 99999-9999',
+        email: 'traveler@gmail.com',
+        password: 'traveler',
+        fullName: 'Traveler Admin',
+        dateOfBirth: '',
+        avatar: UserAvatarEntity.empty(),
+        updatedAt: null,
+      ),
+      TravelerEntity(
+        phone: '(11) 99999-9999',
+        email: 'traveler1@gmail.com',
+        password: 'traveler',
+        fullName: 'Traveler 1',
+        dateOfBirth: '',
+        avatar: UserAvatarEntity.empty(),
+        updatedAt: null,
+      ),
+      TravelerEntity(
+        phone: '(11) 99999-9999',
+        email: 'traveler2@gmail.com',
+        password: 'traveler',
+        fullName: 'Traveler 2',
+        dateOfBirth: '',
+        avatar: UserAvatarEntity.empty(),
+        updatedAt: null,
+      ),
+    ]);
+>>>>>>> feature_design
 
 //     bags.addAll([
 //       BagEntity(
