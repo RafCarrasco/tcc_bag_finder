@@ -8,6 +8,7 @@ import 'package:tcc_bag_finder/domain/enums/bag_status_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
+import 'package:tcc_bag_finder/app/presentation/traveler/home/widget/bag_tracking_timeline.dart';
 
 class BagItemWidget extends StatefulWidget {
   final BagEntity bag;
@@ -104,8 +105,11 @@ class _BagItemWidgetState extends State<BagItemWidget> {
             ),
           ),
           Padding(
+            padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+            child: BagTrackingTimeline(currentStatus: widget.bag.status),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(
-              vertical: AppDimensions.paddingLarge,
               horizontal: AppDimensions.paddingMedium,
             ),
             child: Row(

@@ -9,6 +9,26 @@ import 'package:dartz/dartz.dart';
 
 class BagRepositoryMock extends IBagRepository {
   final MockDatabase _db;
+  bool canAdvanceTo(BagStatusEnum current, BagStatusEnum next) {
+    const orderedFlow = [
+      BagStatusEnum.CHECKED_IN,
+      BagStatusEnum.IN_TRANSIT,
+      BagStatusEnum.ARRIVED,
+      BagStatusEnum.READY_FOR_PICKUP,
+      BagStatusEnum.CLAIMED,
+    ];
+
+    final currentIndex = orderedFlow.indexOf(current);
+    final nextIndex = orderedFlow.indexOf(next);
+
+    // Só permite avançar para o próximo status na ordem
+    return nextIndex == currentIndex + 1;
+  }
+
+  // Verifica se a bagagem está pronta para ser marcada como retirada
+  bool canBeClaimed(BagStatusEnum status) {
+    return status == BagStatusEnum.READY_FOR_PICKUP;
+  }
 
   BagRepositoryMock(
     this._db,
@@ -144,45 +164,43 @@ class BagRepositoryMock extends IBagRepository {
   Future<Either<BagFailure, BagEntity>> updateBag({
     required BagEntity bag,
   }) async {
-    await Future.delayed(
-      const Duration(
-        seconds: 2,
-      ),
-    );
+    await Future.delayed(const Duration(seconds: 2));
 
-    final int index = _db.bags.indexWhere(
-      (e) => e.id == bag.id,
-    );
+    final index = _db.bags.indexWhere((e) => e.id == bag.id);
+    if (index == -1) return Left(BagNotFound());
 
-    if (index == -1) {
-      return Left(
-        BagNotFound(),
-      );
+    final currentBag = _db.bags[index];
+
+    // 🟡 Verifica se a mudança de status segue o fluxo correto
+    if (!canAdvanceTo(currentBag.status, bag.status)) {
+      return Left(BagFailure.invalidStatusTransition());
+    }
+
+    // 🔒 Garante que só é possível confirmar entrega no status correto
+    if (bag.status == BagStatusEnum.CLAIMED && !canBeClaimed(currentBag.status)) {
+      return Left(BagFailure.cannotBeClaimedYet());
     }
 
     _db.bags[index] = bag;
-
-    return Right(
-      bag,
-    );
+    return Right(bag);
   }
 
-  @override
-  Future<Either<BagFailure, List<BagEntity>>> getCurrentTripBagsById({
-    required TripEntity trip,
-    required String bagId,
-  }) async {
-    await Future.delayed(
-      const Duration(
-        seconds: 2,
-      ),
-    );
-
-    if (trip.bags == null) {
-      return Left(
-        BagNotFound(),
+    @override
+    Future<Either<BagFailure, List<BagEntity>>> getCurrentTripBagsById({
+      required TripEntity trip,
+      required String bagId,
+    }) async {
+      await Future.delayed(
+        const Duration(
+          seconds: 2,
+        ),
       );
-    }
+
+      if (trip.bags == null) {
+        return Left(
+          BagNotFound(),
+        );
+      }
 
     final List<BagEntity> bags = trip.bags!
         .where(

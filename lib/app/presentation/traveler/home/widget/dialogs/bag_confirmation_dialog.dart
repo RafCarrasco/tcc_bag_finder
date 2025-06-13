@@ -3,6 +3,8 @@ import 'package:tcc_bag_finder/app/shared/themes/app_dimensions.dart';
 import 'package:tcc_bag_finder/domain/entity/bag_entity.dart';
 import 'package:tcc_bag_finder/domain/enums/bag_status_enum.dart';
 import 'package:flutter/material.dart';
+import 'package:tcc_bag_finder/app/presentation/traveler/home/widget/bag_tracking_timeline.dart';
+
 
 class BagConfirmationDialog extends StatelessWidget {
   final BagEntity bag;
@@ -123,7 +125,9 @@ class BagConfirmationDialog extends StatelessWidget {
                 ),
                 Expanded(
                   child: TextButton(
-                    onPressed: onConfirmArrival,
+                    onPressed: bag.status == BagStatusEnum.READY_FOR_PICKUP
+                      ? onConfirmArrival
+                      : null,
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppDimensions.paddingMedium,

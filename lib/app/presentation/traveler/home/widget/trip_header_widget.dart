@@ -74,7 +74,8 @@ class TripHeaderWidget extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'ID Viagem:',

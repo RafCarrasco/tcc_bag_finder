@@ -1,7 +1,9 @@
 import 'package:tcc_bag_finder/domain/failures/failure.dart';
 
-abstract class BagFailure extends Failure {
+class BagFailure extends Failure {
   BagFailure({required super.errorMessage});
+  static BagFailure invalidStatusTransition() => BagFailure(errorMessage: "Transição de status inválida.");
+  static BagFailure cannotBeClaimedYet() => BagFailure(errorMessage: "Bagagem ainda não pode ser retirada.");
 }
 
 class BagNotFound extends BagFailure {
