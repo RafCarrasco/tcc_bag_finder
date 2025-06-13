@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 100,
                 ),
                 Text(
-                    AppLocalizations.of(context)!.signUpPagePersonalDataField,
+                    'AppLocalizations.of(context)!.signUpPagePersonalDataField',
                     style: Theme.of(context).textTheme.displayLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                   ),
@@ -88,15 +88,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 Padding(
                   padding: EdgeInsets.all(16.0), 
                   child: InfoField(
-                    title: 'Data de Nascimento',
-                    content: provider.user!.dateOfBirth.isEmpty
-                      ? 'Não informado'
-                      : provider.user!.dateOfBirth,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16.0), 
-                  child: InfoField(
                     title: 'Número de celular',
                     content: provider.user!.phone.isEmpty
                       ? 'Não informado'
@@ -107,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 50,
                 ),
                 Text(
-                  AppLocalizations.of(context)!.signUpPageAccessDataField,
+                  'AppLocalizations.of(context)!.signUpPageAccessDataField',
                   style: Theme.of(context).textTheme.displayLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

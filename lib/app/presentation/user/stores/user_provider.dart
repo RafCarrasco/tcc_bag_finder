@@ -1,6 +1,7 @@
 import 'package:tcc_bag_finder/app/data/datasources/bag_local_datasource.dart';
 import 'package:tcc_bag_finder/app/data/datasources/trip_local_datasource.dart';
 import 'package:tcc_bag_finder/app/data/datasources/user_local_datasource.dart';
+import 'package:tcc_bag_finder/app/data/repositories/user_repository_firestore.dart';
 import 'package:tcc_bag_finder/app/events/user_created_event.dart';
 import 'package:tcc_bag_finder/app/events/user_deleted_event.dart';
 import 'package:tcc_bag_finder/app/events/user_updated_event.dart';
@@ -15,6 +16,7 @@ import 'package:tcc_bag_finder/domain/usecases/user/update_user_usecase.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserProvider extends ChangeNotifier {
   final ITripLocalDatasource _tripLocalDatasource;
@@ -123,6 +125,26 @@ class UserProvider extends ChangeNotifier {
 
     return user;
   }
+Future<String> createUserAuth({
+  required String email,
+  required String password,
+  bool isSignUp = false,
+}) async {
+  final userRepositoryFirestore = Modular.get<UserRepositoryFirestore>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  try {
+    await userRepositoryFirestore.registerWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    User? currentUser = _auth.currentUser;
+    return currentUser!.uid;
+  } catch (e) {
+    print(e);
+    return 'Error :${e}';
+  }
+}
+
 
   Future<void> updateUser({
     required UserEntity user,

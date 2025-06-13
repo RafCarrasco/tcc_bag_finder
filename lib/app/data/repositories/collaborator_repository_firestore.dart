@@ -16,7 +16,7 @@ class CollaboratorRepositoryFirestore implements ICollaboratorRepository {
   }) async {
     try {
       final querySnapshot = await _firestore
-          .collection('collaborators')
+          .collection('users')
           .where('responsibleId', isEqualTo: id)
           .get();
 

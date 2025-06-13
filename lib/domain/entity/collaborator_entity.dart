@@ -1,10 +1,9 @@
-import 'package:uuid/uuid.dart';
+
 import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
 import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CollaboratorEntity extends UserEntity {
-  static const Uuid _uuid = Uuid();
 
   final String company;
   final bool isActive;
@@ -12,11 +11,10 @@ class CollaboratorEntity extends UserEntity {
   final int tripsCreated;
 
   CollaboratorEntity({
-    String? id,
+    required super.id,
     required super.email,
     required super.password,
     required super.fullName,
-    required super.dateOfBirth,
     required super.phone,
     required super.cpf,
     required this.company,
@@ -26,18 +24,13 @@ class CollaboratorEntity extends UserEntity {
     super.role = UserRoleEnum.COLLABORATOR,
     super.createdAt,
     super.updatedAt,
-  }) : super(id: id ?? _uuid.v4());
+  });
 
   @override
   CollaboratorEntity copyWith({
     String? email,
     String? password,
     String? fullName,
-<<<<<<< HEAD
-=======
-    String? dateOfBirth,
-    UserGenderEnum? gender,
->>>>>>> feature_design
     String? phone,
     String? cpf,
     UserRoleEnum? role,
@@ -53,7 +46,6 @@ class CollaboratorEntity extends UserEntity {
       email: email ?? this.email,
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       phone: phone ?? this.phone,
       cpf: cpf ?? this.cpf,
       role: role ?? this.role,
@@ -68,10 +60,10 @@ class CollaboratorEntity extends UserEntity {
 
   factory CollaboratorEntity.empty() {
     return CollaboratorEntity(
+      id: '',      
       email: '',
       password: '',
       fullName: '',
-      dateOfBirth: '',
       phone: '',
       cpf: '',
       role: UserRoleEnum.COLLABORATOR,
@@ -93,7 +85,7 @@ class CollaboratorEntity extends UserEntity {
       throw FormatException('Formato de data inválido: $date');
   }
     return CollaboratorEntity(
-      id: id,
+      id: map['id'] ?? '',
       email: map['email'] ?? '',
       password: map['password'] ?? '',
       fullName: map['fullName'] ?? '',

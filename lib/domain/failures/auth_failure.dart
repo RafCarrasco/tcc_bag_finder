@@ -45,5 +45,11 @@ class InvalidEmail extends AuthFailure {
           errorMessage: "Email inválido.",
         );
 }
+class UserError extends AuthFailure {
+  UserError()
+      : super(
+          errorMessage: "Usuario nao cadastrado",
+        );
+}
 
 

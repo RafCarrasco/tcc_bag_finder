@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:tcc_bag_finder/domain/entity/admin_entity.dart';
 import 'package:tcc_bag_finder/domain/entity/collaborator_entity.dart';
 import 'package:tcc_bag_finder/domain/entity/traveler_entity.dart';
@@ -8,6 +9,7 @@ import 'package:tcc_bag_finder/domain/failures/auth_failure.dart';
 import 'package:tcc_bag_finder/domain/failures/collaborator_failure.dart';
 import 'package:tcc_bag_finder/domain/failures/failure.dart';
 import 'package:tcc_bag_finder/domain/repositories/user_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dartz/dartz.dart';
 
 class UnexpectedAuthFailure extends AuthFailure {
@@ -17,7 +19,7 @@ class UnexpectedAuthFailure extends AuthFailure {
 
 class UserRepositoryFirestore implements IUserRepository {
   final FirebaseFirestore firestore;
-
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   UserRepositoryFirestore(this.firestore);
 
   CollectionReference get usersRef => firestore.collection('users');
@@ -191,13 +193,13 @@ class UserRepositoryFirestore implements IUserRepository {
 
   @override
   Future<Either<Failure, List<UserEntity>>> getUsersByName({required String name}) async {
+
     try {
       final snapshot = await usersRef.get();
       final collaborators = snapshot.docs
           .map((doc) => CollaboratorEntity.fromMap(doc.data() as Map<String, dynamic>, id: doc.id))
           .where((c) => c.fullName.toLowerCase().contains(name.toLowerCase()))
           .toList();
-
       return collaborators.isEmpty
           ? Left(CollaboratorNotFound())
           : Right(name.isEmpty
@@ -208,5 +210,41 @@ class UserRepositoryFirestore implements IUserRepository {
     } catch (e) {
       return Left(UnexpectedAuthFailure(e));
     }
+  }
+
+  Future<User?> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      print('Erro no login: ${e.code} - ${e.message}');
+      return null;
+    }
+  }
+
+  Future<User?> registerWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      print('Erro no registro: ${e.code} - ${e.message}');
+      return null;
+    }
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
   }
 }

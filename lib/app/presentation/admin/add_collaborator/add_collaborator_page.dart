@@ -6,7 +6,6 @@ import 'package:tcc_bag_finder/domain/entity/admin_entity.dart';
 import 'package:uuid/uuid.dart';
 import 'package:tcc_bag_finder/app/shared/themes/functions/global_snackbar.dart';
 import 'package:tcc_bag_finder/domain/entity/collaborator_entity.dart';
-import 'package:tcc_bag_finder/domain/entity/user_avatar_entity.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tcc_bag_finder/app/shared/themes/app_colors.dart';
 import 'package:tcc_bag_finder/app/shared/themes/app_dimensions.dart';
@@ -14,6 +13,7 @@ import 'package:tcc_bag_finder/app/shared/themes/app_icons.dart';
 import 'package:tcc_bag_finder/app/presentation/user/stores/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:uuid/uuid.dart';
 
 class AddCollaboratorPage extends StatefulWidget {
   const AddCollaboratorPage({
@@ -31,6 +31,7 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
   var uuid = const Uuid();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static const Uuid _uuid = Uuid();
 
   @override
   Widget build(BuildContext context) {
@@ -198,13 +199,13 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                               if (_formKey.currentState!.validate()) {
                                 await provider.createUser(
                                   user: CollaboratorEntity(
+                                    id: _uuid.v4(),
                                     fullName:
                                         addCollaboratorController.fullName!,
                                     email: addCollaboratorController.email!,
                                     password:
                                         addCollaboratorController.password!,
-                                    dateOfBirth: '',
-                                    phone: '',
+                                    phone: addCollaboratorController.phone!,
                                     cpf: '',
                                     updatedAt: null,
                                     company:

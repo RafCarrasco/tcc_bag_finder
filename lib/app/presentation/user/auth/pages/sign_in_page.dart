@@ -91,48 +91,6 @@ class _SignInPageState extends State<SignInPage> {
               ],
             ),
           ),
-          // Row(
-          //   mainAxisSize: MainAxisSize.max,
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     Row(
-          //       children: [
-          //         Checkbox(
-          //           value: signInController.rememberMe,
-          //           onChanged: (value) {
-          //             setState(() {
-          //               signInController.setRememberMe(
-          //                 value,
-          //               );
-          //             });
-          //           },
-          //         ),
-          //         Text(
-          //           AppLocalizations.of(context)!.loginPageRememberMe,
-          //           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-          //                 color: AppColors.secondaryGrey,
-          //               ),
-          //         ),
-          //       ],
-          //     ),
-          //     TextButton(
-          //       onPressed: () {
-          //         Modular.to.navigate(
-          //           '/login/find-your-account',
-          //         );
-          //       },
-          //       child: Text(
-          //         AppLocalizations.of(context)!.loginPageForgotPassword,
-          //         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-          //               fontWeight: FontWeight.bold,
-          //               decoration: TextDecoration.underline,
-          //               decorationColor: AppColors.primary,
-          //               decorationThickness: 2,
-          //             ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -228,7 +186,7 @@ class _SignInPageState extends State<SignInPage> {
                       );
                     },
                     child: Text(
-                      AppLocalizations.of(context)!.loginPageRecoverPassword,
+                      'AppLocalizations.of(context)!.loginPageRecoverPassword',
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                             decorationColor: AppColors.primary,

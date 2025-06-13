@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:tcc_bag_finder/app/presentation/admin/collaborator_panel/widgets/dialogs/collaborator_details_dialog.dart';
 import 'package:tcc_bag_finder/app/presentation/admin/collaborator_panel/widgets/dialogs/delete_confirmation_dialog_widget.dart';
 import 'package:tcc_bag_finder/app/presentation/admin/collaborator_panel/widgets/dialogs/edit_collaborator_dialog.dart';
@@ -15,7 +16,6 @@ class CollaboratorPaginationWidget extends StatelessWidget {
     super.key,
     required this.collaborators,
   });
-
   @override
   Widget build(BuildContext context) {
     if (collaborators.isEmpty) {
@@ -85,7 +85,7 @@ class CollaboratorPaginationWidget extends StatelessWidget {
                         ),
                   ),
                   Text(
-                    collaborator.id.substring(0, 4),
+                    collaborator.id.substring(0), //error aqui
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: AppColors.secondaryGrey,
                         ),
@@ -137,6 +137,8 @@ class CollaboratorPaginationWidget extends StatelessWidget {
                 return EditCollaboratorDialog(
                   collaborator: collaborator,
                   onSave: (updatedCollaborator) {
+                    print(updatedCollaborator.email);
+                    print(collaborator.id);
                     userProvider.updateUser(user: updatedCollaborator);
                   },
                 );

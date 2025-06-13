@@ -8,14 +8,6 @@ class UserEntity {
   final String email;
   final String password;
   final String fullName;
-<<<<<<< HEAD
-=======
-
-  @HiveField(4)
-  final String dateOfBirth;
-
-  @HiveField(4)
->>>>>>> feature_design
   final String phone;
   final String cpf; 
   final UserRoleEnum role;
@@ -27,7 +19,6 @@ class UserEntity {
     required this.email,
     required this.password,
     required this.fullName,
-    required this.dateOfBirth,
     required this.phone,
     required this.cpf, 
     this.role = UserRoleEnum.OTHER,
@@ -50,7 +41,6 @@ class UserEntity {
       email: email ?? this.email,
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       phone: phone ?? this.phone,
       cpf: cpf ?? this.cpf, 
       role: role ?? this.role,
@@ -65,7 +55,6 @@ class UserEntity {
       email: '',
       password: '',
       fullName: '',
-      dateOfBirth: '',
       phone: '',
       cpf: '', 
       role: UserRoleEnum.OTHER,

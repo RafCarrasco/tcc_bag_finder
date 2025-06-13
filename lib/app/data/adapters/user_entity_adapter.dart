@@ -1,4 +1,3 @@
-import 'package:tcc_bag_finder/app/data/adapters/user_avatar_entity_adapter.dart';
 import 'package:tcc_bag_finder/domain/entity/user_entity.dart';
 import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
 
@@ -9,7 +8,6 @@ class UserEntityAdapter {
       email: json['email'],
       password: json['password'],
       fullName: json['fullName'],
-      dateOfBirth: json['dateOfBirth'],
       phone: json['phone'],
       cpf: json['cpf'],
       role: UserRoleEnum.values.firstWhere((e) => e.name == json['role'],

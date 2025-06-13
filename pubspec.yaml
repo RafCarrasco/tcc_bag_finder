@@ -32,8 +32,9 @@ dependencies:
   event_bus: ^2.0.1
   dropdown_button2: ^2.3.9
   path_provider: ^2.1.0
-  firebase_core: ^2.30.0
-  cloud_firestore: ^4.14.0
+  firebase_core: ^3.14.0
+  cloud_firestore: ^5.6.9
+  firebase_auth: ^5.6.0
 
 
 dev_dependencies:

@@ -13,7 +13,6 @@ import 'package:tcc_bag_finder/domain/enums/user_role_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:uuid/uuid.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -28,8 +27,8 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
   final GlobalKey<FormState> _formPersonalKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _formAccessKey = GlobalKey<FormState>();
 
+  // final travelerprovider=Modular.get<TravelerRepositoryFirestore>();
   bool isFormValid = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
               ],
             ),
             Text(
-              AppLocalizations.of(context)!.signUpPagePersonalDataField,
+              'AppLocalizations.of(context)!.signUpPagePersonalDataField',
               style: Theme.of(context).textTheme.displayLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -82,7 +81,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                 children: [
                   LoginTextField(
                     suffixIcon: AppIconsSecondaryGrey.personIcon,
-                    hint: AppLocalizations.of(context)!.cpfIdentificationPlaceholder,
+                    hint: 'AppLocalizations.of(context)!.cpfIdentificationPlaceholder',
                     isPassword: false,
                     fieldType: 'cpf',
                     onChanged: (value) {
@@ -112,22 +111,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                   ),
                   LoginTextField(
                     suffixIcon: AppIconsSecondaryGrey.personIcon,
-                    hint: AppLocalizations.of(context)!.dateOfBirthPlaceholder,
-                    isPassword: false,
-                    onChanged: (value) {
-                      signUpController.setDateOfBirth(
-                        value,
-                      );
-                    },
-                    fieldType: 'dateOfBirth',
-                    isRequired: true,
-                  ),
-                  const SizedBox(
-                    height: AppDimensions.verticalSpaceLarge,
-                  ),
-                  LoginTextField(
-                    suffixIcon: AppIconsSecondaryGrey.personIcon,
-                    hint: AppLocalizations.of(context)!.cellphonePlaceholder,
+                    hint: 'AppLocalizations.of(context)!.cellphonePlaceholder',
                     isPassword: false,
                     onChanged: (value) {
                       signUpController.setCellPhone(
@@ -141,7 +125,7 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
               ),
             ),
             Text(
-              AppLocalizations.of(context)!.signUpPageAccessDataField,
+              'AppLocalizations.of(context)!.signUpPageAccessDataField',
               style: Theme.of(context).textTheme.displayLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -197,19 +181,21 @@ class _SignUpPageState extends State<SignUpPage> with ValidationMixin {
                         ),
                 ),
                 onPressed: () async {
-                  final Uuid _uuid = Uuid();
                   UserEntity result;
+                  // String uid = await provider.createUserAuth(
+                  //   email: signUpController.email!, 
+                  //   password: signUpController.password!
+                  // );
                   if (_formPersonalKey.currentState!.validate() && _formAccessKey.currentState!.validate()) {
                     result = await provider.createUser(
                       user: TravelerEntity(
-                        id: _uuid.v4(),
+                        id: 'uid',
                         fullName: signUpController.fullName!,
-                        dateOfBirth: signUpController.dateOfBirth!,
                         email: signUpController.email!,
                         role: UserRoleEnum.TRAVELER,
                         password: signUpController.password!,
-                        phone: '',
-                        cpf: '',
+                        phone: signUpController.cellPhone!,
+                        cpf: signUpController.cpf!,
                         updatedAt: null,
                       ),
                       isSignUp: true,

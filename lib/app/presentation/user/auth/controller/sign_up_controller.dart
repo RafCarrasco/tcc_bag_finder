@@ -14,10 +14,6 @@ class SignUpController {
     fullName = value;
   }
 
-  void setDateOfBirth(String? value) {
-    dateOfBirth = value;
-  }
-
   void setCellPhone(String? value) {
     cellPhone = value;
   }
