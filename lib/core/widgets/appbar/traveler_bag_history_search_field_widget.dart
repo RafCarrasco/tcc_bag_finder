@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../../provider/traveler_provider.dart';
+import '../../../shared/providers/traveler_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/objects/filter_option_object.dart';

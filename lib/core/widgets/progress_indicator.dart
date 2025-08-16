@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../controller/landing_page_step_progess.dart';
+import '../../features/collaborator/controllers/landing_page_step_progess.dart';
 import '../utils/app_colors.dart';
 
 class ProgressIndicatorWidget extends StatelessWidget {

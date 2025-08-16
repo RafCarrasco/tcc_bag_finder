@@ -64,7 +64,7 @@ class AppThemes {
         return Colors.grey;
       }),
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
             AppDimensions.radiusLarge,
@@ -80,7 +80,7 @@ class AppThemes {
       bodyLarge: AppTextStyles.bodyText1,
       bodyMedium: AppTextStyles.bodyText2,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       shape: RoundedRectangleBorder(
         side: BorderSide(color: AppColors.primary, width: 1.2),
         borderRadius: BorderRadius.circular(

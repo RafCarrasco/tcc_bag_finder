@@ -1,0 +1,207 @@
+Folder PATH listing for volume HD
+Volume serial number is 3803-6381
+D:\DOCUMENTS\TCC\TCC_BAG_FINDER\LIB
+¦   main.dart
+¦   
++---app
+¦       app_module.dart
+¦       app_widget.dart
+¦       
++---core
+¦   +---entity
+¦   ¦       admin_entity.dart
+¦   ¦       bag_entity.dart
+¦   ¦       collaborator_entity.dart
+¦   ¦       collaborator_provider_handler.dart
+¦   ¦       report_entity.dart
+¦   ¦       scanner_entity.dart
+¦   ¦       traveler_entity.dart
+¦   ¦       trip_description_entity.dart
+¦   ¦       trip_entity.dart
+¦   ¦       user_avatar_entity.dart
+¦   ¦       user_entity.dart
+¦   ¦       
+¦   +---enums
+¦   ¦       bag_status_enum.dart
+¦   ¦       user_gender_enum.dart
+¦   ¦       user_role_enum.dart
+¦   ¦       
+¦   +---failures
+¦   ¦       admin_failure.dart
+¦   ¦       auth_failure.dart
+¦   ¦       bag_failure.dart
+¦   ¦       collaborator_failure.dart
+¦   ¦       failure.dart
+¦   ¦       trip_failure.dart
+¦   ¦       
+¦   +---utils
+¦   ¦   ¦   app_colors.dart
+¦   ¦   ¦   app_dimensions.dart
+¦   ¦   ¦   app_icons.dart
+¦   ¦   ¦   app_text_styles.dart
+¦   ¦   ¦   app_themes.dart
+¦   ¦   ¦   generate_random_password.dart
+¦   ¦   ¦   global_snackbar.dart
+¦   ¦   ¦   user_validation_mixin.dart
+¦   ¦   ¦   
+¦   ¦   +---objects
+¦   ¦           filter_option_object.dart
+¦   ¦           
+¦   +---widgets
+¦       ¦   action_button_widget.dart
+¦       ¦   admin_actions_widget.dart
+¦       ¦   bag_item_widget.dart
+¦       ¦   bag_pagination_widget.dart
+¦       ¦   circular_text_display_widget.dart
+¦       ¦   collaborator_actions_widget.dart
+¦       ¦   collaborator_pagination_widget.dart
+¦       ¦   collaborator_panel_search_bar_widget.dart
+¦       ¦   collaborator_trips_pagination_widget.dart
+¦       ¦   custom_gender_dropdown_widget.dart
+¦       ¦   custom_text_form_field_widget.dart
+¦       ¦   delete_confirmation_dialog_widget.dart
+¦       ¦   filter_side_bar.dart
+¦       ¦   home_admin_app_bar_widget.dart
+¦       ¦   home_admin_widget.dart
+¦       ¦   home_collaborator_app_bar_widget.dart
+¦       ¦   home_collaborator_bottom_navigation.dart
+¦       ¦   home_traveler_bottom_navigation_widget.dart
+¦       ¦   home_welcome_admin_widget.dart
+¦       ¦   home_welcome_collaborator_widget.dart
+¦       ¦   login_text_field.dart
+¦       ¦   pop_up_menu_button.dart
+¦       ¦   profile_banner_widget.dart
+¦       ¦   profile_info_field_widget.dart
+¦       ¦   progress_indicator.dart
+¦       ¦   screen_helper.dart
+¦       ¦   trip_collaborator_pagination_widget.dart
+¦       ¦   trip_collaborator_panel_search_bar_widget.dart
+¦       ¦   trip_header_widget.dart
+¦       ¦   trip_history_header_widget.dart
+¦       ¦   trip_history_item_widget.dart
+¦       ¦   trip_history_list_widget.dart
+¦       ¦   trip_history_pagination_widget.dart
+¦       ¦   trip_list_widget.dart
+¦       ¦   trip_pagination_widget.dart
+¦       ¦   trip_panel_search_bar_widget.dart
+¦       ¦   
+¦       +---admin
+¦       ¦       add_collaborator_text_field.dart
+¦       ¦       passoword_display_field.dart
+¦       ¦       
+¦       +---appbar
+¦       ¦       history_app_bar_widget.dart
+¦       ¦       home_app_bar_widget.dart
+¦       ¦       home_search_bar_widget.dart
+¦       ¦       home_search_field_widget.dart
+¦       ¦       home_welcome_user_widget.dart
+¦       ¦       traveler_bag_history_search_field_widget.dart
+¦       ¦       trip_history_panel_search_bar_widget.dart
+¦       ¦       
+¦       +---dialogs
+¦       ¦       app_version_dialog.dart
+¦       ¦       bag_confirmation_dialog.dart
+¦       ¦       collaborator_details_dialog.dart
+¦       ¦       delete_confirmation_dialog_widget.dart
+¦       ¦       edit_bag_description_dialog.dart
+¦       ¦       edit_collaborator_dialog.dart
+¦       ¦       get_description_dialog_widget.dart
+¦       ¦       report_problem_dialog.dart
+¦       ¦       send_notification_dialog_widget.dart
+¦       ¦       
+¦       +---fields
+¦               init_user_trip_description_text_field.dart
+¦               init_user_trip_dropdown_field.dart
+¦               init_user_trip_text_field.dart
+¦               luggage_quantity_dropdown_field.dart
+¦               
++---features
+¦   +---admin
+¦   ¦   +---controllers
+¦   ¦   ¦       add_collaborator_controler.dart
+¦   ¦   ¦       update_controller.dart
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦           add_collaborator_page.dart
+¦   ¦           home_admin_page.dart
+¦   ¦           landing_admin_page.dart
+¦   ¦           
+¦   +---auth
+¦   ¦   +---controller
+¦   ¦   ¦       sign_in_controller.dart
+¦   ¦   ¦       sign_up_controller.dart
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦           find_your_account_page.dart
+¦   ¦           forgot_password_page.dart
+¦   ¦           login_landing_page.dart
+¦   ¦           sign_in_page.dart
+¦   ¦           sign_up_page.dart
+¦   ¦           
+¦   +---collaborator
+¦   ¦   +---controllers
+¦   ¦   ¦       init_user_trip_controller.dart
+¦   ¦   ¦       init_user_trip_dropdown_controller.dart
+¦   ¦   ¦       landing_page_step_progess.dart
+¦   ¦   ¦       luggage_quantity_dropdown_controller.dart
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦           collaborator_panel_page.dart
+¦   ¦           collaborator_trips_panel_page.dart
+¦   ¦           home_collaborator_page.dart
+¦   ¦           init_user_trip_page.dart
+¦   ¦           landing_collaborator_page.dart
+¦   ¦           search_company_trip_page.dart
+¦   ¦           trip_collaborator_panel_page.dart
+¦   ¦           
+¦   +---traveler
+¦   ¦   +---pages
+¦   ¦           edit_profile_page.dart
+¦   ¦           home_traveler_page.dart
+¦   ¦           landing_profile_page.dart
+¦   ¦           landing_traveler_page.dart
+¦   ¦           profile_page.dart
+¦   ¦           traveler_bag_history_page.dart
+¦   ¦           
+¦   +---trip
+¦       +---pages
+¦               safely_remove_page.dart
+¦               splash_page.dart
+¦               track_page.dart
+¦               track_your_bag_page.dart
+¦               
++---l10n
+¦       app_en.arb
+¦       app_localizations.dart
+¦       app_localizations_en.dart
+¦       app_localizations_pt.dart
+¦       app_pt.arb
+¦       
++---pages
+¦   +---landing
+¦           landign_page.dart
+¦           
++---repositories
+¦       bag_repository.dart
+¦       collaborator_repository.dart
+¦       traveler_repository.dart
+¦       trip_repository.dart
+¦       user_repository.dart
+¦       
++---shared
+    +---events
+    ¦       trip_created_event.dart
+    ¦       user_created_event.dart
+    ¦       user_deleted_event.dart
+    ¦       user_updated_event.dart
+    ¦       
+    +---functions
+    ¦       find_by_phone_function.dart
+    ¦       order_alphabetic_function.dart
+    ¦       order_by_created_time_function.dart
+    ¦       order_by_status_function.dart
+    ¦       
+    +---navigation
+            home_admin_bottom_navigation_bar.dart
+            landing_admin_page.dart
+            

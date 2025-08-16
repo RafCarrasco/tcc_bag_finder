@@ -2,9 +2,9 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../controller/init_user_trip_dropdown_controller.dart';
+import '../../../features/collaborator/controllers/init_user_trip_dropdown_controller.dart';
 import '../../entity/traveler_entity.dart';
-import '../../provider/collaborator_provider.dart';
+import '../../../shared/providers/collaborator_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/app_icons.dart';

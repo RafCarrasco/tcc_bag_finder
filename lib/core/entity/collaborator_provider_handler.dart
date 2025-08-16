@@ -1,4 +1,4 @@
-import '../../events/trip_created_event.dart';
+import '../../shared/events/trip_created_event.dart';
 import 'trip_entity.dart';
 
 class TripEventHandler {

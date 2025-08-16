@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../entity/collaborator_entity.dart';
-import '../provider/user_provider.dart';
+import '../../shared/providers/user_provider.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_dimensions.dart';
 import 'delete_confirmation_dialog_widget.dart';

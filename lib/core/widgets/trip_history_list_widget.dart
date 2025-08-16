@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../entity/trip_entity.dart';
-import '../provider/traveler_provider.dart';
+import '../../shared/providers/traveler_provider.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_dimensions.dart';
 import 'trip_history_header_widget.dart';

@@ -1,10 +1,10 @@
-import 'package:bag_finder/pages/landing/safely_remove_page.dart';
-import 'package:bag_finder/pages/landing/track_page.dart';
-import 'package:bag_finder/pages/landing/track_your_bag_page.dart';
+import 'package:bag_finder/features/trip/pages/safely_remove_page.dart';
+import 'package:bag_finder/features/trip/pages/track_page.dart';
+import 'package:bag_finder/features/trip/pages/track_your_bag_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../controller/landing_page_step_progess.dart';
+import '../../features/collaborator/controllers/landing_page_step_progess.dart';
 
 class WelcomeLandingPage extends StatelessWidget {
   const WelcomeLandingPage({super.key});

@@ -2,7 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../controller/luggage_quantity_dropdown_controller.dart';
+import '../../../features/collaborator/controllers/luggage_quantity_dropdown_controller.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/app_icons.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/bag_entity.dart';
-import '../provider/traveler_provider.dart';
+import '../../shared/providers/traveler_provider.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_dimensions.dart';
 import 'bag_pagination_widget.dart';
