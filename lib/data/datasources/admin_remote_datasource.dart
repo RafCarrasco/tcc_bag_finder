@@ -3,13 +3,13 @@ import 'package:http/http.dart' as http;
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
 
-class CollaboratorRemoteDataSource {
+class AdminRemoteDataSource {
   final String baseUrl;
 
-  CollaboratorRemoteDataSource({required this.baseUrl});
+  AdminRemoteDataSource({required this.baseUrl});
 
   Future<List<CollaboratorEntity>> getCollaboratorsByResponsibleId(String id) async {
-    final response = await http.get(Uri.parse('$baseUrl/admin/$id/collaborators'));
+    final response = await http.get(Uri.parse('$baseUrl/admins/$id/collaborators'));
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;

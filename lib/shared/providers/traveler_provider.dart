@@ -1,24 +1,57 @@
 import 'package:flutter/foundation.dart';
+import '../../core/entity/trip_entity.dart';
+import '../../core/entity/bag_entity.dart';
+import '../../repositories/trip_repository.dart';
 
-/// Fake TravelerProvider só para evitar erros de import.
-/// Vai ser substituído futuramente por controllers + usecases.
 class TravelerProvider extends ChangeNotifier {
-  // Estado fake só pra ilustrar
+  final ITripRepository repository;
+
+  TravelerProvider(this.repository);
+
+  TripEntity? _currentTrip;
+  List<BagEntity>? _bags;
+  List<TripEntity>? _trips;
   bool _isLoading = false;
-  String _travelerName = "Viajante Teste";
 
+  TripEntity? get currentTrip => _currentTrip;
+  List<BagEntity>? get bags => _bags;
+  List<TripEntity>? get trips => _trips;
   bool get isLoading => _isLoading;
-  String get travelerName => _travelerName;
 
-  // Método fake para simular uma ação qualquer
-  Future<void> loadTravelerProfile() async {
-    _isLoading = true;
+  void _setLoading(bool value) {
+    _isLoading = value;
     notifyListeners();
+  }
 
-    await Future.delayed(const Duration(seconds: 1));
+  Future<void> getTripsByStatus({
+    required String travelerId,
+    required bool isDone,
+  }) async {
+    _setLoading(true);
 
-    _travelerName = "Viajante Fake Atualizado";
-    _isLoading = false;
-    notifyListeners();
+    final result = await repository.getTripsByStatusAndId(
+      travelerId: travelerId,
+      isDone: isDone,
+    );
+
+    result.fold(
+      (failure) {
+        _currentTrip = null;
+        _bags = [];
+        _trips = [];
+      },
+      (trips) {
+        _trips = trips;
+        if (trips.isNotEmpty) {
+          _currentTrip = trips.first;
+          _bags = _currentTrip?.bags ?? [];
+        } else {
+          _currentTrip = null;
+          _bags = [];
+        }
+      },
+    );
+
+    _setLoading(false);
   }
 }

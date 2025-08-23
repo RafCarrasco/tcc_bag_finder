@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-
 import '../../../core/entity/trip_entity.dart';
 import '../../../core/failures/trip_failure.dart';
 import '../../../repositories/trip_repository.dart';
@@ -22,7 +21,7 @@ class CheckDoneTripUsecase implements ICheckDoneTripUsecase {
     required TripEntity trip,
   }) async {
     return await repository.isTripDone(
-      trip: trip,
+      tripId: trip.id,
     );
   }
 }

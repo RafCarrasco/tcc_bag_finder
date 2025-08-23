@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
-import '../../../core/entity/trip_entity.dart';
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
@@ -23,8 +22,6 @@ class SearchCompanyTripPage extends StatefulWidget {
 class _SearchCompanyTripPageState extends State<SearchCompanyTripPage> {
   final collaboratorProvider = Modular.get<CollaboratorProvider>();
 
-  List<TripEntity> trips = [];
-
   @override
   void initState() {
     super.initState();
@@ -32,7 +29,7 @@ class _SearchCompanyTripPageState extends State<SearchCompanyTripPage> {
   }
 
   void getTrips() async {
-    trips = await collaboratorProvider.getAllTripsByResponsible(
+    await collaboratorProvider.getAllTripsByResponsible(
       responsibleId: widget.collaboratorId,
     );
   }
@@ -53,10 +50,7 @@ class _SearchCompanyTripPageState extends State<SearchCompanyTripPage> {
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 5,
-                offset: Offset(
-                  0,
-                  3,
-                ),
+                offset: Offset(0, 3),
               ),
             ],
           ),

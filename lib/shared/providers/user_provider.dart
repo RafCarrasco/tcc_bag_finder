@@ -1,3 +1,123 @@
 import 'package:flutter/foundation.dart';
+import 'package:dartz/dartz.dart';
+import '../../core/entity/user_entity.dart';
+import '../../infra/repositories/user_repository_impl.dart';
+import '../../core/failures/failure.dart';
+import '../../core/utils/global_snackbar.dart';
 
-class UserProvider extends ChangeNotifier {}
+class UserProvider extends ChangeNotifier {
+  final UserRepositoryImpl repository;
+
+  UserEntity? _user;
+  bool _isLoading = false;
+
+  UserProvider(this.repository);
+
+  UserEntity? get user => _user;
+  bool get isLoading => _isLoading;
+  bool get isLoggedIn => _user != null;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  Future<Either<Failure, UserEntity?>> login({
+    required String email,
+    required String password,
+  }) async {
+    _setLoading(true);
+    final result = await repository.authenticateUser(
+      email: email,
+      password: password,
+    );
+    _setLoading(false);
+
+    return result.fold(
+      (failure) => Left(failure),
+      (user) {
+        _user = user;
+        notifyListeners();
+        return Right(user);
+      },
+    );
+  }
+
+  Future<Either<Failure, UserEntity>> addUser(UserEntity user) async {
+    _setLoading(true);
+    final result = await repository.addUser(user: user);
+    _setLoading(false);
+
+    return result.fold(
+      (failure) => Left(failure),
+      (created) {
+        _user = created;
+        notifyListeners();
+        GlobalSnackBar.info("Usuário criado com sucesso!");
+        return Right(created);
+      },
+    );
+  }
+
+  Future<Either<Failure, UserEntity>> updateUser({
+    required UserEntity user,
+    bool showSnackBar = true,
+  }) async {
+    _setLoading(true);
+    final result = await repository.updateUser(user: user);
+    _setLoading(false);
+
+    return result.fold(
+      (failure) {
+        if (showSnackBar) GlobalSnackBar.error("Erro ao atualizar usuário");
+        return Left(failure);
+      },
+      (updated) {
+        _user = updated;
+        notifyListeners();
+        if (showSnackBar) GlobalSnackBar.info("Usuário atualizado com sucesso!");
+        return Right(updated);
+      },
+    );
+  }
+
+  Future<Either<Failure, UserEntity?>> getUserById(String id) async {
+    _setLoading(true);
+    final result = await repository.getUserById(id: id);
+    _setLoading(false);
+
+    return result.fold(
+      (failure) => Left(failure),
+      (user) {
+        _user = user;
+        notifyListeners();
+        return Right(user);
+      },
+    );
+  }
+
+  Future<UserEntity?> getUser({required String userId}) async {
+    final result = await getUserById(userId);
+    return result.fold(
+      (failure) => null,
+      (user) => user,
+    );
+  }
+
+  void logout() {
+    _user = null;
+    notifyListeners();
+    GlobalSnackBar.info("Logout realizado com sucesso!");
+  }
+
+  Future<Map<String, String>> getAllUsersNamesByIds(List<String> ids) async {
+    _setLoading(true);
+    final result = await repository.getAllUsersByIds(ids: ids);
+    _setLoading(false);
+
+    return result.fold(
+      (failure) => {},
+      (names) => Map.fromIterables(ids, names),
+    );
+  }
+}
