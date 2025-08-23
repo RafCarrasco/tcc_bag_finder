@@ -18,13 +18,6 @@ class CollaboratorAlreadyExists extends CollaboratorFailure {
         );
 }
 
-class CollaboratorNotAuthorized extends CollaboratorFailure {
-  CollaboratorNotAuthorized()
-      : super(
-          errorMessage: "Colaborador não autorizado.",
-        );
-}
-
 class CollaboratorUnauthorized extends CollaboratorFailure {
   CollaboratorUnauthorized()
       : super(

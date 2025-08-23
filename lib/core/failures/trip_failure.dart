@@ -25,31 +25,10 @@ class TripNotCreated extends TripFailure {
         );
 }
 
-class TripNotUpdated extends TripFailure {
-  TripNotUpdated()
-      : super(
-          errorMessage: "Viagem não foi atualizada.",
-        );
-}
-
-class TripNotDeleted extends TripFailure {
-  TripNotDeleted()
-      : super(
-          errorMessage: "Viagem não foi excluída.",
-        );
-}
-
-class TripNotAdded extends TripFailure {
-  TripNotAdded()
-      : super(
-          errorMessage: "Viagem não foi adicionada.",
-        );
-}
-
 class TripNotDone extends TripFailure {
   TripNotDone()
       : super(
-          errorMessage: "Viagem não foi concluida.",
+          errorMessage: "Viagem não foi concluída.",
         );
 }
 

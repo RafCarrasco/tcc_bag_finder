@@ -9,7 +9,7 @@ abstract class ITripRepository {
   });
 
   Future<Either<TripFailure,bool>> isTripDone({
-    required TripEntity trip,
+    required String tripId,
   });
 
   Future<Either<TripFailure, TripEntity>> updateTrip({
