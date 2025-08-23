@@ -57,12 +57,10 @@ class UserProvider extends ChangeNotifier {
     );
   }
 
-  /// 🔹 Novo método para cadastro de usuários (colaboradores, admin, traveler etc.)
   Future<UserEntity?> registerNewUser({
     required UserEntity user,
     required String password,
   }) async {
-    // Se o backend exige senha, você pode adaptar aqui
     final result = await repository.addUser(user: user);
 
     return result.fold(
@@ -132,4 +130,22 @@ class UserProvider extends ChangeNotifier {
       },
     );
   }
+
+  Future<bool> deleteUser({required String id}) async {
+  _setLoading(true);
+  final result = await repository.deleteUser(id: id);
+  _setLoading(false);
+
+  return result.fold(
+    (failure) => false,
+    (_) {
+      if (_user?.id == id) {
+        _user = null;
+        notifyListeners();
+      }
+      return true;
+    },
+  );
+}
+
 }

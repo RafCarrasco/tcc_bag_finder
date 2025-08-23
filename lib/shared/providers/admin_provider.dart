@@ -1,19 +1,22 @@
 import 'package:flutter/foundation.dart';
+import 'package:dartz/dartz.dart';
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
-import '../../infra/repositories/admin_repository_impl.dart';
+import '../../core/failures/admin_failure.dart';
+import '../../repositories/admin_repository.dart';
 
 class AdminProvider extends ChangeNotifier {
-  final AdminRepositoryImpl repository;
+  final IAdminRepository repository;
 
   AdminProvider(this.repository);
 
   bool _isLoading = false;
-  List<CollaboratorEntity>? _collaborators;
-  List<TripEntity>? _collaboratorTrips;
-
   bool get isLoading => _isLoading;
+
+  List<CollaboratorEntity>? _collaborators;
   List<CollaboratorEntity>? get collaborators => _collaborators;
+
+  List<TripEntity>? _collaboratorTrips;
   List<TripEntity>? get collaboratorTrips => _collaboratorTrips;
 
   void _setLoading(bool value) {
@@ -21,40 +24,91 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Buscar colaboradores de um admin
   Future<void> getCollaboratorsByResponsibleId({required String id}) async {
     _setLoading(true);
 
     final result = await repository.getCollaboratorsByResponsibleId(id: id);
 
     result.fold(
-      (failure) {
-        _collaborators = [];
-      },
-      (collaborators) {
-        _collaborators = collaborators;
+      (failure) => _collaborators = [],
+      (list) => _collaborators = list,
+    );
+
+    _setLoading(false);
+  }
+
+  Future<void> getCollaboratorTripsByCollaboratorId({
+    required String collaboratorId,
+  }) async {
+    _setLoading(true);
+
+    final result =
+    await repository.getCollaboratorTripsByCollaboratorId(
+      collaboratorId: collaboratorId,
+    );
+
+
+    result.fold(
+      (failure) => _collaboratorTrips = [],
+      (list) => _collaboratorTrips = list,
+    );
+
+    _setLoading(false);
+  }
+
+  Future<void> getCollaboratorsByName({
+    required String name,
+    required String responsibleId,
+  }) async {
+    _setLoading(true);
+
+    final result = await repository.getCollaboratorsByResponsibleId(id: responsibleId);
+
+    result.fold(
+      (failure) => _collaborators = [],
+      (list) {
+        _collaborators = list
+            .where((c) => c.fullName.toLowerCase().contains(name.toLowerCase()))
+            .toList();
       },
     );
 
     _setLoading(false);
   }
 
-  /// Buscar viagens de um colaborador específico
-  Future<void> getCollaboratorTripsByCollaboratorId({required String collaboratorId}) async {
-    _setLoading(true);
+  void orderByAlphabetic({
+    required List<CollaboratorEntity> list,
+    required bool isAscending,
+  }) {
+    _collaborators = [...list]..sort((a, b) {
+        final nameA = a.fullName.toLowerCase();
+        final nameB = b.fullName.toLowerCase();
+        return isAscending ? nameA.compareTo(nameB) : nameB.compareTo(nameA);
+      });
+    notifyListeners();
+  }
 
-    final result =
-        await repository.getCollaboratorTripsByCollaboratorId(collaboratorId: collaboratorId);
+  void orderByCreatedTime({
+    required List<CollaboratorEntity> list,
+    required bool isAscending,
+  }) {
+    _collaborators = [...list]..sort((a, b) {
+        return isAscending
+            ? a.createdAt.compareTo(b.createdAt)
+            : b.createdAt.compareTo(a.createdAt);
+      });
+    notifyListeners();
+  }
 
-    result.fold(
-      (failure) {
-        _collaboratorTrips = [];
-      },
-      (trips) {
-        _collaboratorTrips = trips;
-      },
-    );
-
-    _setLoading(false);
+  void orderByStatus({
+    required List<CollaboratorEntity> list,
+    required bool isAscending,
+  }) {
+    _collaborators = [...list]..sort((a, b) {
+        return isAscending
+            ? a.isActive.toString().compareTo(b.isActive.toString())
+            : b.isActive.toString().compareTo(a.isActive.toString());
+      });
+    notifyListeners();
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
-
 import '../entity/bag_entity.dart';
 import '../../shared/providers/traveler_provider.dart';
 import '../utils/app_colors.dart';

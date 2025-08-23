@@ -13,10 +13,16 @@ class TravelerProvider extends ChangeNotifier {
   List<TripEntity>? _trips;
   bool _isLoading = false;
 
+  bool _isTripComplete = false;
+  int _checkedBags = 0;
+
   TripEntity? get currentTrip => _currentTrip;
   List<BagEntity>? get bags => _bags;
   List<TripEntity>? get trips => _trips;
   bool get isLoading => _isLoading;
+
+  bool get isTripComplete => _isTripComplete;
+  int get checkedBags => _checkedBags;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -53,5 +59,27 @@ class TravelerProvider extends ChangeNotifier {
     );
 
     _setLoading(false);
+  }
+
+
+  Future<void> checkIsTripDone({required TripEntity trip}) async {
+    final result = await repository.isTripDone(tripId: trip.id);
+    result.fold(
+      (_) => _isTripComplete = false,
+      (isDone) => _isTripComplete = isDone,
+    );
+    notifyListeners();
+  }
+
+  void updateCheckedBags(int value) {
+    _checkedBags = value;
+    notifyListeners();
+  }
+
+  void checkTripCompletion() {
+    if (_bags != null && _checkedBags >= _bags!.length) {
+      _isTripComplete = true;
+    }
+    notifyListeners();
   }
 }
