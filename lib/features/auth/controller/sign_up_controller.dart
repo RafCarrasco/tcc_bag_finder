@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/entity/user_entity.dart';
+import '../../../core/utils/global_snackbar.dart';
 
 class SignUpController {
-  final FirebaseAuth _auth;
-  final UserProvider _provider;
+  final UserProvider _provider = Modular.get<UserProvider>();
 
   String? email;
   String? password;
   String? fullName;
   String? phone;
   String? cpf;
-
-  SignUpController(this._auth, this._provider);
 
   void setEmail(String? value) => email = value;
   void setPassword(String? value) => password = value;
@@ -39,41 +36,31 @@ class SignUpController {
 
   Future<void> signUp(BuildContext context) async {
     if (!areFieldsValid()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos.')),
-      );
+      GlobalSnackBar.error('Preencha todos os campos.');
       return;
     }
 
-    try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email!.trim(),
-        password: password!.trim(),
-      );
+    final newUser = UserEntity(
+      id: '',
+      email: email!,
+      fullName: fullName!,
+      phone: phone ?? '',
+      role: 'TRAVELER',
+      isActive: true,
+      cpf: cpf,
+      createdAt: DateTime.now(),
+    );
 
-      final uid = userCredential.user!.uid;
-      final newUser = UserEntity(
-        id: uid,
-        email: email!,
-        fullName: fullName!,
-        phone: phone ?? '',
-        role: 'TRAVELER',
-        isActive: true,
-        cpf: cpf,
-        createdAt: DateTime.now(),
-      );
+    final result = await _provider.addUser(newUser);
 
-      await _provider.saveUserToFirestore(newUser);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cadastro realizado com sucesso!')),
-      );
-
-      Modular.to.navigate('/traveler/$uid/home');
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Erro ao cadastrar')),
-      );
-    }
+    result.fold(
+      (failure) {
+        GlobalSnackBar.error(failure.errorMessage);
+      },
+      (user) {
+        GlobalSnackBar.success('Cadastro realizado com sucesso!');
+        Modular.to.navigate('/traveler/${user.id}/home');
+      },
+    );
   }
 }

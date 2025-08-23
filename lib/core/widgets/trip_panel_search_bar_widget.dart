@@ -38,6 +38,7 @@ class _TripPanelSearchBarWidgetState extends State<TripPanelSearchBarWidget> {
             onChanged: (text) async {
               await collaboratorProvider.getAllTripsByTraveler(
                 travelerId: text,
+                responsibleId: "id_do_responsavel_aqui",
               );
             },
           ),

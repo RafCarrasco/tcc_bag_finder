@@ -1,7 +1,6 @@
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
 import '../../auth/controller/sign_up_controller.dart';
 import '../controllers/init_user_trip_controller.dart';
 import '../../../core/entity/bag_entity.dart';
@@ -240,12 +239,11 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                         .tripsCreated;
 
                                 await userProvider.updateUser(
-                                  user:
-                                      (userProvider.user! as CollaboratorEntity)
-                                          .copyWith(
+                                  user: (userProvider.user!
+                                          as CollaboratorEntity)
+                                      .copyWith(
                                     tripsCreated: count++,
                                   ),
-                                  showSnackBar: false,
                                 );
 
                                 Modular.to.pushNamed(

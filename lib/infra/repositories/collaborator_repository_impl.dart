@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/failures/collaborator_failure.dart';
-import '../../core/failures/trip_failure.dart';
 import '../../repositories/collaborator_repository.dart';
 import '../../data/datasources/collaborator_remote_datasource.dart';
 
@@ -24,14 +23,30 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
   }
 
   @override
-  Future<Either<TripFailure, List<TripEntity>>> getCollaboratorTripsByCollaboratorId({
-    required String collaboratorId,
+  Future<Either<CollaboratorFailure, List<TripEntity>>> getTripsByTravelerId({
+    required String travelerId,
+    required String responsibleId,
   }) async {
     try {
-      final result = await remote.getCollaboratorTripsByCollaboratorId(collaboratorId);
+      final result = await remote.getTripsByTravelerId(
+        travelerId: travelerId,
+        responsibleId: responsibleId,
+      );
       return Right(result);
     } catch (e) {
-      return Left(TripReadError());
+      return Left(CollaboratorTripsError());
+    }
+  }
+
+  @override
+  Future<Either<CollaboratorFailure, List<TripEntity>>> getAllTripsByResponsible({
+    required String responsibleId,
+  }) async {
+    try {
+      final result = await remote.getAllTripsByResponsible(responsibleId);
+      return Right(result);
+    } catch (e) {
+      return Left(CollaboratorTripsError());
     }
   }
 }

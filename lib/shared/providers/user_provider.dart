@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/user_entity.dart';
-import '../../infra/repositories/user_repository_impl.dart';
 import '../../core/failures/failure.dart';
-import '../../core/utils/global_snackbar.dart';
+import '../../infra/repositories/user_repository_impl.dart';
 
 class UserProvider extends ChangeNotifier {
   final UserRepositoryImpl repository;
@@ -53,29 +52,41 @@ class UserProvider extends ChangeNotifier {
       (created) {
         _user = created;
         notifyListeners();
-        GlobalSnackBar.info("Usuário criado com sucesso!");
         return Right(created);
+      },
+    );
+  }
+
+  /// 🔹 Novo método para cadastro de usuários (colaboradores, admin, traveler etc.)
+  Future<UserEntity?> registerNewUser({
+    required UserEntity user,
+    required String password,
+  }) async {
+    // Se o backend exige senha, você pode adaptar aqui
+    final result = await repository.addUser(user: user);
+
+    return result.fold(
+      (failure) => null,
+      (created) {
+        _user = created;
+        notifyListeners();
+        return created;
       },
     );
   }
 
   Future<Either<Failure, UserEntity>> updateUser({
     required UserEntity user,
-    bool showSnackBar = true,
   }) async {
     _setLoading(true);
     final result = await repository.updateUser(user: user);
     _setLoading(false);
 
     return result.fold(
-      (failure) {
-        if (showSnackBar) GlobalSnackBar.error("Erro ao atualizar usuário");
-        return Left(failure);
-      },
+      (failure) => Left(failure),
       (updated) {
         _user = updated;
         notifyListeners();
-        if (showSnackBar) GlobalSnackBar.info("Usuário atualizado com sucesso!");
         return Right(updated);
       },
     );
@@ -107,7 +118,6 @@ class UserProvider extends ChangeNotifier {
   void logout() {
     _user = null;
     notifyListeners();
-    GlobalSnackBar.info("Logout realizado com sucesso!");
   }
 
   Future<Map<String, String>> getAllUsersNamesByIds(List<String> ids) async {
@@ -117,7 +127,9 @@ class UserProvider extends ChangeNotifier {
 
     return result.fold(
       (failure) => {},
-      (names) => Map.fromIterables(ids, names),
+      (names) {
+        return Map.fromIterables(ids, names);
+      },
     );
   }
 }

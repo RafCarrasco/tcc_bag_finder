@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/utils/global_snackbar.dart';
+import '../../../shared/providers/user_provider.dart';
 
 class SignInController {
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
+  final UserProvider _userProvider = Modular.get<UserProvider>();
 
   String? email;
   String? password;
   bool rememberMe = false;
-
-  SignInController(this._auth, this._firestore);
 
   void setEmail(String? value) => email = value;
   void setPassword(String? value) => password = value;
@@ -34,38 +30,32 @@ class SignInController {
       return;
     }
 
-    try {
-      final userCredential = await _auth.signInWithEmailAndPassword(
-        email: email!.trim(),
-        password: password!.trim(),
-      );
+    final result = await _userProvider.login(
+      email: email!.trim(),
+      password: password!.trim(),
+    );
 
-      final user = userCredential.user;
-      if (user == null) {
-        GlobalSnackBar.error('Usuário não encontrado.');
-        return;
-      }
+    result.fold(
+      (failure) {
+        GlobalSnackBar.error(failure.errorMessage);
+      },
+      (user) {
+        if (user == null) {
+          GlobalSnackBar.error('Usuário não encontrado.');
+          return;
+        }
 
-      final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists || !doc.data()!.containsKey('role')) {
-        GlobalSnackBar.error('Informações do usuário incompletas.');
-        return;
-      }
+        final role = user.role.toLowerCase();
+        final route = switch (role) {
+          'admin' => '/admin/${user.id}/home',
+          'collaborator' => '/collaborator/${user.id}/home',
+          'traveler' => '/traveler/${user.id}/home',
+          _ => '/welcome',
+        };
 
-      final role = doc['role'];
-      final route = switch (role.toString().toLowerCase()) {
-        'admin' => '/admin/${user.uid}/home',
-        'collaborator' => '/collaborator/${user.uid}/home',
-        'traveler' => '/traveler/${user.uid}/home',
-        _ => '/welcome',
-      };
-
-      GlobalSnackBar.success('Login realizado com sucesso!');
-      Modular.to.navigate(route);
-    } on FirebaseAuthException catch (e) {
-      GlobalSnackBar.error(e.message ?? 'Erro ao fazer login.');
-    } catch (e) {
-      GlobalSnackBar.error('Erro inesperado. Tente novamente.');
-    }
+        GlobalSnackBar.success('Login realizado com sucesso!');
+        Modular.to.navigate(route);
+      },
+    );
   }
 }
