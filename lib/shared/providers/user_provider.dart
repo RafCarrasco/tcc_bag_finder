@@ -119,17 +119,19 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<Map<String, String>> getAllUsersNamesByIds(List<String> ids) async {
-    _setLoading(true);
-    final result = await repository.getAllUsersByIds(ids: ids);
-    _setLoading(false);
+  _setLoading(true);
+  final result = await repository.getAllUsersByIds(ids: ids);
+  _setLoading(false);
 
-    return result.fold(
-      (failure) => {},
-      (names) {
-        return Map.fromIterables(ids, names);
-      },
-    );
-  }
+  return result.fold(
+    (failure) => {},
+    (users) {
+      final names = users.map((u) => u.fullName).toList();
+      return Map.fromIterables(ids, names);
+    },
+  );
+}
+
 
   Future<bool> deleteUser({required String id}) async {
   _setLoading(true);

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../core/entity/user_entity.dart';
-import '../core/failures/auth_failure.dart';
 import '../core/failures/failure.dart';
+import '../core/failures/auth_failure.dart';
 
 abstract class IUserRepository {
   Future<Either<AuthFailure, UserEntity>> addUser({
@@ -12,6 +12,8 @@ abstract class IUserRepository {
     required String id,
   });
 
+  Future<Either<Failure, List<UserEntity>>> getAllUsers();
+
   Future<Either<Failure, UserEntity>> updateUser({
     required UserEntity user,
   });
@@ -20,9 +22,7 @@ abstract class IUserRepository {
     required String id,
   });
 
-  Future<Either<Failure, List<UserEntity>>> getAllUsers();
-
-  Future<Either<Failure, List<String>>> getAllUsersByIds({
+  Future<Either<Failure, List<UserEntity>>> getAllUsersByIds({
     List<String>? ids,
   });
 

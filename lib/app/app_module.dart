@@ -1,5 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:logger/web.dart';
 
 // Controllers
 import '../features/auth/controller/sign_in_controller.dart';
@@ -7,8 +8,12 @@ import '../features/auth/controller/sign_up_controller.dart';
 import '../features/collaborator/controllers/landing_page_step_progess.dart';
 
 // Providers
+import '../infra/repositories/user_repository_impl.dart';
 import '../repositories/user_repository.dart';
 import '../shared/providers/user_provider.dart';
+
+// Datasources
+import '../data/datasources/user_remote_datasource.dart';
 
 // Usecases
 import '../features/admin/usecases/update_user_usecase.dart';
@@ -44,20 +49,46 @@ class AppModule extends Module {
     // EventBus
     i.addSingleton<EventBus>(() => EventBus());
 
-    // Repositório (mock no lugar do Firebase)
-    i.addLazySingleton<IUserRepository>(() => UserRepositoryMockImpl());
+    // Logger
+    i.addLazySingleton<Logger>(() => Logger());
+
+    // Datasource real (Node + MySQL)
+    i.addLazySingleton<UserRemoteDataSource>(
+      () => UserRemoteDataSource(baseUrl: "http://localhost:3000"),
+    );
+
+    // Repositório real (usa o datasource)
+    i.addLazySingleton<IUserRepository>(
+      () => UserRepositoryImpl(i()),
+    );
+    i.addLazySingleton<UserRepositoryImpl>(
+    () => UserRepositoryImpl(i()),
+  );
 
     // Usecases
-    i.addLazySingleton<IUpdateUserUsecase>(() => UpdateUserUsecase(repository: i()));
-    i.addLazySingleton<IDeleteUserUsecase>(() => DeleteUserUsecase(repository: i()));
+    i.addLazySingleton<IUpdateUserUsecase>(
+      () => UpdateUserUsecase(repository: i()),
+    );
+    i.addLazySingleton<IDeleteUserUsecase>(
+      () => DeleteUserUsecase(repository: i()),
+    );
 
     // Provider
-    i.addLazySingleton<UserProvider>(() => UserProvider(i(), i()));
+    i.addLazySingleton<UserProvider>(
+      () => UserProvider(i()),
+    );
 
     // Controllers
-    i.addLazySingleton<SignInController>(() => SignInController(i(), i()));
-    i.addLazySingleton<SignUpController>(() => SignUpController(i(), i()));
-    i.addLazySingleton<LandingPageStepProgess>(LandingPageStepProgess.new);
+    i.addLazySingleton<SignInController>(
+      () => SignInController(),
+    );
+    i.addLazySingleton<SignUpController>(
+      () => SignUpController(),
+    );
+
+    i.addLazySingleton<LandingPageStepProgess>(
+      () => LandingPageStepProgess(),
+    );
   }
 
   @override
@@ -71,7 +102,8 @@ class AppModule extends Module {
       ChildRoute('/sign-in', child: (_) => const SignInPage()),
       ChildRoute('/sign-up', child: (_) => const SignUpPage()),
       ChildRoute('/forgot-password', child: (_) => const ForgotPasswordPage()),
-      ChildRoute('/find-your-account', child: (_) => const FindYourAccountPage()),
+      ChildRoute('/find-your-account',
+          child: (_) => const FindYourAccountPage()),
     ]);
 
     // Admin
@@ -79,11 +111,19 @@ class AppModule extends Module {
       final id = r.args.params['adminId'];
       return LandingAdminPage(adminId: id);
     }, children: [
-      ChildRoute('/home', child: (_) => HomeAdminPage(adminId: r.args.params['adminId'])),
-      ChildRoute('/add-collaborator', child: (_) => const AddCollaboratorPage()),
-      ChildRoute('/collaborator-panel', child: (_) => CollaboratorPanelPage(adminId: r.args.params['adminId'])),
-      ChildRoute('/trip-collaborator-panel', child: (_) => TripCollaboratorPanelPage(adminId: r.args.params['adminId'])),
-      ChildRoute('/trip-collaborator-panel/:collaboratorId', child: (_) => CollaboratorTripsPanelPage(collaboratorId: r.args.params['collaboratorId'])),
+      ChildRoute('/home',
+          child: (_) => HomeAdminPage(adminId: r.args.params['adminId'])),
+      ChildRoute('/add-collaborator',
+          child: (_) => const AddCollaboratorPage()),
+      ChildRoute('/collaborator-panel',
+          child: (_) =>
+              CollaboratorPanelPage(adminId: r.args.params['adminId'])),
+      ChildRoute('/trip-collaborator-panel',
+          child: (_) =>
+              TripCollaboratorPanelPage(adminId: r.args.params['adminId'])),
+      ChildRoute('/trip-collaborator-panel/:collaboratorId',
+          child: (_) => CollaboratorTripsPanelPage(
+              collaboratorId: r.args.params['collaboratorId'])),
     ]);
 
     // Collaborator
@@ -93,7 +133,9 @@ class AppModule extends Module {
     }, children: [
       ChildRoute('/home', child: (_) => const HomeCollaboratorPage()),
       ChildRoute('/init-user-trip', child: (_) => const InitUserTripPage()),
-      ChildRoute('/search-company-trips', child: (_) => SearchCompanyTripPage(collaboratorId: r.args.params['collaboratorId'])),
+      ChildRoute('/search-company-trips',
+          child: (_) => SearchCompanyTripPage(
+              collaboratorId: r.args.params['collaboratorId'])),
     ]);
 
     // Traveler
@@ -101,8 +143,12 @@ class AppModule extends Module {
       final id = r.args.params['travelerId'];
       return LandingTravelerPage(travelerId: id);
     }, children: [
-      ChildRoute('/home', child: (_) => HomeTravelerPage(travelerId: r.args.params['travelerId'])),
-      ChildRoute('/history-panel', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/home',
+          child: (_) =>
+              HomeTravelerPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/history-panel',
+          child: (_) =>
+              TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/profile', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),
     ]);

@@ -61,12 +61,12 @@ class UserRemoteDataSource {
   Future<void> deleteUser(String id) async {
     final response = await http.delete(Uri.parse('$baseUrl/users/$id'));
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Erro ao deletar usuário: ${response.body}');
     }
   }
 
-  Future<List<String>> getAllUsersByIds(List<String> ids) async {
+  Future<List<UserEntity>> getAllUsersByIds(List<String> ids) async {
     final response = await http.post(
       Uri.parse('$baseUrl/users/by-ids'),
       headers: {'Content-Type': 'application/json'},
@@ -75,7 +75,7 @@ class UserRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
-      return list.cast<String>();
+      return list.map((e) => UserEntity.fromJson(e)).toList();
     } else {
       throw Exception('Erro ao buscar usuários por IDs: ${response.body}');
     }

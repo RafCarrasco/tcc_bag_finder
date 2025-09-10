@@ -2,7 +2,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:logger/web.dart';
 
 abstract class Failure implements Exception {
-  String errorMessage;
+  final String errorMessage;
 
   Failure({
     required this.errorMessage,
@@ -15,6 +15,9 @@ abstract class Failure implements Exception {
       stackTrace: stackTrace,
     );
   }
+
+  @override
+  String toString() => errorMessage;
 }
 
 class LocalStorageFailure extends Failure {
