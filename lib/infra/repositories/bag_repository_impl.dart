@@ -17,7 +17,7 @@ class BagRepositoryImpl implements IBagRepository {
       final result = await remote.addBag(bag);
       return Right(result);
     } catch (e) {
-      return Left(BagCreateError());
+      return Left(BagCreateError(message: e.toString()));
     }
   }
 
@@ -28,7 +28,7 @@ class BagRepositoryImpl implements IBagRepository {
       final result = await remote.getBagsById(bagId);
       return Right(result);
     } catch (e) {
-      return Left(BagReadError());
+      return Left(BagReadError(message: e.toString()));
     }
   }
 
@@ -38,7 +38,7 @@ class BagRepositoryImpl implements IBagRepository {
       await remote.updateBag(bag);
       return const Right(null);
     } catch (e) {
-      return Left(BagUpdateError());
+      return Left(BagUpdateError(message: e.toString()));
     }
   }
 
@@ -48,7 +48,7 @@ class BagRepositoryImpl implements IBagRepository {
       await remote.deleteBag(bagId);
       return const Right(null);
     } catch (e) {
-      return Left(BagDeleteError());
+      return Left(BagDeleteError(message: e.toString()));
     }
   }
 
@@ -59,7 +59,7 @@ class BagRepositoryImpl implements IBagRepository {
       final result = await remote.getBagsByUserId(userId);
       return Right(result);
     } catch (e) {
-      return Left(BagReadError());
+      return Left(BagReadError(message: e.toString()));
     }
   }
 
@@ -70,33 +70,29 @@ class BagRepositoryImpl implements IBagRepository {
       final result = await remote.getBagsByStatus(status);
       return Right(result);
     } catch (e) {
-      return Left(BagReadError());
+      return Left(BagReadError(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<BagFailure, List<BagEntity>>> getCurrentTripBagsById({
-    required TripEntity trip,
-    required String bagId,
-  }) async {
+  Future<Either<BagFailure, List<BagEntity>>> getCurrentTripBagsById(
+      {required TripEntity trip, required String bagId}) async {
     try {
       final result = await remote.getCurrentTripBagsById(trip, bagId);
       return Right(result);
     } catch (e) {
-      return Left(BagReadError());
+      return Left(BagReadError(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<BagFailure, List<BagEntity>>> getUserActiveBagsById({
-    required String userId,
-    required String bagId,
-  }) async {
+  Future<Either<BagFailure, List<BagEntity>>> getUserActiveBagsById(
+      {required String userId, required String bagId}) async {
     try {
       final result = await remote.getUserActiveBagsById(userId, bagId);
       return Right(result);
     } catch (e) {
-      return Left(BagReadError());
+      return Left(BagReadError(message: e.toString()));
     }
   }
 }

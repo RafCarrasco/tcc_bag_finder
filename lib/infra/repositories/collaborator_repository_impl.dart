@@ -1,3 +1,5 @@
+import 'package:bag_finder/core/entity/traveler_entity.dart';
+import 'package:bag_finder/core/failures/failure.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
@@ -47,6 +49,16 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
       return Right(result);
     } catch (e) {
       return Left(CollaboratorTripsError());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<TravelerEntity>>> getAllTravelers() async {
+    try {
+      final result = await remote.getAllTravelers();
+      return Right(result);
+    } catch (e) {
+      return Left(CollaboratorTripsError(message: "Erro ao buscar trips por travelerId"));
     }
   }
 }

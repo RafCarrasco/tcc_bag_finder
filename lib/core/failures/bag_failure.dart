@@ -5,78 +5,56 @@ abstract class BagFailure extends Failure {
 }
 
 class BagNotFound extends BagFailure {
-  BagNotFound()
-      : super(
-          errorMessage: "Bagagem não encontrada.",
-        );
+  BagNotFound({String message = "Bagagem não encontrada."})
+      : super(errorMessage: message);
 }
 
 class BagAlreadyExists extends BagFailure {
-  BagAlreadyExists()
-      : super(
-          errorMessage: "Bagagem já existe.",
-        );
+  BagAlreadyExists({String message = "Bagagem já existe."})
+      : super(errorMessage: message);
 }
 
 class BagAlreadyAssigned extends BagFailure {
-  BagAlreadyAssigned()
-      : super(
-          errorMessage: "Bagagem já foi atribuída.",
-        );
+  BagAlreadyAssigned({String message = "Bagagem já foi atribuída."})
+      : super(errorMessage: message);
 }
 
 class BagNotAssigned extends BagFailure {
-  BagNotAssigned()
-      : super(
-          errorMessage: "Bagagem não foi atribuída.",
-        );
+  BagNotAssigned({String message = "Bagagem não foi atribuída."})
+      : super(errorMessage: message);
 }
 
 class BagNotAvailable extends BagFailure {
-  BagNotAvailable()
-      : super(
-          errorMessage: "Bagagem não está disponível.",
-        );
+  BagNotAvailable({String message = "Bagagem não está disponível."})
+      : super(errorMessage: message);
 }
 
 class BagNotDelivered extends BagFailure {
-  BagNotDelivered()
-      : super(
-          errorMessage: "Bagagem não foi entregue.",
-        );
+  BagNotDelivered({String message = "Bagagem não foi entregue."})
+      : super(errorMessage: message);
 }
 
 class BagAlreadyDelivered extends BagFailure {
-  BagAlreadyDelivered()
-      : super(
-          errorMessage: "Bagagem já foi entregue.",
-        );
+  BagAlreadyDelivered({String message = "Bagagem já foi entregue."})
+      : super(errorMessage: message);
 }
 
 class BagCreateError extends BagFailure {
-  BagCreateError()
-      : super(
-          errorMessage: "Erro ao criar a bagagem.",
-        );
+  BagCreateError({String message = "Erro ao criar a bagagem."})
+      : super(errorMessage: message);
 }
 
 class BagReadError extends BagFailure {
-  BagReadError()
-      : super(
-          errorMessage: "Erro ao consultar a bagagem.",
-        );
+  BagReadError({String message = "Erro ao consultar a bagagem."})
+      : super(errorMessage: message);
 }
 
 class BagUpdateError extends BagFailure {
-  BagUpdateError()
-      : super(
-          errorMessage: "Erro ao atualizar a bagagem.",
-        );
+  BagUpdateError({String message = "Erro ao atualizar a bagagem."})
+      : super(errorMessage: message);
 }
 
 class BagDeleteError extends BagFailure {
-  BagDeleteError()
-      : super(
-          errorMessage: "Erro ao excluir a bagagem.",
-        );
+  BagDeleteError({String message = "Erro ao excluir a bagagem."})
+      : super(errorMessage: message);
 }

@@ -8,7 +8,6 @@ import '../features/collaborator/controllers/landing_page_step_progess.dart';
 
 // Providers
 import '../repositories/user_repository.dart';
-import '../core/infra/user_repository_mock_impl.dart';
 import '../shared/providers/user_provider.dart';
 
 // Usecases

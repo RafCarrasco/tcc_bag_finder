@@ -1,13 +1,16 @@
 import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
+import '../../core/entity/bag_entity.dart';
 import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 import '../../data/datasources/trip_remote_datasource.dart';
+import '../../data/datasources/bag_remote_datasource.dart';
 
 class TripRepositoryImpl implements ITripRepository {
   final TripRemoteDataSource remote;
+  final BagRemoteDataSource bagRemote;
 
-  TripRepositoryImpl(this.remote);
+  TripRepositoryImpl(this.remote, this.bagRemote);
 
   @override
   Future<Either<TripFailure, TripEntity>> addTrip(
@@ -116,6 +119,30 @@ class TripRepositoryImpl implements ITripRepository {
   Future<Either<TripFailure, bool>> isTripDone({required String tripId}) async {
     try {
       final result = await remote.isTripDone(tripId);
+      return Right(result);
+    } catch (e) {
+      return Left(TripReadError());
+    }
+  }
+
+  @override
+  Future<Either<TripFailure, BagEntity>> updateBag(
+      {required BagEntity bag}) async {
+    try {
+      final result = await bagRemote.updateBag(bag);
+      return Right(result);
+    } catch (e) {
+      return Left(TripUpdateError());
+    }
+  }
+
+  @override
+  Future<Either<TripFailure, List<BagEntity>>> getCurrentTripBagsById({
+    required TripEntity trip,
+    required String bagId,
+  }) async {
+    try {
+      final result = await bagRemote.getCurrentTripBagsById(trip, bagId);
       return Right(result);
     } catch (e) {
       return Left(TripReadError());

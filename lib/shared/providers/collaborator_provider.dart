@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
-
 import '../../core/entity/trip_entity.dart';
+import '../../core/entity/traveler_entity.dart'; // Adicionado
 import '../../core/failures/failure.dart';
 import '../../repositories/collaborator_repository.dart';
 
@@ -16,6 +16,9 @@ class CollaboratorProvider extends ChangeNotifier {
   List<TripEntity>? _trips;
   List<TripEntity>? get trips => _trips;
 
+  List<TravelerEntity> _travelers = []; // Adicionado
+  List<TravelerEntity> get travelers => _travelers; // Adicionado
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -26,32 +29,40 @@ class CollaboratorProvider extends ChangeNotifier {
     required String responsibleId,
   }) async {
     _setLoading(true);
-
     final result = await repository.getTripsByTravelerId(
       travelerId: travelerId,
       responsibleId: responsibleId,
     );
-
     result.fold(
       (failure) => _trips = [],
       (list) => _trips = list,
     );
-
     _setLoading(false);
   }
 
   Future<void> getAllTripsByResponsible({required String responsibleId}) async {
     _setLoading(true);
-
-    final result =
-        await repository.getAllTripsByResponsible(responsibleId: responsibleId);
-
+    final result = await repository.getAllTripsByResponsible(
+      responsibleId: responsibleId,
+    );
     result.fold(
       (failure) => _trips = [],
       (list) => _trips = list,
     );
-
     _setLoading(false);
+  }
+
+  Future<List<TravelerEntity>> getAllTravelers() async {
+    _setLoading(true);
+    final result = await repository.getAllTravelers();
+    List<TravelerEntity> list = [];
+    result.fold(
+      (failure) => list = [],
+      (travelers) => list = travelers,
+    );
+    _travelers = list;
+    _setLoading(false);
+    return list;
   }
 
   void orderByAlphabetic({
@@ -71,7 +82,9 @@ class CollaboratorProvider extends ChangeNotifier {
     required bool isAscending,
   }) {
     _trips = [...list]..sort((a, b) {
-        return isAscending ? a.time.compareTo(b.time) : b.time.compareTo(a.time);
+        return isAscending
+            ? a.time.compareTo(b.time)
+            : b.time.compareTo(a.time);
       });
     notifyListeners();
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
+import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 
 class TravelerProvider extends ChangeNotifier {
@@ -12,7 +14,6 @@ class TravelerProvider extends ChangeNotifier {
   List<BagEntity>? _bags;
   List<TripEntity>? _trips;
   bool _isLoading = false;
-
   bool _isTripComplete = false;
   int _checkedBags = 0;
 
@@ -20,7 +21,6 @@ class TravelerProvider extends ChangeNotifier {
   List<BagEntity>? get bags => _bags;
   List<TripEntity>? get trips => _trips;
   bool get isLoading => _isLoading;
-
   bool get isTripComplete => _isTripComplete;
   int get checkedBags => _checkedBags;
 
@@ -61,6 +61,18 @@ class TravelerProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> getTripsById({required String tripId}) async {
+    _setLoading(true);
+
+    final result = await repository.getTripsById(tripId: tripId);
+
+    result.fold(
+      (failure) => _trips = [],
+      (list) => _trips = list,
+    );
+
+    _setLoading(false);
+  }
 
   Future<void> checkIsTripDone({required TripEntity trip}) async {
     final result = await repository.isTripDone(tripId: trip.id);
@@ -81,5 +93,94 @@ class TravelerProvider extends ChangeNotifier {
       _isTripComplete = true;
     }
     notifyListeners();
+  }
+
+  void orderTripsByCreatedTime({
+    required List<TripEntity> list,
+    required bool isAscending,
+  }) {
+    _trips = [...list]..sort((a, b) {
+        return isAscending
+            ? a.createdAt.compareTo(b.createdAt)
+            : b.createdAt.compareTo(a.createdAt);
+      });
+    notifyListeners();
+  }
+
+  void orderTripsByUpdatedTime({
+    required List<TripEntity> list,
+    required bool isAscending,
+  }) {
+    _trips = [...list]..sort((a, b) {
+        return isAscending
+            ? (a.updatedAt ?? DateTime(0)).compareTo(b.updatedAt ?? DateTime(0))
+            : (b.updatedAt ?? DateTime(0))
+                .compareTo(a.updatedAt ?? DateTime(0));
+      });
+    notifyListeners();
+  }
+
+  Future<void> updateBag({required BagEntity bag}) async {
+    _setLoading(true);
+
+    final result = await repository.updateBag(bag: bag);
+
+    result.fold(
+      (failure) {},
+      (_) {
+        if (_bags != null) {
+          final index = _bags!.indexWhere((b) => b.id == bag.id);
+          if (index != -1) {
+            _bags![index] = bag;
+          }
+        }
+      },
+    );
+
+    _setLoading(false);
+  }
+
+  void orderBagsByUpdatedTime({
+    required List<BagEntity> list,
+    required bool isAscending,
+  }) {
+    _bags = [...list]..sort((a, b) {
+        return isAscending
+            ? (a.updatedAt ?? DateTime(0)).compareTo(b.updatedAt ?? DateTime(0))
+            : (b.updatedAt ?? DateTime(0))
+                .compareTo(a.updatedAt ?? DateTime(0));
+      });
+    notifyListeners();
+  }
+
+  void orderBagsByStatus({
+    required List<BagEntity> list,
+    required bool isAscending,
+  }) {
+    _bags = [...list]..sort((a, b) {
+        final aStatus = a.status.toString();
+        final bStatus = b.status.toString();
+        return isAscending
+            ? aStatus.compareTo(bStatus)
+            : bStatus.compareTo(aStatus);
+      });
+    notifyListeners();
+  }
+
+  Future<void> getCurrentTripBagsById({
+    required TripEntity trip,
+    required String bagId,
+  }) async {
+    _setLoading(true);
+
+    final result =
+        await repository.getCurrentTripBagsById(trip: trip, bagId: bagId);
+
+    result.fold(
+      (failure) => _bags = [],
+      (list) => _bags = list,
+    );
+
+    _setLoading(false);
   }
 }
