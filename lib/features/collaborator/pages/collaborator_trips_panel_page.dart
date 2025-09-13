@@ -6,7 +6,7 @@ import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
-import '../../../core/widgets/collaborator_trips_pagination_widget.dart';
+import '../../../core/widgets/collaborator/collaborator_trips_pagination_widget.dart';
 
 class CollaboratorTripsPanelPage extends StatefulWidget {
   final String collaboratorId;

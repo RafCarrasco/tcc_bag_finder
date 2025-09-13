@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/user_entity.dart';
 import '../../core/failures/failure.dart';
-import '../../infra/repositories/user_repository_impl.dart';
+import '../../repositories/user_repository.dart';
 
 class UserProvider extends ChangeNotifier {
-  final UserRepositoryImpl repository;
+  final IUserRepository repository;
 
   UserEntity? _user;
   bool _isLoading = false;
@@ -119,35 +119,33 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<Map<String, String>> getAllUsersNamesByIds(List<String> ids) async {
-  _setLoading(true);
-  final result = await repository.getAllUsersByIds(ids: ids);
-  _setLoading(false);
+    _setLoading(true);
+    final result = await repository.getAllUsersByIds(ids: ids);
+    _setLoading(false);
 
-  return result.fold(
-    (failure) => {},
-    (users) {
-      final names = users.map((u) => u.fullName).toList();
-      return Map.fromIterables(ids, names);
-    },
-  );
-}
-
+    return result.fold(
+      (failure) => {},
+      (users) {
+        final names = users.map((u) => u.fullName).toList();
+        return Map.fromIterables(ids, names);
+      },
+    );
+  }
 
   Future<bool> deleteUser({required String id}) async {
-  _setLoading(true);
-  final result = await repository.deleteUser(id: id);
-  _setLoading(false);
+    _setLoading(true);
+    final result = await repository.deleteUser(id: id);
+    _setLoading(false);
 
-  return result.fold(
-    (failure) => false,
-    (_) {
-      if (_user?.id == id) {
-        _user = null;
-        notifyListeners();
-      }
-      return true;
-    },
-  );
-}
-
+    return result.fold(
+      (failure) => false,
+      (_) {
+        if (_user?.id == id) {
+          _user = null;
+          notifyListeners();
+        }
+        return true;
+      },
+    );
+  }
 }

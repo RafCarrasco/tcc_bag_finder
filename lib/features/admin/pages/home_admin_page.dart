@@ -4,7 +4,7 @@ import '../../../core/entity/admin_entity.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/widgets/admin_actions_widget.dart';
-import '../../../core/widgets/home_admin_app_bar_widget.dart';
+import '../../../core/widgets/admin/home_admin_app_bar_widget.dart';
 
 class HomeAdminPage extends StatefulWidget {
   final String adminId;

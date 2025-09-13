@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import '../utils/app_icons.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
+import '../../utils/app_icons.dart';
 
 class HomeCollaboratorBottomNavigation extends StatefulWidget {
   final int selectedIndex;

@@ -1,6 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:logger/web.dart';
+import 'package:logger/logger.dart';
 
 // Controllers
 import '../features/auth/controller/sign_in_controller.dart';
@@ -8,12 +8,19 @@ import '../features/auth/controller/sign_up_controller.dart';
 import '../features/collaborator/controllers/landing_page_step_progess.dart';
 
 // Providers
-import '../infra/repositories/user_repository_impl.dart';
-import '../repositories/user_repository.dart';
 import '../shared/providers/user_provider.dart';
+import '../shared/providers/traveler_provider.dart';
 
 // Datasources
 import '../data/datasources/user_remote_datasource.dart';
+import '../data/datasources/trip_remote_datasource.dart';
+import '../data/datasources/bag_remote_datasource.dart';
+
+// Repositories
+import '../infra/repositories/user_repository_impl.dart';
+import '../infra/repositories/trip_repository_impl.dart';
+import '../repositories/user_repository.dart';
+import '../repositories/trip_repository.dart';
 
 // Usecases
 import '../features/admin/usecases/update_user_usecase.dart';
@@ -46,24 +53,26 @@ import '../features/traveler/pages/edit_profile_page.dart';
 class AppModule extends Module {
   @override
   void binds(Injector i) {
-    // EventBus
+    i.addSingleton<Logger>(() => Logger());
     i.addSingleton<EventBus>(() => EventBus());
 
-    // Logger
-    i.addLazySingleton<Logger>(() => Logger());
-
-    // Datasource real (Node + MySQL)
+    // Datasources
     i.addLazySingleton<UserRemoteDataSource>(
       () => UserRemoteDataSource(baseUrl: "http://localhost:3000"),
     );
-
-    // Repositório real (usa o datasource)
-    i.addLazySingleton<IUserRepository>(
-      () => UserRepositoryImpl(i()),
+    i.addLazySingleton<TripRemoteDataSource>(
+      () => TripRemoteDataSource(baseUrl: "http://localhost:3000"),
     );
-    i.addLazySingleton<UserRepositoryImpl>(
-    () => UserRepositoryImpl(i()),
-  );
+    i.addLazySingleton<BagRemoteDataSource>(
+      () => BagRemoteDataSource(baseUrl: "http://localhost:3000"),
+    );
+
+    // Repositories
+    i.addLazySingleton<IUserRepository>(() => UserRepositoryImpl(i()));
+    i.addLazySingleton<UserRepositoryImpl>(() => UserRepositoryImpl(i()));
+    i.addLazySingleton<ITripRepository>(
+      () => TripRepositoryImpl(i<TripRemoteDataSource>(), i<BagRemoteDataSource>()),
+    );
 
     // Usecases
     i.addLazySingleton<IUpdateUserUsecase>(
@@ -73,37 +82,26 @@ class AppModule extends Module {
       () => DeleteUserUsecase(repository: i()),
     );
 
-    // Provider
-    i.addLazySingleton<UserProvider>(
-      () => UserProvider(i()),
-    );
+    // Providers
+    i.addLazySingleton<UserProvider>(() => UserProvider(i()));
+    i.addLazySingleton<TravelerProvider>(() => TravelerProvider(i()));
 
     // Controllers
-    i.addLazySingleton<SignInController>(
-      () => SignInController(),
-    );
-    i.addLazySingleton<SignUpController>(
-      () => SignUpController(),
-    );
-
-    i.addLazySingleton<LandingPageStepProgess>(
-      () => LandingPageStepProgess(),
-    );
+    i.addLazySingleton<SignInController>(() => SignInController());
+    i.addLazySingleton<SignUpController>(() => SignUpController());
+    i.addLazySingleton<LandingPageStepProgess>(() => LandingPageStepProgess());
   }
 
   @override
   void routes(RouteManager r) {
-    // Splash & Welcome
     r.child(Modular.initialRoute, child: (_) => const SplashPage());
     r.child('/welcome', child: (_) => const WelcomeLandingPage());
 
-    // Login / Auth
     r.child('/login', child: (_) => const LoginLandingPage(), children: [
       ChildRoute('/sign-in', child: (_) => const SignInPage()),
       ChildRoute('/sign-up', child: (_) => const SignUpPage()),
       ChildRoute('/forgot-password', child: (_) => const ForgotPasswordPage()),
-      ChildRoute('/find-your-account',
-          child: (_) => const FindYourAccountPage()),
+      ChildRoute('/find-your-account', child: (_) => const FindYourAccountPage()),
     ]);
 
     // Admin

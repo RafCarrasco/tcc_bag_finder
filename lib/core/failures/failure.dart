@@ -1,20 +1,11 @@
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:logger/web.dart';
-
 abstract class Failure implements Exception {
   final String errorMessage;
+  final StackTrace? stackTrace;
 
   Failure({
     required this.errorMessage,
-    StackTrace? stackTrace,
-  }) {
-    Modular.get<Logger>().e(
-      errorMessage,
-      time: DateTime.now(),
-      error: this,
-      stackTrace: stackTrace,
-    );
-  }
+    this.stackTrace,
+  });
 
   @override
   String toString() => errorMessage;
@@ -42,10 +33,8 @@ class NoDataFound extends Failure {
 }
 
 class UnknownError extends Failure {
-  final StackTrace? stackTrace;
-
   UnknownError({
-    this.stackTrace,
+    StackTrace? stackTrace,
   }) : super(
           stackTrace: stackTrace,
           errorMessage: 'Falha desconhecida',
@@ -73,18 +62,10 @@ class ServerError extends Failure {
         );
 }
 
-class AuthenticationFailure extends Failure {
-  AuthenticationFailure()
-      : super(
-          errorMessage: 'Erro de autenticação. Verifique suas credenciais',
-        );
-}
-
 class PermissionDeniedError extends Failure {
   PermissionDeniedError()
       : super(
-          errorMessage:
-              'Permissão negada. Verifique as permissões do aplicativo',
+          errorMessage: 'Permissão negada. Verifique as permissões do aplicativo',
         );
 }
 

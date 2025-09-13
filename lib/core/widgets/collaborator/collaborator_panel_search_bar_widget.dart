@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import '../../../shared/providers/admin_provider.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
+import '../../utils/objects/filter_option_object.dart';
+import '../appbar/home_search_field_widget.dart';
+import '../filter_side_bar.dart';
 
-import '../../shared/providers/admin_provider.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import '../utils/objects/filter_option_object.dart';
-import 'appbar/home_search_field_widget.dart';
-import 'filter_side_bar.dart';
-
-class TripCollaboratorPanelSearchBarWidget extends StatefulWidget {
+class CollaboratorPanelSearchBarWidget extends StatefulWidget {
   final String adminId;
 
-  const TripCollaboratorPanelSearchBarWidget({
-    required this.adminId,
+  const CollaboratorPanelSearchBarWidget({
     super.key,
+    required this.adminId,
   });
 
   @override
-  State<TripCollaboratorPanelSearchBarWidget> createState() =>
-      _TripCollaboratorPanelSearchBarWidgetState();
+  State<CollaboratorPanelSearchBarWidget> createState() =>
+      _CollaboratorPanelSearchBarWidgetState();
 }
 
-class _TripCollaboratorPanelSearchBarWidgetState
-    extends State<TripCollaboratorPanelSearchBarWidget> {
+class _CollaboratorPanelSearchBarWidgetState
+    extends State<CollaboratorPanelSearchBarWidget> {
   bool isAscendingAlphabetic = false;
   bool isAscendingByCreatedTime = false;
   bool isAscendingByStatus = false;
@@ -59,9 +58,7 @@ class _TripCollaboratorPanelSearchBarWidgetState
             useRootNavigator: true,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
-                top: Radius.circular(
-                  AppDimensions.radiusLarge,
-                ),
+                top: Radius.circular(AppDimensions.radiusLarge),
               ),
             ),
             builder: (context) => FilterSidebar(

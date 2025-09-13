@@ -5,7 +5,7 @@ import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/widgets/appbar/home_app_bar_widget.dart';
-import '../../../core/widgets/trip_history_list_widget.dart';
+import '../../../core/widgets/trip/trip_history_list_widget.dart';
 
 class TravelerBagHistoryPage extends StatefulWidget {
   final String travelerId;

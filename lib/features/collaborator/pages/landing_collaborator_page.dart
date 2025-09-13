@@ -3,7 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../core/widgets/home_collaborator_bottom_navigation.dart';
+import '../../../core/widgets/collaborator/home_collaborator_bottom_navigation.dart';
 import '../../../core/widgets/screen_helper.dart';
 
 

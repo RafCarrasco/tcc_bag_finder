@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../entity/trip_entity.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
+import '../../entity/trip_entity.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
 import 'trip_history_item_widget.dart';
 
 class TripHistoryPaginationWidget extends StatelessWidget {

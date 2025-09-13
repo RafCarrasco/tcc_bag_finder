@@ -6,7 +6,7 @@ import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/widgets/appbar/history_app_bar_widget.dart';
-import '../../../core/widgets/trip_list_widget.dart';
+import '../../../core/widgets/trip/trip_list_widget.dart';
 
 class HomeTravelerPage extends StatefulWidget {
   final String travelerId;

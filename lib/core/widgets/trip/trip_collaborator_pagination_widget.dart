@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../entity/collaborator_entity.dart';
-import '../../shared/providers/user_provider.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
+import '../../entity/collaborator_entity.dart';
+import '../../../shared/providers/user_provider.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
 
 class TripCollaboratorPaginationWidget extends StatefulWidget {
   final List<CollaboratorEntity> collaborators;

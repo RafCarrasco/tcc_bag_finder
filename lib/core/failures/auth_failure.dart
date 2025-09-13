@@ -5,45 +5,30 @@ abstract class AuthFailure extends Failure {
 }
 
 class UserNotFound extends AuthFailure {
-  UserNotFound()
-      : super(
-          errorMessage: "Usuário não encontrado.",
-        );
+  UserNotFound() : super(errorMessage: "Usuário não encontrado.");
 }
 
 class UserAlreadyInUse extends AuthFailure {
-  UserAlreadyInUse()
-      : super(
-          errorMessage: "Usuário em uso.",
-        );
+  UserAlreadyInUse() : super(errorMessage: "Usuário em uso.");
 }
 
 class EmailAlreadyInUse extends AuthFailure {
-  EmailAlreadyInUse()
-      : super(
-          errorMessage: "Email em uso.",
-        );
+  EmailAlreadyInUse() : super(errorMessage: "Email em uso.");
 }
 
 class InvalidPassword extends AuthFailure {
-  InvalidPassword()
-      : super(
-          errorMessage: "Senha inválida.",
-        );
+  InvalidPassword() : super(errorMessage: "Senha inválida.");
 }
 
 class PhoneAlreadyInUse extends AuthFailure {
-  PhoneAlreadyInUse()
-      : super(
-          errorMessage: "Telefone em uso.",
-        );
+  PhoneAlreadyInUse() : super(errorMessage: "Telefone em uso.");
 }
 
 class InvalidEmail extends AuthFailure {
-  InvalidEmail()
-      : super(
-          errorMessage: "Email inválido.",
-        );
+  InvalidEmail() : super(errorMessage: "Email inválido.");
 }
 
-
+class AuthenticationFailure extends AuthFailure {
+  AuthenticationFailure()
+      : super(errorMessage: "Erro de autenticação. Verifique suas credenciais.");
+}

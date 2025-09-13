@@ -6,8 +6,8 @@ import '../../../core/entity/collaborator_entity.dart';
 import '../../../shared/providers/admin_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
-import '../../../core/widgets/collaborator_pagination_widget.dart';
-import '../../../core/widgets/collaborator_panel_search_bar_widget.dart';
+import '../../../core/widgets/collaborator/collaborator_pagination_widget.dart';
+import '../../../core/widgets/collaborator/collaborator_panel_search_bar_widget.dart';
 
 class CollaboratorPanelPage extends StatefulWidget {
   final String adminId;

@@ -5,8 +5,8 @@ import '../../../shared/providers/collaborator_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
-import '../../../core/widgets/trip_pagination_widget.dart';
-import '../../../core/widgets/trip_panel_search_bar_widget.dart';
+import '../../../core/widgets/trip/trip_pagination_widget.dart';
+import '../../../core/widgets/trip/trip_panel_search_bar_widget.dart';
 
 class SearchCompanyTripPage extends StatefulWidget {
   final String collaboratorId;

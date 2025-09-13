@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../entity/trip_entity.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import '../utils/app_icons.dart';
+import '../../entity/trip_entity.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
+import '../../utils/app_icons.dart';
 
 class TripHistoryItemWidget extends StatelessWidget {
   final String collaboratorName;

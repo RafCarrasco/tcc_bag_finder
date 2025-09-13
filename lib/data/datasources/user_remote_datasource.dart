@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../core/entity/user_entity.dart';
+import '../../core/failures/failure.dart';
 
 class UserRemoteDataSource {
   final String baseUrl;
@@ -104,19 +105,37 @@ class UserRemoteDataSource {
     }
   }
 
-  Future<UserEntity?> authenticateUser(String email, String password) async {
+Future<UserEntity?> authenticateUser(String email, String password) async {
+  try {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
 
+    print(" [Auth] Status: ${response.statusCode}");
+    print(" [Auth] Body: ${response.body}");
+
     if (response.statusCode == 200) {
-      return UserEntity.fromJson(jsonDecode(response.body));
+      final data = jsonDecode(response.body);
+
+      if (data is Map<String, dynamic> && data["user"] != null) {
+        return UserEntity.fromJson(data["user"]);
+      }
+
+      return UserEntity.fromJson(data);
     } else if (response.statusCode == 401) {
-      return null;
+      print("❌ Credenciais inválidas para $email");
+      return null; // 👈 agora só retorna null
     } else {
       throw Exception('Erro ao autenticar usuário: ${response.body}');
     }
+  } catch (e, stack) {
+    print(" Exception em authenticateUser: $e");
+    print(stack);
+    rethrow;
   }
+}
+
+
 }

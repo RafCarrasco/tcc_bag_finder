@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../utils/app_dimensions.dart';
-import 'action_button_widget.dart';
+import '../../utils/app_dimensions.dart';
+import '../action_button_widget.dart';
 
 class CollaboratorActionsWidget extends StatelessWidget {
   final String collaboratorId;

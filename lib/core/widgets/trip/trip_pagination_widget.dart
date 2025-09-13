@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../entity/trip_entity.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import '../utils/app_icons.dart';
-import 'dialogs/get_description_dialog_widget.dart';
-import 'dialogs/send_notification_dialog_widget.dart';
+import '../../entity/trip_entity.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
+import '../../utils/app_icons.dart';
+import '../dialogs/get_description_dialog_widget.dart';
+import '../dialogs/send_notification_dialog_widget.dart';
 
 class TripPaginationWidget extends StatefulWidget {
   final List<TripEntity> trips;

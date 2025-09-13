@@ -6,8 +6,8 @@ import '../../../shared/providers/admin_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
-import '../../../core/widgets/collaborator_panel_search_bar_widget.dart';
-import '../../../core/widgets/trip_collaborator_pagination_widget.dart';
+import '../../../core/widgets/collaborator/collaborator_panel_search_bar_widget.dart';
+import '../../../core/widgets/trip/trip_collaborator_pagination_widget.dart';
 
 class TripCollaboratorPanelPage extends StatefulWidget {
   final String adminId;

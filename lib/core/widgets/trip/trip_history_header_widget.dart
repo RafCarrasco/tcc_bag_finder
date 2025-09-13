@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import 'circular_text_display_widget.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
 
-class TripHeaderWidget extends StatelessWidget {
-  final DateTime date;
-  final String tripId;
-  final int checkedBags;
-  final int bags;
-  final String collaboratorName;
-  final String airportOrigin;
-  final String airportDestination;
+class TripHistoryHeaderWidget extends StatelessWidget {
+  final int tripsCount;
+  final int activeTripsCount;
 
-  const TripHeaderWidget({
+  const TripHistoryHeaderWidget({
     super.key,
-    required this.date,
-    required this.tripId,
-    required this.airportOrigin,
-    required this.airportDestination,
-    required this.collaboratorName,
-    required this.checkedBags,
-    required this.bags,
+    required this.tripsCount,
+    required this.activeTripsCount,
   });
 
   @override
@@ -63,7 +52,7 @@ class TripHeaderWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Informações Gerais da Viagem:',
+                'Histórico de Viagens:',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontWeight: FontWeight.bold,
@@ -77,7 +66,7 @@ class TripHeaderWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                'ID Viagem:',
+                'Viagens Realizadas:',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -86,7 +75,7 @@ class TripHeaderWidget extends StatelessWidget {
                 width: 4,
               ),
               Text(
-                '($tripId)',
+                '$tripsCount',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondaryGrey,
@@ -97,7 +86,7 @@ class TripHeaderWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Data Viagem:',
+                'Viagens Ativas:',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -106,7 +95,7 @@ class TripHeaderWidget extends StatelessWidget {
                 width: 4,
               ),
               Text(
-                '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}',
+                '$activeTripsCount',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondaryGrey,
@@ -117,7 +106,7 @@ class TripHeaderWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Colaborador Responsável:',
+                'Viagens Concluidas:',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -126,56 +115,12 @@ class TripHeaderWidget extends StatelessWidget {
                 width: 4,
               ),
               Text(
-                collaboratorName,
+                '${tripsCount - activeTripsCount}',
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondaryGrey,
                     ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                'Malas Entregues :',
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              checkedBags == bags
-                  ? Text(
-                      'Todos Malas Entregues!',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondaryGrey,
-                      ),
-                    )
-                  : Text(
-                      '${checkedBags.toString()}/${bags.toString()}',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.secondaryGrey,
-                          ),
-                    ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularTextDisplay(
-                airportCode: airportOrigin,
-              ),
-              Icon(
-                Icons.keyboard_double_arrow_right_outlined,
-                color: AppColors.primary,
-                size: AppDimensions.iconExtraLarge,
-              ),
-              CircularTextDisplay(
-                airportCode: airportDestination,
               ),
             ],
           ),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
 
-import '../utils/app_dimensions.dart';
-import 'pop_up_menu_button.dart';
+import '../../utils/app_dimensions.dart';
+import '../pop_up_menu_button.dart';
 
-class HomeWelcomeCollaboratorWidget extends StatelessWidget {
+class HomeWelcomeAdminWidget extends StatelessWidget {
   final String userName;
   final String companyName;
 
-  const HomeWelcomeCollaboratorWidget({
+  const HomeWelcomeAdminWidget({
     super.key,
     required this.userName,
     required this.companyName,
@@ -25,7 +25,7 @@ class HomeWelcomeCollaboratorWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Console do Colaborador',
+              'Console Admin',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
                     fontSize: AppDimensions.fontMedium,
@@ -42,7 +42,7 @@ class HomeWelcomeCollaboratorWidget extends StatelessWidget {
                   ),
             ),
             Text(
-              'Bem vindo ao console do colaborador',
+              'Bem vindo ao console de administrador',
               textAlign: TextAlign.left,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
@@ -50,18 +50,21 @@ class HomeWelcomeCollaboratorWidget extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          companyName,
-          style: const TextStyle(
-            fontSize: AppDimensions.fontMedium,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        const PopUpMenuButton(),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const PopUpMenuButton(),
+            Text(
+              companyName,
+              style: const TextStyle(
+                fontSize: AppDimensions.fontMedium,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        )
       ],
     );
   }

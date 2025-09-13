@@ -3,8 +3,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../../core/entity/collaborator_entity.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_dimensions.dart';
-import '../../../core/widgets/collaborator_actions_widget.dart';
-import '../../../core/widgets/home_collaborator_app_bar_widget.dart';
+import '../../../core/widgets/collaborator/collaborator_actions_widget.dart';
+import '../../../core/widgets/collaborator/home_collaborator_app_bar_widget.dart';
 
 class HomeCollaboratorPage extends StatefulWidget {
   const HomeCollaboratorPage({

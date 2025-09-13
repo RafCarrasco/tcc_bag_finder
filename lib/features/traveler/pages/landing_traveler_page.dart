@@ -3,7 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../core/widgets/home_traveler_bottom_navigation_widget.dart';
+import '../../../core/widgets/traveler/home_traveler_bottom_navigation_widget.dart';
 import '../../../core/widgets/screen_helper.dart';
 
 class LandingTravelerPage extends StatefulWidget {

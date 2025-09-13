@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/app_dimensions.dart';
+import 'home_welcome_collaborator_widget.dart';
 
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import 'home_welcome_admin_widget.dart';
-
-class HomeAdminAppBarWidget extends StatelessWidget {
+class HomeCollaboratorAppBarWidget extends StatelessWidget {
   final String userName;
   final String company;
-  const HomeAdminAppBarWidget({
+  const HomeCollaboratorAppBarWidget({
     super.key,
     required this.userName,
     required this.company,
@@ -28,7 +27,7 @@ class HomeAdminAppBarWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HomeWelcomeAdminWidget(
+          HomeWelcomeCollaboratorWidget(
             userName: userName,
             companyName: company,
           ),
