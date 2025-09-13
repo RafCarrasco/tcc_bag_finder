@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';

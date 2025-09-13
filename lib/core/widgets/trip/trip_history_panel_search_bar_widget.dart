@@ -5,7 +5,7 @@ import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/objects/filter_option_object.dart';
 import '../filter_side_bar.dart';
-import 'home_search_field_widget.dart';
+import '../appbar/home_search_field_widget.dart';
 
 class TripHistoryPanelSearchBarWidget extends StatefulWidget {
   final String hint;
@@ -29,17 +29,12 @@ class _TripHistoryPanelSearchBarWidgetState
     final travelerProvider = Modular.get<TravelerProvider>();
 
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: HomeSearchFieldWidget(
             hint: widget.hint,
             onChanged: (text) async {
-              await travelerProvider.getTripsById(
-                tripId: text,
-              );
+              await travelerProvider.getTripsById(tripId: text);
             },
           ),
         ),
@@ -76,7 +71,7 @@ class _TripHistoryPanelSearchBarWidgetState
                 ),
                 FilterOption(
                   icon: Icons.check_circle,
-                  label: 'Data de atualização',
+                  label: 'Data de atualização',
                   onTap: () {
                     travelerProvider.orderTripsByUpdatedTime(
                       list: travelerProvider.trips ?? [],

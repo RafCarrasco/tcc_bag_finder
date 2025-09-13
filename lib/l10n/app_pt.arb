@@ -39,5 +39,12 @@
 
     "helloUserHomepage": "Olá!,",
     "greetingsFromBagFinder": "BagFinder te deseja uma ótima viagem!"
+
+
+    "signUpPagePersonalDataField": "Dados pessoais",
+    "signUpPageAccessDataField": "Dados de acesso",
+    "profilePageTitle": "MEU PERFIL",
+    "profilePageEditButton": "Editar Perfil",
+    "profilePageLogoutButton": "Sair"
  }
     

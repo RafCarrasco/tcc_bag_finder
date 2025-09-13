@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import 'home_welcome_user_widget.dart';
-import 'trip_history_panel_search_bar_widget.dart';
+import '../trip/trip_history_panel_search_bar_widget.dart';
 
 class HomeTravelerAppBarWidget extends StatelessWidget {
   final String userName;

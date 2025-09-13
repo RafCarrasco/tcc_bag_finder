@@ -25,13 +25,15 @@ class UserEntity {
     return UserEntity(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
+      fullName: json['full_name'] ?? json['fullName'] ?? '',
       phone: json['phone'] ?? '',
-      role: json['type'] ?? json['role'] ?? 'cliente',
+      role: json['role'] ?? json['type'] ?? 'TRAVELER',
       cpf: json['cpf'],
-      isActive: json['isActive'] ?? true,
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+      isActive: json['is_active'] == 1 || json['is_active'] == true,
+      createdAt: DateTime.tryParse(json['created_at'] ?? json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'] ?? json['updatedAt'])
+          : null,
     );
   }
 
@@ -39,13 +41,13 @@ class UserEntity {
     return {
       'id': id,
       'email': email,
-      'fullName': fullName,
+      'full_name': fullName,
       'phone': phone,
       'cpf': cpf,
-      'type': role,
-      'isActive': isActive,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
+      'role': role,
+      'is_active': isActive,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 

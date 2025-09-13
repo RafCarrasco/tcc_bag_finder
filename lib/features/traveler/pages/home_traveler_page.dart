@@ -22,38 +22,33 @@ class HomeTravelerPage extends StatefulWidget {
 
 class _HomeTravelerPageState extends State<HomeTravelerPage> {
   final travelerProvider = Modular.get<TravelerProvider>();
-  var provider = Modular.get<UserProvider>();
-  late String? collaboratorName;
+  final userProvider = Modular.get<UserProvider>();
 
+  String? collaboratorName;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    init();
-  }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await travelerProvider.getTripsByStatus(
+        travelerId: widget.travelerId,
+        isDone: false,
+      );
 
-  void init() async {
-    await travelerProvider.getTripsByStatus(
-      travelerId: widget.travelerId,
-      isDone: false,
-    );
+      if (travelerProvider.currentTrip == null) {
+        setState(() => isLoading = false);
+        return;
+      }
 
-    if (travelerProvider.currentTrip == null) {
+      final collaborator = await userProvider.getUser(
+        userId: travelerProvider.currentTrip!.responsibleCollaboratorId,
+      );
+
       setState(() {
+        collaboratorName = collaborator?.fullName;
         isLoading = false;
       });
-
-      return;
-    }
-
-    final collaborator = await provider.getUser(
-      userId: travelerProvider.currentTrip!.responsibleCollaboratorId,
-    );
-
-    setState(() {
-      collaboratorName = collaborator?.fullName;
-      isLoading = false;
     });
   }
 
@@ -61,11 +56,11 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
+
+    final user = userProvider.user;
 
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -86,7 +81,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
             ],
           ),
           child: HomeTravelerAppBarWidget(
-            userName: provider.user!.fullName,
+            userName: user?.fullName ?? 'Viajante',
             hint: 'Procure sua bagagem...',
           ),
         ),
@@ -94,9 +89,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
           child: Consumer<TravelerProvider>(
             builder: (context, travelerProvider, _) {
               if (travelerProvider.isLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               if (travelerProvider.currentTrip == null) {
@@ -104,11 +97,8 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.warning,
-                        color: AppColors.primary,
-                        size: 50,
-                      ),
+                      Icon(Icons.warning, color: AppColors.primary, size: 50),
+                      const SizedBox(height: 8),
                       Text(
                         'Nenhuma viagem iniciada!',
                         style: TextStyle(
@@ -122,15 +112,11 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                 );
               }
 
-              if (travelerProvider.currentTrip != null) {
-                return TripListWidget(
-                  travelerId: widget.travelerId,
-                  bags: travelerProvider.bags ?? [],
-                  collaboratorName: collaboratorName ?? "",
-                );
-              }
-
-              return Container();
+              return TripListWidget(
+                travelerId: widget.travelerId,
+                bags: travelerProvider.bags ?? [],
+                collaboratorName: collaboratorName ?? "",
+              );
             },
           ),
         ),

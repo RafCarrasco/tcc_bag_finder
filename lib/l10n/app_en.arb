@@ -39,4 +39,10 @@
 
     "helloUserHomepage": "Hello!,",
     "greetingsFromBagFinder": "BagFinder wishes you a great trip!"
+
+    "signUpPagePersonalDataField": "Personal Data",
+    "signUpPageAccessDataField": "Access Data",
+    "profilePageTitle": "MY PROFILE",
+    "profilePageEditButton": "Edit Profile",
+    "profilePageLogoutButton": "Logout"
 }

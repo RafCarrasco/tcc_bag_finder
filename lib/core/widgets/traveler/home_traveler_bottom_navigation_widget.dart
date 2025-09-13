@@ -48,7 +48,7 @@ class _HomeTravelerBottomNavigationState
         break;
       case 2:
         Modular.to.pushNamed(
-          '/profile/${widget.travelerId}',
+          '/traveler/${widget.travelerId}/profile',
         );
         break;
     }
@@ -84,9 +84,7 @@ class _HomeTravelerBottomNavigationState
               color: widget.selectedIndex == 0
                   ? AppColors.primary
                   : AppColors.secondaryGrey,
-              onPressed: () => _navigateTo(
-                0,
-              ),
+              onPressed: () => _navigateTo(0),
             ),
             IconButton(
               padding: EdgeInsets.zero,
@@ -97,9 +95,7 @@ class _HomeTravelerBottomNavigationState
               color: widget.selectedIndex == 1
                   ? AppColors.primary
                   : AppColors.secondaryGrey,
-              onPressed: () => _navigateTo(
-                1,
-              ),
+              onPressed: () => _navigateTo(1),
             ),
             IconButton(
               padding: EdgeInsets.zero,
@@ -110,9 +106,7 @@ class _HomeTravelerBottomNavigationState
               color: widget.selectedIndex == 2
                   ? AppColors.primary
                   : AppColors.secondaryGrey,
-              onPressed: () => _navigateTo(
-                2,
-              ),
+              onPressed: () => _navigateTo(2),
             ),
           ],
         ),

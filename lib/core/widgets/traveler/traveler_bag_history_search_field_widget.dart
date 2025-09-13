@@ -5,7 +5,7 @@ import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/objects/filter_option_object.dart';
 import '../filter_side_bar.dart';
-import 'home_search_field_widget.dart';
+import '../appbar/home_search_field_widget.dart';
 
 class TravelerBagHistorySearchFieldWidget extends StatefulWidget {
   final String hint;
@@ -20,7 +20,6 @@ class TravelerBagHistorySearchFieldWidget extends StatefulWidget {
 
 class _TravelerBagHistorySearchFieldWidgetState extends State<TravelerBagHistorySearchFieldWidget> {
   var travelerProvider = Modular.get<TravelerProvider>();
-
   bool isAscendingByUpdatedTime = false;
 
   @override
@@ -29,13 +28,15 @@ class _TravelerBagHistorySearchFieldWidgetState extends State<TravelerBagHistory
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        HomeSearchFieldWidget(
-          hint: widget.hint,
-          onChanged: (value) async {
-            await travelerProvider.getTripsById(
-              tripId: value,
-            );
-          },
+        Expanded(
+          child: HomeSearchFieldWidget(
+            hint: widget.hint,
+            onChanged: (value) async {
+              await travelerProvider.getTripsById(
+                tripId: value,
+              );
+            },
+          ),
         ),
         IconButton(
           icon: Icon(

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
@@ -26,7 +27,9 @@ class TravelerProvider extends ChangeNotifier {
 
   void _setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   Future<void> getTripsByStatus({
@@ -80,19 +83,25 @@ class TravelerProvider extends ChangeNotifier {
       (_) => _isTripComplete = false,
       (isDone) => _isTripComplete = isDone,
     );
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void updateCheckedBags(int value) {
     _checkedBags = value;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void checkTripCompletion() {
     if (_bags != null && _checkedBags >= _bags!.length) {
       _isTripComplete = true;
     }
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void orderTripsByCreatedTime({
@@ -104,7 +113,9 @@ class TravelerProvider extends ChangeNotifier {
             ? a.createdAt.compareTo(b.createdAt)
             : b.createdAt.compareTo(a.createdAt);
       });
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void orderTripsByUpdatedTime({
@@ -117,7 +128,9 @@ class TravelerProvider extends ChangeNotifier {
             : (b.updatedAt ?? DateTime(0))
                 .compareTo(a.updatedAt ?? DateTime(0));
       });
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   Future<void> updateBag({required BagEntity bag}) async {
@@ -150,7 +163,9 @@ class TravelerProvider extends ChangeNotifier {
             : (b.updatedAt ?? DateTime(0))
                 .compareTo(a.updatedAt ?? DateTime(0));
       });
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void orderBagsByStatus({
@@ -164,7 +179,9 @@ class TravelerProvider extends ChangeNotifier {
             ? aStatus.compareTo(bStatus)
             : bStatus.compareTo(aStatus);
       });
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   Future<void> getCurrentTripBagsById({

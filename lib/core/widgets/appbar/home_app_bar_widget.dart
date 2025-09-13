@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import 'home_search_bar_widget.dart';
@@ -26,7 +25,7 @@ class HomeTravelerAppBarWidget extends StatelessWidget {
         bottom: AppDimensions.paddingSmall,
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           HomeWelcomeUserWidget(

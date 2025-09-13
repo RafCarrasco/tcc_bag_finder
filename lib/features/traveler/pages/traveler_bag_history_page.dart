@@ -21,7 +21,7 @@ class TravelerBagHistoryPage extends StatefulWidget {
 class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
   final travelerProvider = Modular.get<TravelerProvider>();
   final provider = Modular.get<UserProvider>();
-  late Map<String, String> collaboratorsNames;
+  Map<String, String> collaboratorsNames = {};
 
   bool isLoading = true;
 
@@ -37,18 +37,17 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
       isDone: true,
     );
 
-    final ids = travelerProvider.trips!
-        .map((trip) => trip.responsibleCollaboratorId)
-        .toList();
+    final trips = travelerProvider.trips ?? [];
+    final ids = trips.map((trip) => trip.responsibleCollaboratorId).toList();
 
-    final names = await provider.getAllUsersNamesByIds(
-      ids,
-    );
+    final names = await provider.getAllUsersNamesByIds(ids);
 
-    setState(() {
-      collaboratorsNames = names;
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        collaboratorsNames = names;
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -60,6 +59,8 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
         ),
       );
     }
+
+    final userName = provider.user?.fullName ?? 'Viajante';
 
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -80,7 +81,7 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
             ],
           ),
           child: HomeTravelerAppBarWidget(
-            userName: provider.user!.fullName,
+            userName: userName,
             hint: 'Procure sua viagem...',
           ),
         ),
