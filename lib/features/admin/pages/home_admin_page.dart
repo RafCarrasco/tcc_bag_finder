@@ -13,14 +13,14 @@ class HomeAdminPage extends StatefulWidget {
     super.key,
     required this.adminId,
   });
-
+  
   @override
   State<HomeAdminPage> createState() => _HomeAdminPageState();
 }
 
 class _HomeAdminPageState extends State<HomeAdminPage> {
   var provider = Modular.get<UserProvider>();
-
+  
   @override
   Widget build(BuildContext context) {
     return Column(

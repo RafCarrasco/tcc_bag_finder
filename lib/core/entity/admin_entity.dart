@@ -1,9 +1,7 @@
 import '../enums/user_role_enum.dart';
 import 'user_entity.dart';
-import 'package:uuid/uuid.dart';
 
 class AdminEntity extends UserEntity {
-  static const Uuid _uuid = Uuid();
 
   final String company;
 
@@ -13,10 +11,9 @@ class AdminEntity extends UserEntity {
     required String fullName,
     required String phone,
     required String role,
-    required String password, // <- obrigatório
+    required String password,
     required bool isActive,
     required DateTime createdAt,
-    DateTime? updatedAt,
     this.company = '',
   }) : super(
           id: id,
@@ -31,7 +28,7 @@ class AdminEntity extends UserEntity {
 
   factory AdminEntity.empty() {
     return AdminEntity(
-      id: _uuid.v4(),
+      id: '',
       email: '',
       fullName: '',
       phone: '',
@@ -39,7 +36,6 @@ class AdminEntity extends UserEntity {
       password: '',
       isActive: true,
       createdAt: DateTime.now(),
-      updatedAt: null,
       company: '',
     );
   }
@@ -56,14 +52,13 @@ class AdminEntity extends UserEntity {
     return AdminEntity(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
+      fullName: json['full_name'] ?? '',
       phone: json['phone'] ?? '',
       role: json['role'] ?? UserRoleEnum.ADMIN.name,
       password: json['password'] ?? '',
       isActive: json['isActive'] ?? true,
       company: json['company'] ?? '',
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
     );
   }
 }

@@ -36,7 +36,7 @@ class CollaboratorEntity extends UserEntity {
       tripsCreated: json['tripsCreated'] ?? 0,
       id: json['id'] ?? '',
       email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
+      fullName: json['fullName'] ?? json['full_name'] ?? '',
       phone: json['phone'] ?? '',
       role: json['type'] ?? json['role'] ?? 'COLLABORATOR',
       password: json['password'] ?? '',

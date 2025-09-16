@@ -9,17 +9,23 @@ import 'package:logger/logger.dart';
 import '../features/auth/controller/sign_in_controller.dart';
 import '../features/auth/controller/sign_up_controller.dart';
 import '../features/collaborator/controllers/landing_page_step_progess.dart';
+import '../features/admin/controllers/add_collaborator_controler.dart';
 
 //datasource
 import 'package:bag_finder/data/datasources/user_remote_datasource.dart';
+import 'package:bag_finder/data/datasources/admin_remote_datasource.dart';
 
 //repository
 import '../../infra/repositories/user_repository_impl.dart';
+import '../../infra/repositories/trip_repository_impl.dart';
+import '../../infra/repositories/admin_repository_impl.dart';
 import '../../repositories/trip_repository.dart';
+import '../../repositories/admin_repository.dart';
 
 // Providers
-import '../repositories/user_repository.dart';
 import '../shared/providers/user_provider.dart';
+import '../shared/providers/admin_provider.dart';
+import '../shared/providers/trip_provider.dart';
 
 // Usecases
 import '../features/admin/usecases/update_user_usecase.dart';
@@ -58,11 +64,14 @@ class AppModule extends Module {
     //datasource
     i.addLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource());
     i.addLazySingleton<TripRemoteDataSource>(() => TripRemoteDataSource());
+    i.addLazySingleton<AdminRemoteDataSource>(() => AdminRemoteDataSource());
     
     //repository
     i.addSingleton<Logger>(() => Logger());
     i.addLazySingleton<UserRepositoryImpl>(() => UserRepositoryImpl(i()));
+    i.addLazySingleton<TripRepositoryImpl>(() => TripRepositoryImpl(i()));
     i.addLazySingleton<ITripRepository>(() => TripRepositoryImpl(i()));
+    i.addLazySingleton<IAdminRepository>(() => AdminRepositoryImpl(i()));
 
     // Usecases
     i.addLazySingleton<IUpdateUserUsecase>(() => UpdateUserUsecase(repository: i()));
@@ -70,11 +79,14 @@ class AppModule extends Module {
 
     // Provider
     i.addLazySingleton<UserProvider>(() => UserProvider(i()));
+    i.addLazySingleton<AdminProvider>(() => AdminProvider(i()));
     i.addLazySingleton<TravelerProvider>(() => TravelerProvider(i()));
+    i.addLazySingleton<TripProvider>(() => TripProvider(i()));
 
     // Controllers
     i.addLazySingleton<SignInController>(() => SignInController());
     i.addLazySingleton<SignUpController>(() => SignUpController());
+    i.addLazySingleton<AddCollaboratorController>(() => AddCollaboratorController());
     i.addLazySingleton<LandingPageStepProgess>(LandingPageStepProgess.new);
   }
 

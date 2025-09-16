@@ -16,9 +16,6 @@ class UserRepositoryImpl implements IUserRepository {
       final result = await remote.addUser(user);
       return Right(result);
     } catch (e) {
-      print(user.createdAt.runtimeType);
-      print(e);
-      print('repository erro');
       return Left(UserAlreadyInUse());
     }
   }

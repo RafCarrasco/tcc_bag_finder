@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdminRemoteDataSource {
-  final String baseUrl;
-
-  AdminRemoteDataSource({required this.baseUrl});
+  final String baseUrl = dotenv.env['BASE_URL']!;
 
   Future<List<CollaboratorEntity>> getCollaboratorsByResponsibleId(String id) async {
     final response = await http.get(Uri.parse('$baseUrl/admins/$id/collaborators'));

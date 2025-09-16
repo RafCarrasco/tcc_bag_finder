@@ -27,7 +27,6 @@ class TravelerEntity extends UserEntity {
     String? password,
     bool? isActive,
     DateTime? createdAt,
-    DateTime? updatedAt,
     List<TripEntity>? bags,
   }) {
     return TravelerEntity(

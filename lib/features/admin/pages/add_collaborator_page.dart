@@ -168,11 +168,11 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
 
                           final collaborator = CollaboratorEntity(
                             id: '',
-                            password: '',
+                            password: addCollaboratorController.password!,
                             fullName: addCollaboratorController.fullName!,
                             email: addCollaboratorController.email!,
                             phone: addCollaboratorController.phone!,
-                            role: UserRoleEnum.COLLABORATOR.toLiteral(),
+                            role: 'COLLABORATOR',
                             isActive: true,
                             company: currentUser.company,
                             responsibleId: currentUser.id,

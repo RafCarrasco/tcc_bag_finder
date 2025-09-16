@@ -23,7 +23,7 @@ class UserEntity {
     return UserEntity(
       id: json['id'].toString() ?? '',
       email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
+      fullName: json['full_name'] ?? json['fullName'] ?? '',
       phone: json['phone'] ?? '',
       role: json['type'] ?? json['role'] ?? 'TRAVELER',
       password: json['password'] ?? '',

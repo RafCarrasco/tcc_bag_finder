@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bag_finder/core/entity/admin_entity.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/entity/user_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -110,7 +111,11 @@ class UserRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      return UserEntity.fromJson(jsonDecode(response.body));
+      final data = jsonDecode(response.body);
+      if ((data['role'] as String) == 'ADMIN') {
+        return AdminEntity.fromJson(data);
+      }
+      return UserEntity.fromJson(data);
     } else if (response.statusCode == 401) {
       return null;
     } else {

@@ -7,6 +7,8 @@ import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
 import '../../../core/widgets/login_text_field.dart';
+import '../../../shared/providers/user_provider.dart';
+import '../../../core/entity/user_entity.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -17,6 +19,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final SignInController signInController = Modular.get<SignInController>();
+  final UserProvider provider = Modular.get<UserProvider>();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -111,7 +114,26 @@ class _SignInPageState extends State<SignInPage> {
             child: ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  await signInController.signIn(context);
+                  final result = await provider.login(
+                    email: signInController.email!,
+                    password: signInController.password!,
+                  );
+
+                  result.fold(
+                    (failure) {
+                      // Aqui você trata o erro, pode mostrar um snackbar, dialog etc.
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro: ${failure.toString()}')),
+                      );
+                    },
+                    (user) {
+                      if (user != null) {
+                        Modular.to.navigate(
+                          '/${user.role.toLowerCase()}/${user.id}/home',
+                        );
+                      }
+                    },
+                  );
                 }
               },
               child: Text(
