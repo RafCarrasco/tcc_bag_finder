@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
-import '../../../core/utils/app_dimensions.dart';
-import '../../../core/widgets/appbar/history_app_bar_widget.dart';
 import '../../../core/widgets/trip/trip_list_widget.dart';
 
 class HomeTravelerPage extends StatefulWidget {
@@ -62,65 +60,117 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
 
     final user = userProvider.user;
 
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(
-              AppDimensions.radiusExtraLarge,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: HomeTravelerAppBarWidget(
-            userName: user?.fullName ?? 'Viajante',
-            hint: 'Procure sua bagagem...',
-          ),
-        ),
-        Expanded(
-          child: Consumer<TravelerProvider>(
-            builder: (context, travelerProvider, _) {
-              if (travelerProvider.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (travelerProvider.currentTrip == null) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.warning, color: AppColors.primary, size: 50),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Nenhuma viagem iniciada!',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
+    return Scaffold(
+      body: Column(
+        children: [
+          /// Header verde reto
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            width: double.infinity,
+            color: AppColors.primary,
+            child: Row(
+              children: [
+                /// Avatar (ícone de mala)
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.luggage,
+                    size: 32,
+                    color: AppColors.primary,
                   ),
-                );
-              }
+                ),
+                const SizedBox(width: 12),
 
-              return TripListWidget(
-                travelerId: widget.travelerId,
-                bags: travelerProvider.bags ?? [],
-                collaboratorName: collaboratorName ?? "",
-              );
-            },
+                /// Saudação com nome destacado
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                      children: [
+                        const TextSpan(text: "Olá, "),
+                        TextSpan(
+                          text: user?.fullName.isNotEmpty == true
+                              ? user!.fullName
+                              : "Viajante",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const TextSpan(text: "!"),
+                      ],
+                    ),
+                  ),
+                ),
+
+                /// Ícone de notificação
+                IconButton(
+                  onPressed: () {
+                    // Exemplo: abrir notificações
+                  },
+                  icon: const Icon(
+                    Icons.notifications_none,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+
+          /// Conteúdo branco com cantos arredondados em cima
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: Consumer<TravelerProvider>(
+                builder: (context, travelerProvider, _) {
+                  if (travelerProvider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (travelerProvider.currentTrip == null) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.warning,
+                              color: AppColors.primary, size: 50),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Nenhuma viagem iniciada!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return TripListWidget(
+                    travelerId: widget.travelerId,
+                    bags: travelerProvider.bags ?? [],
+                    collaboratorName: collaboratorName ?? "",
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
