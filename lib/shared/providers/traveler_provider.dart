@@ -1,8 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
+import '../../core/entity/trip_history_entity.dart';
 import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 
@@ -14,6 +17,7 @@ class TravelerProvider extends ChangeNotifier {
   TripEntity? _currentTrip;
   List<BagEntity>? _bags;
   List<TripEntity>? _trips;
+  List<TripHistoryEntity> _history = [];
   bool _isLoading = false;
   bool _isTripComplete = false;
   int _checkedBags = 0;
@@ -21,6 +25,7 @@ class TravelerProvider extends ChangeNotifier {
   TripEntity? get currentTrip => _currentTrip;
   List<BagEntity>? get bags => _bags;
   List<TripEntity>? get trips => _trips;
+  List<TripHistoryEntity> get history => _history;
   bool get isLoading => _isLoading;
   bool get isTripComplete => _isTripComplete;
   int get checkedBags => _checkedBags;
@@ -32,17 +37,33 @@ class TravelerProvider extends ChangeNotifier {
     });
   }
 
+  Future<void> getTravelerHistory(String travelerId) async {
+    _setLoading(true);
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/bags/traveler/$travelerId/history'),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        _history = data.map((e) => TripHistoryEntity.fromJson(e)).toList();
+      } else {
+        _history = [];
+      }
+    } catch (e) {
+      _history = [];
+    }
+    _setLoading(false);
+  }
+
   Future<void> getTripsByStatus({
     required String travelerId,
     required bool isDone,
   }) async {
     _setLoading(true);
-
     final result = await repository.getTripsByStatusAndId(
       travelerId: travelerId,
       isDone: isDone,
     );
-
     result.fold(
       (failure) {
         _currentTrip = null;
@@ -60,20 +81,16 @@ class TravelerProvider extends ChangeNotifier {
         }
       },
     );
-
     _setLoading(false);
   }
 
   Future<void> getTripsById({required String tripId}) async {
     _setLoading(true);
-
     final result = await repository.getTripsById(tripId: tripId);
-
     result.fold(
       (failure) => _trips = [],
       (list) => _trips = list,
     );
-
     _setLoading(false);
   }
 
@@ -135,9 +152,7 @@ class TravelerProvider extends ChangeNotifier {
 
   Future<void> updateBag({required BagEntity bag}) async {
     _setLoading(true);
-
     final result = await repository.updateBag(bag: bag);
-
     result.fold(
       (failure) {},
       (_) {
@@ -149,7 +164,6 @@ class TravelerProvider extends ChangeNotifier {
         }
       },
     );
-
     _setLoading(false);
   }
 
@@ -189,15 +203,12 @@ class TravelerProvider extends ChangeNotifier {
     required String bagId,
   }) async {
     _setLoading(true);
-
     final result =
         await repository.getCurrentTripBagsById(trip: trip, bagId: bagId);
-
     result.fold(
       (failure) => _bags = [],
       (list) => _bags = list,
     );
-
     _setLoading(false);
   }
 }

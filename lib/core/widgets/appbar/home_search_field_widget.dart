@@ -6,6 +6,7 @@ import '../../utils/app_text_styles.dart';
 class HomeSearchFieldWidget extends StatelessWidget {
   final String hint;
   final void Function(String)? onChanged;
+
   const HomeSearchFieldWidget({
     super.key,
     required this.hint,
@@ -15,46 +16,44 @@ class HomeSearchFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingMedium,
-        vertical: 0,
-      ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30.0),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(6), 
+        boxShadow: [
           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: TextField(
-        textAlign: TextAlign.center,
         onChanged: onChanged,
         decoration: InputDecoration(
-          fillColor: AppColors.secondary,
-          filled: true,
-          border: InputBorder.none,
-          hintText: hint,
           prefixIcon: Icon(
             Icons.search,
             size: AppDimensions.iconMedium,
             color: AppColors.primary,
           ),
+          hintText: hint,
           hintStyle: TextStyle(
             color: AppColors.primary,
             fontSize: 14,
           ),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: BorderSide.none,
+          ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingMedium,
-            vertical: 0,
+            vertical: 14,
           ),
         ),
         style: AppTextStyles.titleMedium.copyWith(
           color: AppColors.secondaryGrey,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

@@ -63,14 +63,12 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
     return Scaffold(
       body: Column(
         children: [
-          /// Header verde reto
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             width: double.infinity,
             color: AppColors.primary,
             child: Row(
               children: [
-                /// Avatar (ícone de mala)
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: Colors.white,
@@ -82,7 +80,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                 ),
                 const SizedBox(width: 12),
 
-                /// Saudação com nome destacado
                 Expanded(
                   child: RichText(
                     text: TextSpan(
@@ -107,22 +104,20 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                   ),
                 ),
 
-                /// Ícone de notificação
-                IconButton(
-                  onPressed: () {
-                    // Exemplo: abrir notificações
-                  },
-                  icon: const Icon(
-                    Icons.notifications_none,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     // Exemplo: abrir notificações
+                //   },
+                //   icon: const Icon(
+                //     Icons.notifications_none,
+                //     color: Colors.white,
+                //     size: 28,
+                //   ),
+                // ),
               ],
             ),
           ),
 
-          /// Conteúdo branco com cantos arredondados em cima
           Expanded(
             child: Container(
               width: double.infinity,
