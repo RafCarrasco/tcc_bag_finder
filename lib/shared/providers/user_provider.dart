@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/user_entity.dart';
 import '../../core/failures/failure.dart';
 import '../../infra/repositories/user_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
   final UserRepositoryImpl repository;
@@ -10,7 +12,7 @@ class UserProvider extends ChangeNotifier {
   UserEntity? _user;
   bool _isLoading = false;
 
-  UserProvider(this.repository);
+  UserProvider(this.repository){_loadUserFromStorage();}
 
   UserEntity? get user => _user;
   bool get isLoading => _isLoading;
@@ -19,6 +21,29 @@ class UserProvider extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+    Future<void> _saveUserToStorage(UserEntity user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("user", jsonEncode(user.toJson()));
+  }
+
+  Future<void> _loadUserFromStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString("user");
+    if (jsonString != null) {
+      try {
+        final Map<String, dynamic> json = jsonDecode(jsonString);
+        _user = UserEntity.fromJson(json);
+        notifyListeners();
+      } catch (e) {
+        debugPrint("Erro ao restaurar usuário: $e");
+      }
+    }
+  }
+
+  Future<void> _clearUserFromStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("user");
   }
 
   Future<Either<Failure, UserEntity?>> login({
@@ -48,8 +73,9 @@ class UserProvider extends ChangeNotifier {
     _setLoading(false);
     return result.fold(
       (failure) => Left(failure),
-      (created) {
+      (created)async {
         _user = created;
+        await _saveUserToStorage(created);
         notifyListeners();
         return Right(created);
       },
@@ -64,8 +90,8 @@ class UserProvider extends ChangeNotifier {
 
     return result.fold(
       (failure) => null,
-      (created) {
-        _user = created;
+      (created) async{
+        await _saveUserToStorage(created);
         notifyListeners();
         return created;
       },
@@ -81,8 +107,9 @@ class UserProvider extends ChangeNotifier {
 
     return result.fold(
       (failure) => Left(failure),
-      (updated) {
+      (updated) async{
         _user = updated;
+        await _saveUserToStorage(updated);
         notifyListeners();
         return Right(updated);
       },
@@ -96,8 +123,9 @@ class UserProvider extends ChangeNotifier {
 
     return result.fold(
       (failure) => Left(failure),
-      (user) {
+      (user)async{
         _user = user;
+        await _saveUserToStorage(user!);
         notifyListeners();
         return Right(user);
       },
@@ -112,8 +140,9 @@ class UserProvider extends ChangeNotifier {
     );
   }
 
-  void logout() {
+  void logout() async{
     _user = null;
+    await _clearUserFromStorage();
     notifyListeners();
   }
 
@@ -125,26 +154,28 @@ class UserProvider extends ChangeNotifier {
     return result.fold(
       (failure) => {},
       (names) {
+        
         return Map.fromIterables(ids, names);
       },
     );
   }
 
   Future<bool> deleteUser({required String id}) async {
-  _setLoading(true);
-  final result = await repository.deleteUser(id: id);
-  _setLoading(false);
+    _setLoading(true);
+    final result = await repository.deleteUser(id: id);
+    _setLoading(false);
 
-  return result.fold(
-    (failure) => false,
-    (_) {
-      if (_user?.id == id) {
-        _user = null;
-        notifyListeners();
-      }
-      return true;
-    },
-  );
+    return result.fold(
+      (failure) => false,
+      (_) async {
+        if (_user?.id == id) {
+          _user = null;
+          await _clearUserFromStorage();
+          notifyListeners();
+        }
+        return true;
+      },
+    );
+  }
 }
 
-}

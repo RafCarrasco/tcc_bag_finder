@@ -1,12 +1,12 @@
 import 'user_entity.dart';
 
 class CollaboratorEntity extends UserEntity {
-  final String company;
+  final String company_id;
   final String responsibleId;
   final int tripsCreated;
 
   CollaboratorEntity({
-    required this.company,
+    required this.company_id,
     required this.responsibleId,
     this.tripsCreated = 0,
     required super.id,
@@ -23,7 +23,7 @@ class CollaboratorEntity extends UserEntity {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      'company': company,
+      'company_id': company_id,
       'responsibleId': responsibleId,
       'tripsCreated': tripsCreated,
     };
@@ -31,7 +31,7 @@ class CollaboratorEntity extends UserEntity {
 
   factory CollaboratorEntity.fromJson(Map<String, dynamic> json) {
     return CollaboratorEntity(
-      company: json['company'] ?? '',
+      company_id: json['company_id'] ?? '',
       responsibleId: json['responsibleId'] ?? '',
       tripsCreated: json['tripsCreated'] ?? 0,
       id: json['id'] ?? '',
@@ -60,7 +60,7 @@ class CollaboratorEntity extends UserEntity {
       password: user.password,
       isActive: user.isActive,
       createdAt: user.createdAt,
-      company: company,
+      company_id: company,
       responsibleId: responsibleId,
       tripsCreated: tripsCreated,
     );
@@ -90,7 +90,7 @@ class CollaboratorEntity extends UserEntity {
       password: password ?? this.password,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
-      company: company ?? this.company,
+      company_id: company_id ?? this.company_id,
       responsibleId: responsibleId ?? this.responsibleId,
       tripsCreated: tripsCreated ?? this.tripsCreated,
     );

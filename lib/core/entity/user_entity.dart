@@ -1,3 +1,6 @@
+import 'admin_entity.dart';
+import 'collaborator_entity.dart';
+
 class UserEntity {
   final String id;
   final String email;
@@ -20,6 +23,12 @@ class UserEntity {
   });
 
   factory UserEntity.fromJson(Map<String, dynamic> json) {
+    final role = json['role'] ?? '';
+    if (role == 'ADMIN') {
+      return AdminEntity.fromJson(json);
+    } else if (role == 'COLLABORATOR') {
+      return CollaboratorEntity.fromJson(json);
+    }
     return UserEntity(
       id: json['id'].toString() ?? '',
       email: json['email'] ?? '',

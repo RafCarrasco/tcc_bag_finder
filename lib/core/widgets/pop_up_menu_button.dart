@@ -71,7 +71,10 @@ class PopUpMenuButton extends StatelessWidget {
         ),
         PopupMenuItem<String>(
           value: 'logout',
-          onTap: () => Modular.get<UserProvider>().logout(),
+          onTap: (){
+            Modular.get<UserProvider>().logout();
+            Modular.to.navigate('/login/sign-in');
+          },
           child: ListTile(
             leading: Icon(
               Icons.logout,

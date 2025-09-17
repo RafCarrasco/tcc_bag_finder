@@ -43,7 +43,7 @@ class _HomeCollaboratorPageState extends State<HomeCollaboratorPage> {
           ),
           child: HomeCollaboratorAppBarWidget(
             userName: provider.user!.fullName,
-            company: (provider.user! as CollaboratorEntity).company,
+            company: (provider.user! as CollaboratorEntity).company_id,
           ),
         ),
         Expanded(
