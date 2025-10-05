@@ -3,10 +3,9 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '../../entity/bag_entity.dart';
 import '../../../shared/providers/traveler_provider.dart';
-import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
-import '../bag_pagination_widget.dart';
 import 'trip_header_widget.dart';
+import '../bag/bag_timeline_widget.dart';
 
 class TripListWidget extends StatefulWidget {
   final String travelerId;
@@ -41,6 +40,36 @@ class _TripListWidgetState extends State<TripListWidget> {
     );
   }
 
+  String _mapStatus(String status) {
+    switch (status) {
+      case 'DELIVERED':
+        return 'Entregue';
+      case 'IN_TRANSIT':
+        return 'Em trânsito';
+      case 'CHECKED_IN':
+        return 'Despachada';
+      case 'CREATED':
+        return 'Criada';
+      default:
+        return status;
+    }
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case 'DELIVERED':
+        return Colors.green;
+      case 'IN_TRANSIT':
+        return Colors.orange;
+      case 'CHECKED_IN':
+        return Colors.blue;
+      case 'CREATED':
+        return Colors.grey;
+      default:
+        return Colors.black87;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,72 +77,79 @@ class _TripListWidgetState extends State<TripListWidget> {
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingMedium,
+            vertical: AppDimensions.paddingSmall,
           ),
-          child: Selector<TravelerProvider, int>(
-            selector: (_, provider) => provider.checkedBags,
-            builder: (context, checkedBags, child) {
-              if (checkedBags == widget.bags.length) {
-                travelerProvider.checkTripCompletion();
+          child: TripHeaderWidget(
+            airportDestination: airportDestination,
+            airportOrigin: airportOrigin,
+            tripId: travelerProvider.currentTrip!.id,
+            date: date,
+            collaboratorName: widget.collaboratorName,
+            checkedBags:
+                widget.bags.where((bag) => bag.status == "DELIVERED").length,
+            bags: widget.bags.length,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        Expanded(
+          child: Consumer<TravelerProvider>(
+            builder: (context, provider, child) {
+              if (widget.bags.isEmpty) {
+                return const Center(
+                  child: Text(
+                    "Nenhuma bagagem registrada nesta viagem.",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                );
               }
 
-              return TripHeaderWidget(
-                airportDestination: airportDestination,
-                airportOrigin: airportOrigin,
-                tripId: travelerProvider.currentTrip!.id,
-                date: date,
-                collaboratorName: widget.collaboratorName,
-                checkedBags: checkedBags,
-                bags: widget.bags.length,
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: widget.bags.length,
+                itemBuilder: (context, index) {
+                  final bag = widget.bags[index];
+
+                  return Card(
+                    elevation: 3,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      leading:
+                          const Icon(Icons.luggage, color: Colors.blueGrey),
+                      title: Text(bag.description ?? "Sem descrição"),
+                      subtitle: Text(
+                        "Status: ${_mapStatus(bag.status.name)}",
+                        style: TextStyle(
+                          color: _statusColor(bag.status.name),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (_) => SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.8,
+                            child: BagTimelineWidget(bagId: bag.id),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
               );
             },
           ),
-        ),
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 10.0,
-          ),
-          child: Divider(
-            color: AppColors.secondaryGrey.withOpacity(0.3),
-            thickness: 4,
-          ),
-        ),
-        Consumer<TravelerProvider>(
-          builder: (context, provider, child) {
-            if (provider.isTripComplete) {
-              return Expanded(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: AppColors.primary,
-                        size: 100,
-                      ),
-                      Text(
-                        'Todos os bagagens foram entregues',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return Expanded(
-                child: BagPaginationWidget(
-                  bags: widget.bags,
-                  airportOriginCode:
-                      travelerProvider.currentTrip!.description.airportOrigin,
-                  airportDestinationCode: travelerProvider
-                      .currentTrip!.description.airportDestination,
-                ),
-              );
-            }
-          },
         ),
       ],
     );
