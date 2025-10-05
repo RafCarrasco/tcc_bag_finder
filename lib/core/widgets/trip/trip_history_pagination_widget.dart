@@ -32,7 +32,7 @@ class TripHistoryPaginationWidget extends StatelessWidget {
               size: 50,
             ),
             Text(
-              'Nenhuma viagem iniciada!',
+              'Nenhuma viagem iniciada!!',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,

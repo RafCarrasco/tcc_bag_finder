@@ -5,6 +5,7 @@ import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/widgets/trip/trip_list_widget.dart';
+import '../../../core/widgets/bag/bag_timeline_widget.dart';
 
 class HomeTravelerPage extends StatefulWidget {
   final String travelerId;
@@ -103,17 +104,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                     ),
                   ),
                 ),
-
-                // IconButton(
-                //   onPressed: () {
-                //     // Exemplo: abrir notificações
-                //   },
-                //   icon: const Icon(
-                //     Icons.notifications_none,
-                //     color: Colors.white,
-                //     size: 28,
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -155,10 +145,36 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                     );
                   }
 
-                  return TripListWidget(
-                    travelerId: widget.travelerId,
-                    bags: travelerProvider.bags ?? [],
-                    collaboratorName: collaboratorName ?? "",
+                  final bags = travelerProvider.bags ?? [];
+                  final bagId = bags.isNotEmpty ? bags.first.id : null;
+
+                  return Column(
+                    children: [
+                      TripListWidget(
+                        travelerId: widget.travelerId,
+                        bags: bags,
+                        collaboratorName: collaboratorName ?? "",
+                      ),
+
+                      const Divider(height: 1, color: Colors.grey),
+
+                      if (bagId != null)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: BagTimelineWidget(bagId: bagId),
+                          ),
+                        )
+                      else
+                        const Expanded(
+                          child: Center(
+                            child: Text(
+                              "Nenhuma bagagem para acompanhar.",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),
