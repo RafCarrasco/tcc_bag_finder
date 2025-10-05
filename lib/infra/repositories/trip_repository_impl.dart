@@ -13,8 +13,9 @@ class TripRepositoryImpl implements ITripRepository {
   TripRepositoryImpl(this.remote, this.bagRemote);
 
   @override
-  Future<Either<TripFailure, TripEntity>> addTrip(
-      {required TripEntity trip}) async {
+  Future<Either<TripFailure, TripEntity>> addTrip({
+    required TripEntity trip,
+  }) async {
     try {
       final result = await remote.addTrip(trip);
       return Right(result);
@@ -34,8 +35,9 @@ class TripRepositoryImpl implements ITripRepository {
   }
 
   @override
-  Future<Either<TripFailure, TripEntity?>> getTripById(
-      {required String id}) async {
+  Future<Either<TripFailure, TripEntity?>> getTripById({
+    required String id,
+  }) async {
     try {
       final result = await remote.getTripById(id);
       return Right(result);
@@ -45,8 +47,9 @@ class TripRepositoryImpl implements ITripRepository {
   }
 
   @override
-  Future<Either<TripFailure, TripEntity>> updateTrip(
-      {required TripEntity trip}) async {
+  Future<Either<TripFailure, TripEntity>> updateTrip({
+    required TripEntity trip,
+  }) async {
     try {
       final result = await remote.updateTrip(trip);
       return Right(result);
@@ -56,7 +59,9 @@ class TripRepositoryImpl implements ITripRepository {
   }
 
   @override
-  Future<Either<TripFailure, void>> deleteTrip({required String id}) async {
+  Future<Either<TripFailure, void>> deleteTrip({
+    required String id,
+  }) async {
     try {
       await remote.deleteTrip(id);
       return const Right(null);
@@ -109,6 +114,7 @@ class TripRepositoryImpl implements ITripRepository {
   }) async {
     try {
       final result = await remote.getTripsByStatusAndId(isDone, travelerId);
+
       return Right(result);
     } catch (e) {
       return Left(TripReadError());
@@ -116,7 +122,9 @@ class TripRepositoryImpl implements ITripRepository {
   }
 
   @override
-  Future<Either<TripFailure, bool>> isTripDone({required String tripId}) async {
+  Future<Either<TripFailure, bool>> isTripDone({
+    required String tripId,
+  }) async {
     try {
       final result = await remote.isTripDone(tripId);
       return Right(result);
@@ -126,8 +134,9 @@ class TripRepositoryImpl implements ITripRepository {
   }
 
   @override
-  Future<Either<TripFailure, BagEntity>> updateBag(
-      {required BagEntity bag}) async {
+  Future<Either<TripFailure, BagEntity>> updateBag({
+    required BagEntity bag,
+  }) async {
     try {
       final result = await bagRemote.updateBag(bag);
       return Right(result);

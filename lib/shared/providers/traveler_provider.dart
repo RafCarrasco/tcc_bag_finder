@@ -1,12 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/trip_history_entity.dart';
-import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 
 class TravelerProvider extends ChangeNotifier {
@@ -21,6 +20,7 @@ class TravelerProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isTripComplete = false;
   int _checkedBags = 0;
+  Timer? _pollingTimer;
 
   TripEntity? get currentTrip => _currentTrip;
   List<BagEntity>? get bags => _bags;
@@ -75,9 +75,11 @@ class TravelerProvider extends ChangeNotifier {
         if (trips.isNotEmpty) {
           _currentTrip = trips.first;
           _bags = _currentTrip?.bags ?? [];
+          _startPolling(travelerId);
         } else {
           _currentTrip = null;
           _bags = [];
+          _stopPolling();
         }
       },
     );
@@ -210,5 +212,46 @@ class TravelerProvider extends ChangeNotifier {
       (list) => _bags = list,
     );
     _setLoading(false);
+  }
+
+  void _startPolling(String travelerId) {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      try {
+        final result = await repository.getTripsByStatusAndId(
+          travelerId: travelerId,
+          isDone: false,
+        );
+
+        result.fold(
+          (failure) {},
+          (trips) {
+            if (trips.isNotEmpty) {
+              final updatedTrip = trips.first;
+              final updatedBags = updatedTrip.bags ?? [];
+
+              if (!listEquals(_bags, updatedBags)) {
+                _bags = updatedBags;
+                _currentTrip = updatedTrip;
+                notifyListeners();
+              }
+            }
+          },
+        );
+      } catch (e) {
+        if (kDebugMode) print('Polling error: $e');
+      }
+    });
+  }
+
+  void _stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+  }
+
+  @override
+  void dispose() {
+    _stopPolling();
+    super.dispose();
   }
 }
