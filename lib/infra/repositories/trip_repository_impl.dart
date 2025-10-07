@@ -3,6 +3,7 @@ import '../../core/entity/trip_entity.dart';
 import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 import '../../data/datasources/trip_remote_datasource.dart';
+import '../../infra/repositories/traveler_repository_impl.dart';
 
 class TripRepositoryImpl implements ITripRepository {
   final TripRemoteDataSource remote;

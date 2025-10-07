@@ -2,9 +2,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/entity/trip_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../infra/repositories/traveler_repository_impl.dart';
 
 class TripRemoteDataSource {
   final String baseUrl = dotenv.env['BASE_URL']!;
+  final TravelerRepositoryImpl travelerRepository;
+  TripRemoteDataSource({
+    required this.travelerRepository,
+  });
 
   Future<TripEntity> addTrip(TripEntity trip) async {
     final response = await http.post(
@@ -102,18 +107,31 @@ class TripRemoteDataSource {
   }
 
   Future<List<TripEntity>> getTripsByStatusAndId(
-      bool? isDone, String travelerId) async {
+    bool? isDone,
+    String travelerId,
+  ) async {
     final doneParam = isDone != null ? '?isDone=$isDone' : '';
-    final response = await http
-        .get(Uri.parse('$baseUrl/trips/traveler/$travelerId$doneParam'));
+    final url = Uri.parse('$baseUrl/trips/traveler/$travelerId$doneParam');
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final list = jsonDecode(response.body) as List;
-      return list.map((e) => TripEntity.fromJson(e)).toList();
+      final list = jsonDecode(response.body) as List<dynamic>;
+      final trips = await Future.wait(
+        list.map(
+          (e) => TripEntity.fromJsonAsync(
+            e as Map<String, dynamic>,
+            travelerRepository,
+          ),
+        ),
+      );
+      return trips;
     } else {
-      throw Exception('Erro ao buscar viagens por status/id: ${response.body}');
+      throw Exception(
+        'Erro ao buscar viagens por status/id: ${response.body}',
+      );
     }
   }
+
 
   Future<bool> isTripDone(String tripId) async {
     final response = await http.get(Uri.parse('$baseUrl/trips/$tripId/status'));

@@ -76,7 +76,11 @@ class AppModule extends Module {
 
     //datasource
     i.addLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource());
-    i.addLazySingleton<TripRemoteDataSource>(() => TripRemoteDataSource());
+    i.addLazySingleton<TripRemoteDataSource>(
+      () => TripRemoteDataSource(
+        travelerRepository: i<TravelerRepositoryImpl>()
+      )
+      );
     i.addLazySingleton<AdminRemoteDataSource>(() => AdminRemoteDataSource());
     i.addLazySingleton<TravelerRemoteDataSource>(() => TravelerRemoteDataSource());
     i.addLazySingleton<CollaboratorRemoteDataSource>(
@@ -105,7 +109,7 @@ class AppModule extends Module {
     // Provider
     i.addSingleton<UserProvider>(() => UserProvider(i()));
     i.addLazySingleton<AdminProvider>(() => AdminProvider(i()));
-    i.addLazySingleton<TravelerProvider>(() => TravelerProvider(i(),i()));
+    i.addLazySingleton<TravelerProvider>(() => TravelerProvider(i(),i(),i()));
     i.addLazySingleton<TripProvider>(() => TripProvider(i(),i()));
     i.addLazySingleton<CollaboratorProvider>(() => CollaboratorProvider(i()));
 

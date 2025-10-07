@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
+import '../../core/entity/tag_entity.dart';
 import '../../core/failures/collaborator_failure.dart';
 import '../../repositories/collaborator_repository.dart';
 import '../../data/datasources/collaborator_remote_datasource.dart';
@@ -71,5 +72,13 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
       Left(CollaboratorTripsError());
     }
   }
-
+  
+  Future<Either<CollaboratorFailure, Unit>> insertTag(TagEntity tag) async {
+    try {
+      await remote.insertTag(tag);
+      return const Right(unit);
+    } catch (e) {
+      return Left(CollaboratorTripsError());
+    }
+  }
 }

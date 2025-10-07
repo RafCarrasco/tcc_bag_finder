@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import '../../core/entity/tag_entity.dart';
 import '../../core/entity/collaborator_entity.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
@@ -82,6 +82,17 @@ class CollaboratorRemoteDataSource {
 
     if (response.statusCode != 200) {
       throw Exception('Erro ao atualizar responsibleId: ${response.body}');
+    }
+  }
+  Future<void> insertTag(TagEntity tag) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/tags'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(tag.toJson()),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Erro ao inserir tag: ${response.body}');
     }
   }
 }

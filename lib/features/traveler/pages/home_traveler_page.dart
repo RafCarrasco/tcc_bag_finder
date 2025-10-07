@@ -46,7 +46,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
 
       return;
     }
-
     final collaborator = await provider.getUser(
       userId: travelerProvider.currentTrip!.responsibleCollaboratorId,
     );

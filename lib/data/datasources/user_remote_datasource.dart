@@ -23,7 +23,6 @@ class UserRemoteDataSource {
 
   Future<UserEntity?> getUserById(String id) async {
     final response = await http.get(Uri.parse('$baseUrl/users/$id'));
-
     if (response.statusCode == 200) {
       return UserEntity.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 404) {

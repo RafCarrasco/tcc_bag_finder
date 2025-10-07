@@ -29,7 +29,16 @@ class TravelerRepositoryImpl implements ITravelerRepository {
     }
   }
 
-
+    Future<Either<Failure, Map<String, dynamic>>> insertTravelerCpfIfNotExists({
+    required String cpf,
+  }) async {
+    try {
+      final result = await remote.addCpf(cpf);
+      return Right(result);
+    } catch (e) {
+      return Left(ApplicationExecutionError());
+    }
+  }
 
   @override
   Future<Either<Failure, TravelerEntity?>> getTravelerById({required String id}) async {

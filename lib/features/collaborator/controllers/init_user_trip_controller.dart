@@ -1,3 +1,4 @@
+import 'package:bag_finder/core/entity/tag_entity.dart';
 
 import '../../../core/entity/traveler_entity.dart';
 
@@ -5,13 +6,16 @@ class InitUserTripController {
   String _destination = '';
   String _airportOrigin = '';
   String _airportDestination = '';
+  String _cpf = '';
   String? _description = '';
   int? _bagageQuantity = 0;
   TravelerEntity _travelerEntity = TravelerEntity.empty();
+  List<String> codeTags = [];
 
   String get destination => _destination;
   String get airportOrigin => _airportOrigin;
   String get airportDestination => _airportDestination;
+  String get cpf => _cpf;
   String? get description => _description;
   int? get bagageQuantity => _bagageQuantity;
   TravelerEntity get user => _travelerEntity;
@@ -20,6 +24,12 @@ class InitUserTripController {
     required TravelerEntity? user,
   }) {
     _travelerEntity = user ?? TravelerEntity.empty();
+  }
+
+  void setCpf({
+    required String? cpf,
+  }) {
+    _cpf = cpf!;
   }
 
   void setDescription({
@@ -58,5 +68,18 @@ class InitUserTripController {
     _airportDestination = '';
     _description = '';
     _bagageQuantity = 0;
+  }
+
+  void addTagCodeAtIndex(int index, String code) {
+    if (code.isEmpty) return;
+
+    if (codeTags.length > index) {
+      codeTags[index] = code;
+    } else {
+      while (codeTags.length <= index) {
+        codeTags.add('');
+      }
+      codeTags[index] = code;
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bag_finder/core/entity/tag_entity.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -9,6 +10,7 @@ import '../../../core/entity/trip_entity.dart';
 import '../../../core/enums/bag_status_enum.dart';
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../../shared/providers/trip_provider.dart';
+import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
@@ -32,6 +34,7 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
   final provider = Modular.get<CollaboratorProvider>();
   final addBagUsecase = Modular.get<AddBagUsecase>();
   final tripProvider = Modular.get<TripProvider>();
+  final travelerProvider = Modular.get<TravelerProvider>();
   final userProvider = Modular.get<UserProvider>();
   final _controller = Modular.get<InitUserTripController>();
 
@@ -148,7 +151,16 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                           isRequired: true,
                           fieldType: '',
                         ),
-                        // Campo de destino geral
+                        InitUserTripTextField(
+                          prefixIcon: AppIconsSecondaryGrey.idCardIcon,
+                          hintText: 'CPF',
+                          onChanged: (cpf) {
+                            _controller.setCpf(cpf: cpf);
+                          },
+                          isPassword: false,
+                          fieldType: 'cpf',
+                          isRequired: true,
+                        ),
                         InitUserTripTextField(
                           prefixIcon: AppIconsSecondaryGrey.airPlaneModeIcon,
                           hintText: 'Destino',
@@ -176,20 +188,12 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                               ),
                               InitUserTripTextField(
                                 prefixIcon: AppIconsSecondaryGrey.connectingAirportsIcon,
-                                hintText: 'Aeroporto de origem (Bagagem ${index + 1})',
-                                onChanged: (origin) {
+                                hintText: 'TAG-RFID (Bagagem ${index + 1})',
+                                onChanged: (code) {
+                                  _controller.addTagCodeAtIndex(index, code);
                                 },
                                 isPassword: false,
-                                fieldType: 'airport',
-                                isRequired: true,
-                              ),
-                              InitUserTripTextField(
-                                prefixIcon: AppIconsSecondaryGrey.connectingAirportsIcon,
-                                hintText: 'Aeroporto de destino (Bagagem ${index + 1})',
-                                onChanged: (destination) {
-                                },
-                                isPassword: false,
-                                fieldType: 'airport',
+                                fieldType: 'rfid',
                                 isRequired: true,
                               ),
                             ],
@@ -225,15 +229,24 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                       userProvider.user!.id,
                                     travelerEntity: _controller.user,
                                     description: TripDescriptionEntity(
-                                      airportOrigin: _controller.airportOrigin,
-                                      airportDestination:_controller.airportDestination,
+                                      airportOrigin: '_controller.airportOrigin',
+                                      airportDestination:'_controller.airportDestination',
                                     ),
                                     bags: bags
                                   ),
                                 );
+                                travelerProvider.addCpf(_controller.cpf);
+                                int cont = 0;
                                 for (final bag in bags) {
                                   await addBagUsecase.call(
                                     bag: bag);
+                                  provider.insertTag(
+                                    TagEntity(
+                                      code: _controller.codeTags[cont],
+                                      createdAt: DateTime.now()
+                                    )
+                                  );
+                                  cont =cont+1;
                                 }
                                 Modular.to.pushNamed(
                                   '/collaborator/${userProvider.user!.id}/home',

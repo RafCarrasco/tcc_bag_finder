@@ -79,7 +79,7 @@ class TripEntity {
   factory TripEntity.fromJson(Map<String, dynamic> json) {
     return TripEntity(
       id: json['id'],
-      responsibleCollaboratorId: json['responsibleCollaboratorId'],
+      responsibleCollaboratorId: json['responsible_collaborator_id'],
       travelerEntity: TravelerEntity.fromJson(json['travelerEntity']),
       description: TripDescriptionEntity.fromJson(json['description']),
       bags: (json['bags'] as List<dynamic>?)
@@ -90,6 +90,7 @@ class TripEntity {
       updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'])
           : null,
+      
     );
   }
   static Future<TripEntity> fromJsonAsync(
@@ -112,7 +113,7 @@ class TripEntity {
 
     return TripEntity(
       id: json['id'],
-      responsibleCollaboratorId: json['responsibleCollaboratorId'] ?? '',
+      responsibleCollaboratorId: json['responsible_collaborator_id'] ?? '',
       travelerEntity: traveler,
       description: TripDescriptionEntity.fromJson(
         json['description'] ?? <String, dynamic>{},
@@ -124,10 +125,8 @@ class TripEntity {
       createdAt: DateTime.tryParse(json['createdAt'] ?? json['created_at'] ?? '') ??
           DateTime.now(),
       updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'])
-          : (json['updated_at'] != null
-              ? DateTime.tryParse(json['updated_at'])
-              : null),
+                ? DateTime.tryParse(json['updatedAt'])
+                : null,
     );
   }
 

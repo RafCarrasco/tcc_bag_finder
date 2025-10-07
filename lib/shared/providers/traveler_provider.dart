@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/traveler_entity.dart';
+import '../../repositories/trip_repository.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
 import '../../core/failures/traveler_failure.dart';
 import '../../features/auth/controller/auth_controller.dart';
@@ -9,8 +10,9 @@ import '../../features/auth/controller/auth_controller.dart';
 class TravelerProvider extends ChangeNotifier {
   final TravelerRepositoryImpl repository;
   final AuthService authService;
+  final ITripRepository tripRepository;
 
-  TravelerProvider(this.repository, this.authService);
+  TravelerProvider(this.repository, this.authService,this.tripRepository);
 
   TripEntity? _currentTrip;
   List<BagEntity>? _bags;
@@ -40,30 +42,30 @@ class TravelerProvider extends ChangeNotifier {
     required bool isDone,
   }) async {
     _setLoading(true);
-    String result ='arrumar esta funcao';
-    print(result);
-    print(isDone);
-    print(travelerId);
 
-    // result.fold(
-    //   (failure) {
-    //     _currentTrip = null;
-    //     _bags = [];
-    //     _trips = [];
-    //   },
-    //   (trips) {
-    //     _trips = trips;
-    //     if (trips.isNotEmpty) {
-    //       _currentTrip = trips.first;
-    //       _bags = _currentTrip?.bags ?? [];
-    //     } else {
-    //       _currentTrip = null;
-    //       _bags = [];
-    //     }
-    //   },
-    // );
+    final result = await tripRepository.getTripsByStatusAndId(
+      travelerId: travelerId,
+      isDone: isDone,
+    );
+    result.fold(
+      (failure) {
+        _currentTrip = null;
+        _bags = [];
+        _trips = [];
+      },
+      (trips) {
+        _trips = trips;
+        if (trips.isNotEmpty) {
+          _currentTrip = trips.first;
+          _bags = _currentTrip?.bags ?? [];
+        } else {
+          _currentTrip = null;
+          _bags = [];
+        }
+      },
+    );
 
-    // _setLoading(false);
+    _setLoading(false);
   }
 
 
@@ -134,6 +136,30 @@ class TravelerProvider extends ChangeNotifier {
 
     _setLoading(false);
     return traveler;
+  }
+
+  Future<void> addCpf(String cpf) async {
+    _setLoading(true);
+    final result = await repository.insertTravelerCpfIfNotExists(cpf: cpf);
+
+    result.fold(
+      (failure) {
+        if (failure is TravelerReadError) {
+          debugPrint('Erro ao inserir CPF: ${failure.errorMessage}');
+        } else {
+          debugPrint('Erro desconhecido ao inserir CPF: $failure');
+        }
+      },
+      (response) {
+        if (response['created'] == true) {
+          debugPrint('CPF cadastrado com sucesso: ${response['cpf']}');
+        } else {
+          debugPrint('CPF já existia, sem alterações: ${response['cpf']}');
+        }
+      },
+    );
+
+    _setLoading(false);
   }
 
 }

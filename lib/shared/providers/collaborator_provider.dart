@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../infra/repositories/collaborator_repository_impl.dart';
+import '../../core/entity/tag_entity.dart';
 
 class CollaboratorProvider extends ChangeNotifier {
   final CollaboratorRepositoryImpl repository;
@@ -106,5 +107,14 @@ class CollaboratorProvider extends ChangeNotifier {
       (list) => _trips = list,
     );
     _setLoading(false);
+  }
+  
+  Future<void> insertTag(TagEntity tag) async {
+    try {
+      await repository.insertTag(tag);
+      debugPrint('Tag inserida com sucesso!');
+    } catch (e) {
+      debugPrint('Erro ao inserir tag: $e');
+    }
   }
 }
