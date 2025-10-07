@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +26,21 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
 
   String? collaboratorName;
   bool isLoading = true;
+  Timer? _refreshTimer;
+
+  late String _travelerId;
 
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _travelerId = userProvider.user?.id ?? widget.travelerId;
+
+      print("Traveler ID recebido: $_travelerId");
+
       await travelerProvider.getTripsByStatus(
-        travelerId: widget.travelerId,
+        travelerId: _travelerId,
         isDone: false,
       );
 
@@ -48,7 +57,25 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
         collaboratorName = collaborator?.fullName;
         isLoading = false;
       });
+
+      _refreshTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+
+        await travelerProvider.getTripsByStatus(
+          travelerId: _travelerId,
+          isDone: false,
+        );
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -80,7 +107,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                   ),
                 ),
                 const SizedBox(width: 12),
-
                 Expanded(
                   child: RichText(
                     text: TextSpan(
@@ -107,7 +133,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
               ],
             ),
           ),
-
           Expanded(
             child: Container(
               width: double.infinity,
@@ -133,7 +158,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                               color: AppColors.primary, size: 50),
                           const SizedBox(height: 8),
                           Text(
-                            'Nenhuma viagem iniciada!',
+                            'Nenhuma viagem iniciada!!',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -150,19 +175,16 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
 
                   return Column(
                     children: [
-                      TripListWidget(
-                        travelerId: widget.travelerId,
-                        bags: bags,
-                        collaboratorName: collaboratorName ?? "",
-                      ),
-
                       const Divider(height: 1, color: Colors.grey),
-
                       if (bagId != null)
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: BagTimelineWidget(bagId: bagId),
+                            child: TripListWidget(
+                              travelerId: _travelerId,
+                              bags: bags,
+                              collaboratorName: collaboratorName ?? "",
+                            ),
                           ),
                         )
                       else

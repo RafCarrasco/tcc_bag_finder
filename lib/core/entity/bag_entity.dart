@@ -10,6 +10,11 @@ class BagEntity {
   final BagStatusEnum status;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  
+  // Add these missing properties
+  final String? printedCode;  
+  final String? origin;       // Added
+  final String? destination;  // Added
 
   BagEntity({
     String? id,
@@ -18,6 +23,9 @@ class BagEntity {
     required this.status,
     DateTime? createdAt,
     this.updatedAt,
+    this.printedCode,         
+    this.origin,              
+    this.destination,         
   })  : id = id ?? _uuid.v4(),
         createdAt = createdAt ?? DateTime.now();
 
@@ -28,6 +36,9 @@ class BagEntity {
     String? ownerId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? printedCode,      // Added
+    String? origin,           // Added
+    String? destination,      // Added
   }) {
     return BagEntity(
       id: id ?? this.id,
@@ -36,6 +47,9 @@ class BagEntity {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      printedCode: printedCode ?? this.printedCode,  // Added
+      origin: origin ?? this.origin,                  // Added
+      destination: destination ?? this.destination,    
     );
   }
 
@@ -47,6 +61,9 @@ class BagEntity {
       status: BagStatusEnum.UNKNOWN,
       createdAt: DateTime.now(),
       updatedAt: null,
+      printedCode: null,  
+      origin: null,       
+      destination: null,  
     );
   }
 
@@ -58,6 +75,9 @@ class BagEntity {
       'status': status.name,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'printedCode': printedCode,    
+      'origin': origin,              
+      'destination': destination,    
     };
   }
 
@@ -74,6 +94,9 @@ class BagEntity {
       updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'])
           : null,
+      printedCode: json['printedCode'],  
+      origin: json['origin'],      
+      destination: json['destination'],  
     );
   }
 }

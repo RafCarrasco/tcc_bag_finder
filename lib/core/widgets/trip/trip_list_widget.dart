@@ -5,7 +5,6 @@ import '../../entity/bag_entity.dart';
 import '../../../shared/providers/traveler_provider.dart';
 import '../../utils/app_dimensions.dart';
 import 'trip_header_widget.dart';
-import '../bag/bag_timeline_widget.dart';
 
 class TripListWidget extends StatefulWidget {
   final String travelerId;
@@ -31,6 +30,8 @@ class _TripListWidgetState extends State<TripListWidget> {
       travelerProvider.currentTrip!.description.airportDestination;
   String get airportOrigin =>
       travelerProvider.currentTrip!.description.airportOrigin;
+
+  String? selectedPrintedCode;
 
   @override
   void initState() {
@@ -72,84 +73,84 @@ class _TripListWidgetState extends State<TripListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    List<BagEntity> filteredBags = widget.bags;
+    if (selectedPrintedCode != null && selectedPrintedCode!.isNotEmpty) {
+      filteredBags = widget.bags.where((bag) => bag.printedCode == selectedPrintedCode).toList();
+    }
+
     return Column(
       children: [
+        // Adiciona o Dropdown para selecionar o printedCode
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingMedium,
             vertical: AppDimensions.paddingSmall,
           ),
-          child: TripHeaderWidget(
-            airportDestination: airportDestination,
-            airportOrigin: airportOrigin,
-            tripId: travelerProvider.currentTrip!.id,
-            date: date,
-            collaboratorName: widget.collaboratorName,
-            checkedBags:
-                widget.bags.where((bag) => bag.status == "DELIVERED").length,
-            bags: widget.bags.length,
+          child: DropdownButton<String>(
+            hint: Text('Selecione uma mala'),
+            value: selectedPrintedCode,
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedPrintedCode = newValue;
+              });
+            },
+            items: widget.bags.map<DropdownMenuItem<String>>((BagEntity bag) {
+              return DropdownMenuItem<String>(
+                value: bag.printedCode,
+                child: Text(bag.printedCode ?? "Sem código"),
+              );
+            }).toList(),
           ),
         ),
 
         const SizedBox(height: 8),
 
-        Expanded(
-          child: Consumer<TravelerProvider>(
-            builder: (context, provider, child) {
-              if (widget.bags.isEmpty) {
-                return const Center(
-                  child: Text(
-                    "Nenhuma bagagem registrada nesta viagem.",
-                    style: TextStyle(fontSize: 16),
+        // Exibe a lista de malas filtradas ou todas as malas
+        Consumer<TravelerProvider>(
+          builder: (context, provider, child) {
+            if (filteredBags.isEmpty) {
+              return const Center(
+                child: Text(
+                  "Nenhuma bagagem registrada nesta viagem.",
+                  style: TextStyle(fontSize: 16),
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: filteredBags.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final bag = filteredBags[index];
+
+                bool isEmbarque = index % 2 == 0; 
+                String title = isEmbarque ? "Embarque ${airportOrigin}" : "Desembarque ${airportDestination}";
+
+                return Card(
+                  elevation: 3,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.luggage, color: Colors.blueGrey),
+                    title: Text(title),
+                    subtitle: Text(
+                      "Status: ${_mapStatus(bag.status.name)}",
+                      style: TextStyle(
+                        color: _statusColor(bag.status.name),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onTap: () {                    
+                    },
                   ),
                 );
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: widget.bags.length,
-                itemBuilder: (context, index) {
-                  final bag = widget.bags[index];
-
-                  return Card(
-                    elevation: 3,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      leading:
-                          const Icon(Icons.luggage, color: Colors.blueGrey),
-                      title: Text(bag.description ?? "Sem descrição"),
-                      subtitle: Text(
-                        "Status: ${_mapStatus(bag.status.name)}",
-                        style: TextStyle(
-                          color: _statusColor(bag.status.name),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(16)),
-                          ),
-                          builder: (_) => SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.8,
-                            child: BagTimelineWidget(bagId: bag.id),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+              },
+            );
+          },
         ),
       ],
     );

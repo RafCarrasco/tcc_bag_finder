@@ -104,18 +104,20 @@ class TripRemoteDataSource {
   }
 
   Future<List<TripEntity>> getTripsByStatusAndId(
-      bool? isDone, String travelerId) async {
-    final doneParam = isDone != null ? '?isDone=$isDone' : '';
-    final response = await http
-        .get(Uri.parse('$baseUrl/trips/traveler/$travelerId$doneParam'));
+    bool? isDone, String travelerId) async {
+  final status = (isDone == true || isDone == 1) ? '1' : '0';
+  final response = await http.get(
+    Uri.parse('$baseUrl/trips/status/$status/$travelerId'),
+  );
 
-    if (response.statusCode == 200) {
-      final list = jsonDecode(response.body) as List;
-      return list.map((e) => TripEntity.fromJson(e)).toList();
-    } else {
-      throw Exception('Erro ao buscar viagens por status/id: ${response.body}');
-    }
+  if (response.statusCode == 200) {
+    final list = jsonDecode(response.body) as List;
+    return list.map((e) => TripEntity.fromJson(e)).toList();
+  } else {
+    throw Exception('Erro ao buscar viagens por status/id: ${response.body}');
   }
+}
+
 
   Future<bool> isTripDone(String tripId) async {
     final response = await http.get(Uri.parse('$baseUrl/trips/$tripId/status'));

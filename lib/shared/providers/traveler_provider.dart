@@ -55,36 +55,45 @@ class TravelerProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<void> getTripsByStatus({
-    required String travelerId,
-    required bool isDone,
-  }) async {
-    _setLoading(true);
-    final result = await repository.getTripsByStatusAndId(
-      travelerId: travelerId,
-      isDone: isDone,
-    );
-    result.fold(
-      (failure) {
+Future<void> getTripsByStatus({
+  required String travelerId,
+  required bool isDone,
+}) async {
+  print("Buscando viagens para o viajante $travelerId (isDone=$isDone)");
+
+  _setLoading(true);
+
+  final result = await repository.getTripsByStatusAndId(
+    travelerId: travelerId,
+    isDone: isDone,
+  );
+
+  result.fold(
+    (failure) {
+      print("Falha ao buscar viagens: $failure");
+      _currentTrip = null;
+      _bags = [];
+      _trips = [];
+    },
+    (trips) {
+      print("Viagens recebidas: ${trips.length}");
+      if (trips.isNotEmpty) {
+        print("Primeira viagem: ${trips.first.id}");
+        _currentTrip = trips.first;
+        _bags = _currentTrip?.bags ?? [];
+        _startPolling(travelerId);
+      } else {
+        print("Nenhuma viagem encontrada");
         _currentTrip = null;
         _bags = [];
-        _trips = [];
-      },
-      (trips) {
-        _trips = trips;
-        if (trips.isNotEmpty) {
-          _currentTrip = trips.first;
-          _bags = _currentTrip?.bags ?? [];
-          _startPolling(travelerId);
-        } else {
-          _currentTrip = null;
-          _bags = [];
-          _stopPolling();
-        }
-      },
-    );
-    _setLoading(false);
-  }
+        _stopPolling();
+      }
+    },
+  );
+
+  _setLoading(false);
+}
+
 
   Future<void> getTripsById({required String tripId}) async {
     _setLoading(true);

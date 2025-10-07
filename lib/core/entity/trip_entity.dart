@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import '../enums/bag_status_enum.dart';
 import 'bag_entity.dart';
 import 'traveler_entity.dart';
 import 'trip_description_entity.dart';
@@ -82,21 +83,56 @@ class TripEntity {
     };
   }
 
-  factory TripEntity.fromJson(Map<String, dynamic> json) {
-    return TripEntity(
-      id: json['id'],
-      responsibleCollaboratorId: json['responsibleCollaboratorId'],
-      travelerEntity: TravelerEntity.fromJson(json['travelerEntity']),
-      description: TripDescriptionEntity.fromJson(json['description']),
-      bags: (json['bags'] as List<dynamic>?)
-          ?.map((e) => BagEntity.fromJson(e))
-          .toList(),
-      time: DateTime.parse(json['time']),
-      isDone: json['isDone'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'])
-          : null,
+ factory TripEntity.fromJson(Map<String, dynamic> json) {
+  // Descrição da viagem (origem, destino)
+  final description = TripDescriptionEntity(
+    tripId: json['id']?.toString() ?? '',
+    airportOrigin: json['origin']?.toString() ?? '',
+    airportDestination: json['destination']?.toString() ?? '',
+  );
+
+  // Lista de malas associadas
+  final List<BagEntity> bags = [];
+  if (json['bag_id'] != null) {
+    bags.add(
+      BagEntity(
+        id: json['bag_id'].toString(),
+        ownerId: json['traveler_id']?.toString() ?? '',
+        description: json['printed_code']?.toString() ?? '',
+        status: BagStatusEnum.values.firstWhere(
+          (e) => e.name.toUpperCase() == (json['bag_status']?.toString().toUpperCase() ?? ''),
+          orElse: () => BagStatusEnum.UNKNOWN,
+        ),
+        createdAt: json['created_at'] != null
+            ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+            : DateTime.now(),
+        updatedAt: json['updated_at'] != null
+            ? DateTime.tryParse(json['updated_at'].toString())
+            : null,
+      ),
     );
   }
+
+  return TripEntity(
+    id: json['id']?.toString() ?? '',
+    responsibleCollaboratorId:
+        json['responsibleCollaboratorId']?.toString() ?? '',
+    travelerEntity: TravelerEntity.empty(),
+    description: description,
+    bags: bags,
+    time: json['created_at'] != null
+        ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+        : DateTime.now(),
+    isDone: json['is_done'] == 1 ||
+        json['is_done'] == true ||
+        json['is_done'] == '1',
+    createdAt: json['created_at'] != null
+        ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+        : DateTime.now(),
+    updatedAt: json['updated_at'] != null
+        ? DateTime.tryParse(json['updated_at'].toString())
+        : null,
+  );
+}
+
 }
