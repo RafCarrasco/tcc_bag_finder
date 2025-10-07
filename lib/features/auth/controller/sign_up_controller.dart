@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../core/entity/user_entity.dart';
+import '../../../core/entity/traveler_entity.dart';
 import '../../../core/utils/global_snackbar.dart';
 
 class SignUpController {
@@ -35,9 +35,7 @@ class SignUpController {
       GlobalSnackBar.error('Preencha todos os campos obrigatórios.');
       return;
     }
-
-    final newUser = UserEntity(
-      id: '2',
+    final newUser= TravelerEntity(
       email: email!,
       fullName: fullName!,
       phone: phone ?? '',
@@ -45,6 +43,7 @@ class SignUpController {
       isActive: true,
       password: password!, // <- campo adicionado
       createdAt: DateTime.now(),
+      cpf: '11111111112'
     );
 
     final result = await _provider.addUser(newUser);

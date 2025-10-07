@@ -25,9 +25,11 @@ class TravelerRepositoryImpl implements ITravelerRepository {
       final result = await remote.getAllTravelers();
       return Right(result);
     } catch (e) {
-      return Left(UnknownError());
+      return Left(ApplicationExecutionError());
     }
   }
+
+
 
   @override
   Future<Either<Failure, TravelerEntity?>> getTravelerById({required String id}) async {

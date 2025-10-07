@@ -16,6 +16,7 @@ class TripRepositoryImpl implements ITripRepository {
       final result = await remote.addTrip(trip);
       return Right(result);
     } catch (e) {
+      print('Erro implt');
       return Left(TripCreateError());
     }
   }

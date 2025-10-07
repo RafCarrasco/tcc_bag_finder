@@ -39,7 +39,7 @@ class _TripHistoryPanelSearchBarWidgetState
           child: HomeSearchFieldWidget(
             hint: widget.hint,
             onChanged: (text) async {
-              await tripProvider.getTripsById(
+              await tripProvider.getTripById(
                 text
               );
             },

@@ -85,7 +85,7 @@ class _TripCollaboratorPaginationWidgetState
         buildInfoRow(
           context,
           'Viagens Criadas: ',
-          collaborator.tripsCreated.toString(),
+          'nao feita ainda fazer bagulho',
         ),
         buildInfoRow(
           context,
@@ -119,50 +119,49 @@ class _TripCollaboratorPaginationWidgetState
   }
 
   Widget buildTrailingIcons(
-      BuildContext context, CollaboratorEntity collaborator) {
-    return collaborator.tripsCreated != 0
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(
-                    AppColors.primary,
-                  ),
-                ),
-                onPressed: () async {
-                  Modular.to.pushNamed(
-                    '/admin/${provider.user!.id}/trip-collaborator-panel/${collaborator.id}',
-                  );
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Viagens criadas',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: AppColors.secondary,
-                          ),
-                    ),
-                    const SizedBox(
-                      width: 2,
-                    ),
-                    Icon(
-                      Icons.visibility,
-                      size: AppDimensions.iconSmall,
-                      color: AppColors.secondary,
-                    ),
-                  ],
+    BuildContext context, CollaboratorEntity collaborator) {
+      return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(
+                  AppColors.primary,
                 ),
               ),
-            ],
-          )
-        : Text(
-            'Nenhuma viagem criada',
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: AppColors.secondaryGrey,
-                ),
-          );
-  }
+              onPressed: () async {
+                Modular.to.pushNamed(
+                  '/admin/${provider.user!.id}/trip-collaborator-panel/${collaborator.id}',
+                );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Viagens criadas',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: AppColors.secondary,
+                        ),
+                  ),
+                  const SizedBox(
+                    width: 2,
+                  ),
+                  Icon(
+                    Icons.visibility,
+                    size: AppDimensions.iconSmall,
+                    color: AppColors.secondary,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+        // : Text(
+        //     'Nenhuma viagem criada',
+        //     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+        //           color: AppColors.secondaryGrey,
+        //         ),
+        //   );
+    }
 }

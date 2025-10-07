@@ -17,6 +17,7 @@ class BagRepositoryImpl implements IBagRepository {
       final result = await remote.addBag(bag);
       return Right(result);
     } catch (e) {
+      print(e);
       return Left(BagCreateError());
     }
   }

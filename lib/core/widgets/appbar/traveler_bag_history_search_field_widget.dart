@@ -34,7 +34,7 @@ class _TravelerBagHistorySearchFieldWidgetState extends State<TravelerBagHistory
         HomeSearchFieldWidget(
           hint: widget.hint,
           onChanged: (value) async {
-            await tripProvider.getTripsById(
+            await tripProvider.getTripById(
               value,
             );
           },

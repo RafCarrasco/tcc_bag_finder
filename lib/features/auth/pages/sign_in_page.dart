@@ -8,7 +8,6 @@ import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
 import '../../../core/widgets/login_text_field.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../core/entity/user_entity.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -121,7 +120,6 @@ class _SignInPageState extends State<SignInPage> {
 
                   result.fold(
                     (failure) {
-                      // Aqui você trata o erro, pode mostrar um snackbar, dialog etc.
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Erro: ${failure.toString()}')),
                       );

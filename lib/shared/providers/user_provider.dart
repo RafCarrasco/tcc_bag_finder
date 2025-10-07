@@ -61,6 +61,7 @@ class UserProvider extends ChangeNotifier {
       (failure) => Left(failure),
       (user) {
         _user = user;
+        _saveUserToStorage(user!);
         notifyListeners();
         return Right(user);
       },
@@ -87,11 +88,9 @@ class UserProvider extends ChangeNotifier {
     required String password,
   }) async {
     final result = await repository.addUser(user: user);
-
     return result.fold(
       (failure) => null,
       (created) async{
-        await _saveUserToStorage(created);
         notifyListeners();
         return created;
       },

@@ -12,7 +12,6 @@ class TripRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(trip.toJson()),
     );
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       return TripEntity.fromJson(jsonDecode(response.body));
     } else {

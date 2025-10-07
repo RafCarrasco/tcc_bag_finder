@@ -8,24 +8,26 @@ class BagEntity {
   final String? description;
   final String ownerId;
   final BagStatusEnum status;
+  final String? tripId;
   final DateTime createdAt;
-  final DateTime? updatedAt;
 
   BagEntity({
     String? id,
     required this.ownerId,
     required this.description,
     required this.status,
+    this.tripId,
     DateTime? createdAt,
-    this.updatedAt,
   })  : id = id ?? _uuid.v4(),
         createdAt = createdAt ?? DateTime.now();
+
 
   BagEntity copyWith({
     String? id,
     String? description,
     BagStatusEnum? status,
     String? ownerId,
+    String? tripId, // <-- adicionado
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -34,10 +36,11 @@ class BagEntity {
       ownerId: ownerId ?? this.ownerId,
       description: description ?? this.description,
       status: status ?? this.status,
+      tripId: tripId ?? this.tripId, // <-- adicionado
       createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
 
   factory BagEntity.empty() {
     return BagEntity(
@@ -46,7 +49,6 @@ class BagEntity {
       description: '',
       status: BagStatusEnum.UNKNOWN,
       createdAt: DateTime.now(),
-      updatedAt: null,
     );
   }
 
@@ -56,8 +58,8 @@ class BagEntity {
       'description': description,
       'ownerId': ownerId,
       'status': status.name,
+      'tripId': tripId, // <-- adicionado
       'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 
@@ -70,10 +72,8 @@ class BagEntity {
         (e) => e.name == json['status'],
         orElse: () => BagStatusEnum.UNKNOWN,
       ),
+      tripId: json['tripId'], // <-- adicionado
       createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'])
-          : null,
     );
   }
 }

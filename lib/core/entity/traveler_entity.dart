@@ -3,19 +3,21 @@ import 'trip_entity.dart';
 import 'user_entity.dart';
 
 class TravelerEntity extends UserEntity {
+  final String cpf; // <- novo campo
   final List<TripEntity> bags;
 
   TravelerEntity({
-    required super.id,
+    String? id,
     required super.email,
     required super.fullName,
     required super.phone,
     required super.role,
-    required super.password, // <- agora obrigatório
+    required super.password, // obrigatório
     required super.isActive,
     required DateTime super.createdAt,
+    required this.cpf, // <- obrigatório
     this.bags = const [],
-  });
+  }) : super(id: id);
 
   @override
   TravelerEntity copyWith({
@@ -27,6 +29,7 @@ class TravelerEntity extends UserEntity {
     String? password,
     bool? isActive,
     DateTime? createdAt,
+    String? cpf,
     List<TripEntity>? bags,
   }) {
     return TravelerEntity(
@@ -38,6 +41,7 @@ class TravelerEntity extends UserEntity {
       password: password ?? this.password,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      cpf: cpf ?? this.cpf,
       bags: bags ?? this.bags,
     );
   }
@@ -46,12 +50,13 @@ class TravelerEntity extends UserEntity {
     return TravelerEntity(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
+      fullName: json['full_name'] ?? '',
       phone: json['phone'] ?? '',
       role: json['type'] ?? json['role'] ?? UserRoleEnum.TRAVELER.name,
       password: json['password'] ?? '',
       isActive: json['isActive'] ?? true,
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      cpf: json['cpf'] ?? '', // <- mapeamento
       bags: (json['bags'] as List<dynamic>? ?? [])
           .map((e) => TripEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -62,6 +67,7 @@ class TravelerEntity extends UserEntity {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
+      'cpf': cpf, // <- incluir no JSON
       'bags': bags.map((e) => e.toJson()).toList(),
     };
   }
@@ -73,9 +79,10 @@ class TravelerEntity extends UserEntity {
       fullName: '',
       phone: '',
       role: UserRoleEnum.TRAVELER.name,
-      password: '', // <- senha inicial vazia
+      password: '',
       isActive: true,
       createdAt: DateTime.now(),
+      cpf: '',
       bags: [],
     );
   }

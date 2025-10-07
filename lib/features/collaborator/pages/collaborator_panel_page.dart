@@ -27,7 +27,9 @@ class _CollaboratorPanelPageState extends State<CollaboratorPanelPage> {
   @override
   void initState() {
     super.initState();
-    getCollaborators();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCollaborators();
+    });
   }
 
   void getCollaborators() async {

@@ -28,21 +28,17 @@ class _TripPanelSearchBarWidgetState extends State<TripPanelSearchBarWidget> {
     final collaboratorProvider = Modular.get<CollaboratorProvider>();
 
     return Row(
-      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: HomeSearchFieldWidget(
+          HomeSearchFieldWidget(
             hint: 'Procure as viagens do passageiro (ID)...',
             onChanged: (text) async {
-              await collaboratorProvider.getAllTripsByTraveler(
-                travelerId: text,
-                responsibleId: "id_do_responsavel_aqui",
+              await collaboratorProvider.getAllTripsByTravelerFullName(
+                fullName: text,
               );
             },
           ),
-        ),
         IconButton(
           icon: Icon(
             Icons.filter_list,

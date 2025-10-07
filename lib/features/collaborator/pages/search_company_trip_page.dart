@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
+
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
@@ -28,7 +29,7 @@ class _SearchCompanyTripPageState extends State<SearchCompanyTripPage> {
     getTrips();
   }
 
-  void getTrips() async {
+  Future<void> getTrips() async {
     await collaboratorProvider.getAllTripsByResponsible(
       responsibleId: widget.collaboratorId,
     );
@@ -36,82 +37,87 @@ class _SearchCompanyTripPageState extends State<SearchCompanyTripPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(
-              AppDimensions.radiusExtraLarge,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 5,
-                offset: Offset(0, 3),
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(
+                    AppDimensions.radiusExtraLarge,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Container(
+                  width: double.infinity,
+                  color: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppDimensions.paddingSmall,
+                    horizontal: AppDimensions.paddingMedium,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppIconsSecondary.airPlaneModeIcon,
+                      const SizedBox(width: 8),
+                      Text(
+                        'Consultar viagens',
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: AppColors.secondary,
+                              fontSize: AppDimensions.fontLarge,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: AppDimensions.paddingMedium),
+
+              const TripPanelSearchBarWidget(),
+
+              const SizedBox(height: AppDimensions.paddingMedium),
+
+              Expanded(
+                child: Consumer<CollaboratorProvider>(
+                  builder: (context, collaboratorProvider, _) {
+                    if (collaboratorProvider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final trips = collaboratorProvider.trips ?? [];
+
+                    if (trips.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'Nenhuma viagem encontrada.',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return TripPaginationWidget(trips: trips);
+                  },
+                ),
               ),
             ],
           ),
-          child: Container(
-            width: double.infinity,
-            color: AppColors.primary,
-            padding: const EdgeInsets.only(
-              top: AppDimensions.paddingMedium,
-              left: AppDimensions.paddingSmall,
-              right: AppDimensions.paddingSmall,
-              bottom: AppDimensions.paddingSmall,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AppIconsSecondary.airPlaneModeIcon,
-                Text(
-                  'Consultar viagens',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: AppColors.secondary,
-                        fontSize: AppDimensions.fontLarge,
-                        fontWeight: FontWeight.bold,
-                      ),
-                )
-              ],
-            ),
-          ),
         ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingMedium,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: AppDimensions.paddingMedium,
-                ),
-                const TripPanelSearchBarWidget(),
-                Expanded(
-                  child: Consumer<CollaboratorProvider>(
-                    builder: (context, collaboratorProvider, _) {
-                      if (collaboratorProvider.isLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return TripPaginationWidget(
-                        trips: collaboratorProvider.trips ?? [],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

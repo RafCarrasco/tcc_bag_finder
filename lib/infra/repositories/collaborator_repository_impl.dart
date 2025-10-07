@@ -49,4 +49,27 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
       return Left(CollaboratorTripsError());
     }
   }
+  Future<Either<CollaboratorFailure, List<TripEntity>>> getAllTripsByTravelerFullName({
+    required String fullName,
+  }) async {
+    try {
+      final result = await remote.getAllTripsByResponsible(fullName);
+      return Right(result);
+    } catch (e) {
+      return Left(CollaboratorTripsError());
+    }
+  }
+  
+  Future<void> setResponsibleId({
+    required String responsibleId,
+    required String userId,
+  }) async {
+    try {
+      final result = await remote.setResponsibleId(userId,responsibleId);
+      Right(result);
+    } catch (e) {
+      Left(CollaboratorTripsError());
+    }
+  }
+
 }

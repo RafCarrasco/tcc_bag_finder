@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
-import '../../repositories/trip_repository.dart';
+import '../../core/entity/traveler_entity.dart';
+import '../../infra/repositories/traveler_repository_impl.dart';
+import '../../core/failures/traveler_failure.dart';
+import '../../features/auth/controller/auth_controller.dart';
 
 class TravelerProvider extends ChangeNotifier {
-  final ITripRepository repository;
+  final TravelerRepositoryImpl repository;
+  final AuthService authService;
 
-  TravelerProvider(this.repository);
+  TravelerProvider(this.repository, this.authService);
 
   TripEntity? _currentTrip;
   List<BagEntity>? _bags;
@@ -23,6 +27,8 @@ class TravelerProvider extends ChangeNotifier {
 
   bool get isTripComplete => _isTripComplete;
   int get checkedBags => _checkedBags;
+  List<TravelerEntity> _travelers = [];
+  List<TravelerEntity> get travelers => _travelers;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -34,41 +40,40 @@ class TravelerProvider extends ChangeNotifier {
     required bool isDone,
   }) async {
     _setLoading(true);
+    String result ='arrumar esta funcao';
+    print(result);
+    print(isDone);
+    print(travelerId);
 
-    final result = await repository.getTripsByStatusAndId(
-      travelerId: travelerId,
-      isDone: isDone,
-    );
+    // result.fold(
+    //   (failure) {
+    //     _currentTrip = null;
+    //     _bags = [];
+    //     _trips = [];
+    //   },
+    //   (trips) {
+    //     _trips = trips;
+    //     if (trips.isNotEmpty) {
+    //       _currentTrip = trips.first;
+    //       _bags = _currentTrip?.bags ?? [];
+    //     } else {
+    //       _currentTrip = null;
+    //       _bags = [];
+    //     }
+    //   },
+    // );
 
-    result.fold(
-      (failure) {
-        _currentTrip = null;
-        _bags = [];
-        _trips = [];
-      },
-      (trips) {
-        _trips = trips;
-        if (trips.isNotEmpty) {
-          _currentTrip = trips.first;
-          _bags = _currentTrip?.bags ?? [];
-        } else {
-          _currentTrip = null;
-          _bags = [];
-        }
-      },
-    );
-
-    _setLoading(false);
+    // _setLoading(false);
   }
 
 
   Future<void> checkIsTripDone({required TripEntity trip}) async {
-    final result = await repository.isTripDone(tripId: trip.id);
-    result.fold(
-      (_) => _isTripComplete = false,
-      (isDone) => _isTripComplete = isDone,
-    );
-    notifyListeners();
+    // final result = await repository.isTripDone(tripId: trip.id);
+    // result.fold(
+    //   (_) => _isTripComplete = false,
+    //   (isDone) => _isTripComplete = isDone,
+    // );
+    // notifyListeners();
   }
 
   void updateCheckedBags(int value) {
@@ -82,4 +87,53 @@ class TravelerProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> getAllTravelers() async {
+    if (!authService.isLoggedIn) {
+      debugPrint("Nenhum usuário logado, não é possível buscar travelers");
+      return;
+    }
+
+    final currentUser = authService.user; 
+    debugPrint("Usuário logado: ${currentUser?.fullName}");
+
+    final result = await repository.getAllTravelers(
+    );
+
+    result.fold(
+      (failure) {
+        if (failure is TravelerReadError) {
+          debugPrint(failure.errorMessage);
+        }
+      },
+      (travs) {
+        _travelers = travs;
+        notifyListeners();
+      },
+    );
+  }
+  Future<TravelerEntity?> getTravelerById(String id) async {
+    _setLoading(true);
+
+    final result = await repository.getTravelerById(id: id);
+
+    TravelerEntity? traveler;
+
+    result.fold(
+      (failure) {
+        if (failure is TravelerReadError) {
+          debugPrint('Erro ao buscar traveler: ${failure.errorMessage}');
+        } else {
+          debugPrint('Erro desconhecido ao buscar traveler: $failure');
+        }
+      },
+      (trav) {
+        traveler = trav;
+      },
+    );
+
+    _setLoading(false);
+    return traveler;
+  }
+
 }

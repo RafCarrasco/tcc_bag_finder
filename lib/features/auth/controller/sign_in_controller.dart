@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../core/utils/global_snackbar.dart';
 import '../../../shared/providers/user_provider.dart';
+import 'auth_controller.dart';
 
 class SignInController {
-  final UserProvider _userProvider = Modular.get<UserProvider>();
+  final AuthService _authProvider = Modular.get<AuthService>();
 
   String? email;
   String? password;
@@ -30,7 +31,7 @@ class SignInController {
       return;
     }
 
-    final result = await _userProvider.login(
+    final result = await _authProvider.login(
       email: email!.trim(),
       password: password!.trim(),
     );

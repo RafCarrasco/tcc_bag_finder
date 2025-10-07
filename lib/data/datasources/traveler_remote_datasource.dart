@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/entity/traveler_entity.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class TravelerRemoteDataSource {
-  final String baseUrl;
-
-  TravelerRemoteDataSource({required this.baseUrl});
+    final String baseUrl = dotenv.env['BASE_URL']!;
 
   Future<TravelerEntity> addTraveler(TravelerEntity traveler) async {
     final response = await http.post(

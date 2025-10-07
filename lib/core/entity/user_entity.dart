@@ -1,7 +1,9 @@
 import 'admin_entity.dart';
 import 'collaborator_entity.dart';
+import 'package:uuid/uuid.dart';
 
-class UserEntity {
+class UserEntity 
+{static const Uuid _uuid = Uuid();
   final String id;
   final String email;
   final String fullName;
@@ -12,7 +14,7 @@ class UserEntity {
   final DateTime createdAt;
 
   UserEntity({
-    required this.id,
+    String? id,
     required this.email,
     required this.fullName,
     required this.phone,
@@ -20,7 +22,7 @@ class UserEntity {
     required this.password,
     required this.isActive,
     required this.createdAt,
-  });
+  }) : id = id ?? _uuid.v4();
 
   factory UserEntity.fromJson(Map<String, dynamic> json) {
     final role = json['role'] ?? '';

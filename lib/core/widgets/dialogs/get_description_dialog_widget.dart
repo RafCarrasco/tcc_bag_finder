@@ -85,10 +85,6 @@ class GetDescriptionDialogWidget extends StatelessWidget {
             value: trip.description.airportDestination,
           ),
           _buildRoundedInfoContainer(
-            label: 'Data e Hora',
-            value: trip.time.toString(),
-          ),
-          _buildRoundedInfoContainer(
             label: 'Malas',
             value: trip.bags != null ? trip.bags!.length.toString() : '0',
           ),

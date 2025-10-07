@@ -135,11 +135,11 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                       ),
                       _buildInfoRow(
                         'Última alteração:',
-                        widget.bag.updatedAt != null
-                            ? DateFormat('HH:mm').format(
-                                widget.bag.updatedAt!.toLocal(),
-                              )
-                            : 'Nenhuma alteração encontrada!',
+                        // widget.bag.updatedAt != null
+                        //     ? DateFormat('HH:mm').format(
+                        //         widget.bag.updatedAt!.toLocal(),
+                        //       )
+                            'Nenhuma alteração encontrada! Erro no bag item widget',
                         context,
                       ),
                     ],

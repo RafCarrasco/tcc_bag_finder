@@ -3,11 +3,10 @@ import 'package:http/http.dart' as http;
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/enums/bag_status_enum.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BagRemoteDataSource {
-  final String baseUrl;
-
-  BagRemoteDataSource({required this.baseUrl});
+  final String baseUrl = dotenv.env['BASE_URL']!;
 
   Future<BagEntity> addBag(BagEntity bag) async {
     final response = await http.post(
@@ -15,7 +14,6 @@ class BagRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(bag.toJson()),
     );
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       return BagEntity.fromJson(jsonDecode(response.body));
     } else {

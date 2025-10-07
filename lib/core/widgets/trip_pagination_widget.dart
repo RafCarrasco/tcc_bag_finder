@@ -47,18 +47,18 @@ class _TripPaginationWidgetState extends State<TripPaginationWidget> {
             ),
           ),
           style: ListTileStyle.list,
-          title: Row(
+          title:Row(
             children: [
               AppIconsPrimary.personIcon,
               Text(
-                '(${trip.travelerEntity.id.substring(0, 4)})',
+                '(${trip.travelerEntity.id.length >= 4
+                    ? trip.travelerEntity.id.substring(0, 4)
+                    : trip.travelerEntity.id})',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(
-                width: 5,
-              ),
+              const SizedBox(width: 5),
               Text(
                 trip.travelerEntity.fullName,
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(),
@@ -76,7 +76,7 @@ class _TripPaginationWidgetState extends State<TripPaginationWidget> {
                     width: 5,
                   ),
                   Text(
-                    trip.time.toString(),
+                    'Erro em trip_pagination_widget',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: AppColors.secondaryGrey,
                         ),

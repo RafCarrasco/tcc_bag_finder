@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 // Controllers
 import '../features/auth/controller/sign_in_controller.dart';
 import '../features/auth/controller/sign_up_controller.dart';
+import '../features/auth/controller/auth_controller.dart';
 import '../features/collaborator/controllers/landing_page_step_progess.dart';
 import '../features/collaborator/controllers/init_user_trip_controller.dart';
 import '../features/collaborator/controllers/init_user_trip_dropdown_controller.dart';
@@ -18,14 +19,19 @@ import '../features/admin/controllers/add_collaborator_controler.dart';
 import 'package:bag_finder/data/datasources/user_remote_datasource.dart';
 import 'package:bag_finder/data/datasources/admin_remote_datasource.dart';
 import 'package:bag_finder/data/datasources/collaborator_remote_datasource.dart';
+import 'package:bag_finder/data/datasources/traveler_remote_datasource.dart';
+import 'package:bag_finder/data/datasources/bag_remote_datasource.dart';
 
 //repository
 import '../../infra/repositories/user_repository_impl.dart';
 import '../../infra/repositories/collaborator_repository_impl.dart';
 import '../../infra/repositories/admin_repository_impl.dart';
+import '../../infra/repositories/bag_repository_impl.dart';
+import '../../infra/repositories/traveler_repository_impl.dart';
 import '../../repositories/trip_repository.dart';
 import '../../repositories/admin_repository.dart';
 import '../../repositories/collaborator_repository.dart';
+import '../../repositories/bag_repository.dart';
 
 // Providers
 import '../shared/providers/user_provider.dart';
@@ -36,6 +42,7 @@ import '../shared/providers/collaborator_provider.dart';
 // Usecases
 import '../features/admin/usecases/update_user_usecase.dart';
 import '../features/admin/usecases/delete_user_usecase.dart';
+import '../usecase/bag/add_bag_usecase.dart';
 
 // Pages
 import '../features/trip/pages/splash_page.dart';
@@ -71,7 +78,13 @@ class AppModule extends Module {
     i.addLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource());
     i.addLazySingleton<TripRemoteDataSource>(() => TripRemoteDataSource());
     i.addLazySingleton<AdminRemoteDataSource>(() => AdminRemoteDataSource());
-    i.addLazySingleton<CollaboratorRemoteDataSource>(() => CollaboratorRemoteDataSource());
+    i.addLazySingleton<TravelerRemoteDataSource>(() => TravelerRemoteDataSource());
+    i.addLazySingleton<CollaboratorRemoteDataSource>(
+      () => CollaboratorRemoteDataSource(
+        travelerRepository: i<TravelerRepositoryImpl>(),
+      ),
+    );
+    i.addLazySingleton<BagRemoteDataSource>(() => BagRemoteDataSource());
     
     //repository
     i.addSingleton<Logger>(() => Logger());
@@ -79,17 +92,21 @@ class AppModule extends Module {
     i.addLazySingleton<TripRepositoryImpl>(() => TripRepositoryImpl(i()));
     i.addLazySingleton<ITripRepository>(() => TripRepositoryImpl(i()));
     i.addLazySingleton<IAdminRepository>(() => AdminRepositoryImpl(i()));
+    i.addLazySingleton<IBagRepository>(() => BagRepositoryImpl(i()));
     i.addLazySingleton<ICollaboratorRepository>(() => CollaboratorRepositoryImpl(i()));
+    i.addLazySingleton<CollaboratorRepositoryImpl>(() => CollaboratorRepositoryImpl(i()));
+    i.addLazySingleton<TravelerRepositoryImpl>(() => TravelerRepositoryImpl(i()));
 
     // Usecases
+    i.addLazySingleton<AddBagUsecase>(() => AddBagUsecase(repository: i()));
     i.addLazySingleton<IUpdateUserUsecase>(() => UpdateUserUsecase(repository: i()));
     i.addLazySingleton<IDeleteUserUsecase>(() => DeleteUserUsecase(repository: i()));
 
     // Provider
     i.addSingleton<UserProvider>(() => UserProvider(i()));
     i.addLazySingleton<AdminProvider>(() => AdminProvider(i()));
-    i.addLazySingleton<TravelerProvider>(() => TravelerProvider(i()));
-    i.addLazySingleton<TripProvider>(() => TripProvider(i()));
+    i.addLazySingleton<TravelerProvider>(() => TravelerProvider(i(),i()));
+    i.addLazySingleton<TripProvider>(() => TripProvider(i(),i()));
     i.addLazySingleton<CollaboratorProvider>(() => CollaboratorProvider(i()));
 
     // Controllers
@@ -99,6 +116,7 @@ class AppModule extends Module {
     i.addLazySingleton<InitUserTripDropdownController>(() => InitUserTripDropdownController());
     i.addLazySingleton<LuggageQuantityDropdownController>(() => LuggageQuantityDropdownController());
     i.addLazySingleton<AddCollaboratorController>(() => AddCollaboratorController());
+    i.addLazySingleton<AuthService>(() => AuthService(i()));
     i.addLazySingleton<LandingPageStepProgess>(LandingPageStepProgess.new);
   }
 

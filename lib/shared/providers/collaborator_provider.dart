@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:dartz/dartz.dart';
-
 import '../../core/entity/trip_entity.dart';
-import '../../core/failures/failure.dart';
-import '../../repositories/collaborator_repository.dart';
+import '../../infra/repositories/collaborator_repository_impl.dart';
 
 class CollaboratorProvider extends ChangeNotifier {
-  final ICollaboratorRepository repository;
+  final CollaboratorRepositoryImpl repository;
 
   CollaboratorProvider(this.repository);
 
@@ -71,7 +68,7 @@ class CollaboratorProvider extends ChangeNotifier {
     required bool isAscending,
   }) {
     _trips = [...list]..sort((a, b) {
-        return isAscending ? a.time.compareTo(b.time) : b.time.compareTo(a.time);
+        return isAscending ? a.createdAt.compareTo(b.createdAt) : b.createdAt.compareTo(a.createdAt);
       });
     notifyListeners();
   }
@@ -86,5 +83,28 @@ class CollaboratorProvider extends ChangeNotifier {
             : b.isDone.toString().compareTo(a.isDone.toString());
       });
     notifyListeners();
+  }
+  
+  void setResponsibleId({
+    required String userId,
+    required String responsibleId
+  })async{
+    try{
+      await repository.setResponsibleId(userId: userId,responsibleId: responsibleId);
+    }catch(e){
+      print(e);
+    }
+  }
+  Future<void> getAllTripsByTravelerFullName({
+    required String fullName,
+  }) async {
+    _setLoading(true);
+    final result =
+        await repository.getAllTripsByTravelerFullName(fullName: fullName);
+    result.fold(
+      (failure) => _trips = [],
+      (list) => _trips = list,
+    );
+    _setLoading(false);
   }
 }

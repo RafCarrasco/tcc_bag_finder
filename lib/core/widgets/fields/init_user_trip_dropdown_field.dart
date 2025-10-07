@@ -1,7 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
 import '../../../features/collaborator/controllers/init_user_trip_dropdown_controller.dart';
 import '../../entity/traveler_entity.dart';
 import '../../../shared/providers/collaborator_provider.dart';
@@ -10,6 +9,7 @@ import '../../utils/app_dimensions.dart';
 import '../../utils/app_icons.dart';
 import '../../utils/app_text_styles.dart';
 import '../../utils/user_validation_mixin.dart';
+import '../../../shared/providers/traveler_provider.dart';
 
 class InitUserTripDropdownField extends StatefulWidget {
   final String hintText;
@@ -37,6 +37,7 @@ class _InitUserTripDropdownFieldState extends State<InitUserTripDropdownField>
   final InitUserTripDropdownController _controller =
       Modular.get<InitUserTripDropdownController>();
   final TextEditingController textEditingController = TextEditingController();
+  final travelerProvider = Modular.get<TravelerProvider>();
 
   List<TravelerEntity> items = [];
   TravelerEntity? selectedValue;
@@ -45,15 +46,45 @@ class _InitUserTripDropdownFieldState extends State<InitUserTripDropdownField>
   @override
   void initState() {
     super.initState();
+    selectedValue = null;
+    textEditingController.clear();
     _loadTravelers();
   }
 
   Future<void> _loadTravelers() async {
-    // final travelers = await _collaboratorProvider.getAllTravelers();
-    // setState(() {
-    //   items = travelers;
-    // });
+    final result = await travelerProvider.repository.getAllTravelers();
+
+    result.fold(
+      (failure) {
+        debugPrint(failure.errorMessage);
+      },
+      (travs) {
+        setState(() {
+          items = travs;
+          if (_controller.value != null) {
+            final matched = travs.firstWhere(
+              (t) => t.id == _controller.value!.id,
+              orElse: () => TravelerEntity.empty(),
+            );
+
+            final exists = travs.any((t) => t.id == matched.id);
+
+            if (exists) {
+              _controller.onChange(matched);
+              selectedValue = matched;
+            } else {
+              _controller.onChange(null);
+              selectedValue = null;
+              textEditingController.clear();
+            }
+          }
+        });
+      },
+    );
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,14 +194,11 @@ class _InitUserTripDropdownFieldState extends State<InitUserTripDropdownField>
               .toList(),
           value: _controller.value,
           onChanged: (TravelerEntity? value) {
-            setState(
-              () {
-                _controller.onChange(
-                  value,
-                );
-                widget.onChanged?.call(value);
-              },
-            );
+            setState(() {
+              selectedValue = value;
+              _controller.onChange(value);
+              widget.onChanged?.call(value);
+            });
           },
           dropdownStyleData: DropdownStyleData(
             maxHeight: 200,

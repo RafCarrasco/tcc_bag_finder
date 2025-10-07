@@ -1,12 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../core/entity/collaborator_entity.dart';
-import '../../core/entity/trip_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../core/entity/collaborator_entity.dart';
+import '../../core/entity/trip_entity.dart';
+import '../../infra/repositories/traveler_repository_impl.dart';
 
 class CollaboratorRemoteDataSource {
-    final String baseUrl = dotenv.env['BASE_URL']!;
+  final String baseUrl = dotenv.env['BASE_URL']!;
+  final TravelerRepositoryImpl travelerRepository;
+
+  CollaboratorRemoteDataSource({
+    required this.travelerRepository,
+  });
 
   Future<List<CollaboratorEntity>> getCollaboratorsByResponsibleId(String id) async {
     final response = await http.get(Uri.parse('$baseUrl/collaborators/responsible/$id'));
@@ -29,7 +35,9 @@ class CollaboratorRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
-      return list.map((e) => TripEntity.fromJson(e)).toList();
+      return Future.wait(
+        list.map((e) => TripEntity.fromJsonAsync(e, travelerRepository)),
+      );
     } else {
       throw Exception('Erro ao buscar viagens do traveler: ${response.body}');
     }
@@ -40,9 +48,40 @@ class CollaboratorRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
-      return list.map((e) => TripEntity.fromJson(e)).toList();
+      return Future.wait(
+        list.map((e) => TripEntity.fromJsonAsync(e, travelerRepository)),
+      );
     } else {
       throw Exception('Erro ao buscar viagens por responsável: ${response.body}');
+    }
+  }
+  Future<List<TripEntity>> getAllTripsByTravelerFullName(String fullName) async {
+    final response = await http.get(Uri.parse('$baseUrl/trips/name/$fullName'));
+
+    if (response.statusCode == 200) {
+      final list = jsonDecode(response.body) as List;
+      return Future.wait(
+        list.map((e) => TripEntity.fromJsonAsync(e, travelerRepository)),
+      );
+    } else {
+      throw Exception('Erro ao buscar viagens por responsável: ${response.body}');
+    }
+  }
+
+  Future<void> setResponsibleId(String userId, String responsibleId) async {
+    final url = Uri.parse('$baseUrl/collaborators/responsible');
+
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'responsible_id': responsibleId,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao atualizar responsibleId: ${response.body}');
     }
   }
 }

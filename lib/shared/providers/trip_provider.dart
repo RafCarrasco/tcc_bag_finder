@@ -2,12 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/failures/failure.dart';
+import '../../core/failures/trip_failure.dart';
 import '../../infra/repositories/trip_repository_impl.dart';
+import '../../features/auth/controller/auth_controller.dart';
 
 class TripProvider extends ChangeNotifier {
   final TripRepositoryImpl repository;
+  final AuthService authService;
 
-  TripProvider(this.repository);
+  TripProvider(this.repository, this.authService);
 
   List<TripEntity>? _trips;
   bool _isLoading = false;
@@ -21,8 +24,16 @@ class TripProvider extends ChangeNotifier {
   }
 
   Future<Either<Failure, TripEntity>> addTrip({required TripEntity trip}) async {
+    if (authService.user == null) {
+      return Left(TripCreateError());
+    }
+
+    final tripWithResponsible = trip.copyWith(
+      responsibleCollaboratorId: authService.user!.id,
+    );
+
     _setLoading(true);
-    final result = await repository.addTrip(trip: trip);
+    final result = await repository.addTrip(trip: tripWithResponsible);
     result.fold((l) {}, (created) {
       _trips = (_trips ?? [])..add(created);
     });
@@ -30,10 +41,16 @@ class TripProvider extends ChangeNotifier {
     return result;
   }
 
-  Future<void> getTripsByResponsibleId(String collaboratorId) async {
+  Future<void> getTripsByCurrentUser() async {
+    if (authService.user == null) {
+      _trips = [];
+      notifyListeners();
+      return;
+    }
+
     _setLoading(true);
     final result = await repository.getAllTripsByResponsibleId(
-      responsibleCollaboratorId: collaboratorId,
+      responsibleCollaboratorId: authService.user!.id,
     );
     result.fold(
       (failure) => _trips = [],
@@ -42,7 +59,7 @@ class TripProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<void> getTripsById(String tripId) async {
+  Future<void> getTripById(String tripId) async {
     _setLoading(true);
     final result = await repository.getTripsById(tripId: tripId);
     result.fold(
@@ -54,30 +71,20 @@ class TripProvider extends ChangeNotifier {
 
   void orderTripsByCreatedTime({bool ascending = true}) {
     if (_trips == null) return;
-    _trips!.sort((a, b) {
-      if (ascending) {
-        return a.createdAt.compareTo(b.createdAt);
-      } else {
-        return b.createdAt.compareTo(a.createdAt);
-      }
-    });
+    _trips!.sort((a, b) =>
+        ascending ? a.createdAt.compareTo(b.createdAt) : b.createdAt.compareTo(a.createdAt));
     notifyListeners();
   }
 
   void orderTripsByUpdatedTime({bool ascending = true}) {
     if (_trips == null) return;
-    
     _trips!.sort((a, b) {
       if (a.updatedAt == null && b.updatedAt == null) return 0;
-      
       if (a.updatedAt == null) return ascending ? -1 : 1;
       if (b.updatedAt == null) return ascending ? 1 : -1;
-      
-      if (ascending) {
-        return a.updatedAt!.compareTo(b.updatedAt!);
-      } else {
-        return b.updatedAt!.compareTo(a.updatedAt!);
-      }
+      return ascending
+          ? a.updatedAt!.compareTo(b.updatedAt!)
+          : b.updatedAt!.compareTo(a.updatedAt!);
     });
     notifyListeners();
   }

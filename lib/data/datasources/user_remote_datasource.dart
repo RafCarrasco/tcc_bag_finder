@@ -14,7 +14,6 @@ class UserRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(user.toJson()),
     );
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       return UserEntity.fromJson(jsonDecode(response.body));
     } else {

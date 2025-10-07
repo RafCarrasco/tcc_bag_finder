@@ -1,10 +1,10 @@
+import 'package:bag_finder/features/auth/controller/auth_controller.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../controllers/add_collaborator_controler.dart';
 import '../../../core/entity/admin_entity.dart';
 import '../../../core/entity/collaborator_entity.dart';
-import '../../../core/enums/user_role_enum.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
@@ -25,6 +25,7 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
   final _formKey = GlobalKey<FormState>();
   final addCollaboratorController = Modular.get<AddCollaboratorController>();
   final provider = Modular.get<UserProvider>();
+  final auth_provider=Modular.get<AuthService>();
 
   @override
   Widget build(BuildContext context) {
@@ -159,20 +160,19 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          final currentUser = provider.user;
+                          final currentUser = auth_provider.user;
                           if (currentUser == null ||currentUser is! AdminEntity) {
                             GlobalSnackBar.error('Administrador inválido.');
                             return;
                           }
                           final collaborator = CollaboratorEntity(
-                            id: '',
                             password: addCollaboratorController.password!,
                             fullName: addCollaboratorController.fullName!,
                             email: addCollaboratorController.email!,
                             phone: addCollaboratorController.phone!,
                             role: 'COLLABORATOR',
                             isActive: true,
-                            company_id: currentUser.company,
+                            company_id: 'c-1',
                             responsibleId: currentUser.id,
                             createdAt: DateTime.now(),
                           );

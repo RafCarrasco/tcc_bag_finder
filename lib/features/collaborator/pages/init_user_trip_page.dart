@@ -4,7 +4,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../auth/controller/sign_up_controller.dart';
 import '../controllers/init_user_trip_controller.dart';
 import '../../../core/entity/bag_entity.dart';
-import '../../../core/entity/collaborator_entity.dart';
 import '../../../core/entity/trip_description_entity.dart';
 import '../../../core/entity/trip_entity.dart';
 import '../../../core/enums/bag_status_enum.dart';
@@ -19,6 +18,7 @@ import '../../../core/utils/global_snackbar.dart';
 import '../../../core/widgets/fields/init_user_trip_dropdown_field.dart';
 import '../../../core/widgets/fields/init_user_trip_text_field.dart';
 import '../../../core/widgets/fields/luggage_quantity_dropdown_field.dart';
+import '../../../usecase/bag/add_bag_usecase.dart';
 
 class InitUserTripPage extends StatefulWidget {
   const InitUserTripPage({super.key});
@@ -30,6 +30,7 @@ class InitUserTripPage extends StatefulWidget {
 class _InitUserTripPageState extends State<InitUserTripPage> {
   SignUpController signUpController = Modular.get<SignUpController>();
   var provider = Modular.get<CollaboratorProvider>();
+  var addBagUsecase = Modular.get<AddBagUsecase>(); 
   var tripProvider = Modular.get<TripProvider>();
   var userProvider = Modular.get<UserProvider>();
   final _controller = Modular.get<InitUserTripController>();
@@ -211,41 +212,34 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                               ),
                             ),
                             onPressed: () async {
+                              final tripId=uuid.v4();
+                              final bags = List.generate(
+                                _controller.bagageQuantity ?? 0,
+                                  (index) => BagEntity(
+                                    description: null,
+                                    status: BagStatusEnum.CHECKED_IN,
+                                    ownerId: _controller.user.id,
+                                    tripId: tripId,
+                                  ),
+                                );
                               if (_formKey.currentState!.validate()) {
-                                await tripProvider.addTrip(
+                                tripProvider.addTrip(
                                   trip: TripEntity(
+                                    id: tripId,
                                     responsibleCollaboratorId:
-                                        userProvider.user!.id,
+                                      userProvider.user!.id,
                                     travelerEntity: _controller.user,
                                     description: TripDescriptionEntity(
                                       airportOrigin: _controller.airportOrigin,
-                                      airportDestination:
-                                          _controller.airportDestination,
+                                      airportDestination:_controller.airportDestination,
                                     ),
-                                    bags: List.generate(
-                                      _controller.bagageQuantity ?? 0,
-                                      (index) => BagEntity(
-                                        description: null,
-                                        status: BagStatusEnum.CHECKED_IN,
-                                        ownerId: _controller.user.id,
-                                      ),
-                                    ),
-                                    time: DateTime.now(),
+                                    bags: bags
                                   ),
                                 );
-
-                                int count =
-                                    (userProvider.user! as CollaboratorEntity)
-                                        .tripsCreated;
-
-                                await userProvider.updateUser(
-                                  user: (userProvider.user!
-                                          as CollaboratorEntity)
-                                      .copyWith(
-                                    tripsCreated: count++,
-                                  ),
-                                );
-
+                                for (final bag in bags) {
+                                  await addBagUsecase.call(
+                                    bag: bag);
+                                }
                                 Modular.to.pushNamed(
                                   '/collaborator/${userProvider.user!.id}/home',
                                 );
