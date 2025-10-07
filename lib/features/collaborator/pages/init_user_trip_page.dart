@@ -28,14 +28,14 @@ class InitUserTripPage extends StatefulWidget {
 }
 
 class _InitUserTripPageState extends State<InitUserTripPage> {
-  SignUpController signUpController = Modular.get<SignUpController>();
-  var provider = Modular.get<CollaboratorProvider>();
-  var addBagUsecase = Modular.get<AddBagUsecase>(); 
-  var tripProvider = Modular.get<TripProvider>();
-  var userProvider = Modular.get<UserProvider>();
+  final signUpController = Modular.get<SignUpController>();
+  final provider = Modular.get<CollaboratorProvider>();
+  final addBagUsecase = Modular.get<AddBagUsecase>();
+  final tripProvider = Modular.get<TripProvider>();
+  final userProvider = Modular.get<UserProvider>();
   final _controller = Modular.get<InitUserTripController>();
 
-  var uuid = const Uuid();
+  final uuid = const Uuid();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -47,17 +47,12 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(
-              AppDimensions.radiusExtraLarge,
-            ),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusExtraLarge),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 5,
-                offset: Offset(
-                  0,
-                  3,
-                ),
+                offset: Offset(0, 3),
               ),
             ],
           ),
@@ -131,75 +126,76 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                             ),
                           ],
                         ),
+                        // Quantidade de bagagens
                         LuggageQuantityDropdownField(
                           initialQuantity: 10,
                           hintText: 'Quantidade de bagagem',
                           isRequired: true,
                           fieldType: '',
-                          onChanged: (
-                            bagQuantity,
-                          ) {
-                            _controller.setBagageQuantity(
-                              bagageQuantity: bagQuantity,
-                            );
+                          onChanged: (bagQuantity) {
+                            setState(() {
+                              _controller.setBagageQuantity(
+                                  bagageQuantity: bagQuantity);
+                            });
                           },
                         ),
+                        // Selecionar passageiro
                         InitUserTripDropdownField(
                           hintText: 'Buscar passageiro por nome',
-                          onChanged: (
-                            user,
-                          ) {
-                            _controller.setUser(
-                              user: user,
-                            );
+                          onChanged: (user) {
+                            _controller.setUser(user: user);
                           },
                           isRequired: true,
                           fieldType: '',
                         ),
+                        // Campo de destino geral
                         InitUserTripTextField(
                           prefixIcon: AppIconsSecondaryGrey.airPlaneModeIcon,
                           hintText: 'Destino',
-                          onChanged: (
-                            destination,
-                          ) {
-                            _controller.setDestination(
-                              destination: destination,
-                            );
+                          onChanged: (destination) {
+                            _controller.setDestination(destination: destination);
                           },
                           isPassword: false,
                           fieldType: 'destination',
                           isRequired: true,
                         ),
-                        InitUserTripTextField(
-                          prefixIcon:
-                              AppIconsSecondaryGrey.connectingAirportsIcon,
-                          hintText: 'Aeroporto de origem',
-                          onChanged: (
-                            airportOrigin,
-                          ) {
-                            _controller.setAirportOrigin(
-                              airportOrigin: airportOrigin,
-                            );
-                          },
-                          isPassword: false,
-                          fieldType: 'airport',
-                          isRequired: true,
+                        // Campos dinâmicos de aeroportos (por bagagem)
+                        ...List.generate(
+                          _controller.bagageQuantity ?? 0,
+                          (index) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 16),
+                              Text(
+                                'Bagagem ${index + 1}',
+                                style: TextStyle(
+                                  fontSize: AppDimensions.fontLarge,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              InitUserTripTextField(
+                                prefixIcon: AppIconsSecondaryGrey.connectingAirportsIcon,
+                                hintText: 'Aeroporto de origem (Bagagem ${index + 1})',
+                                onChanged: (origin) {
+                                },
+                                isPassword: false,
+                                fieldType: 'airport',
+                                isRequired: true,
+                              ),
+                              InitUserTripTextField(
+                                prefixIcon: AppIconsSecondaryGrey.connectingAirportsIcon,
+                                hintText: 'Aeroporto de destino (Bagagem ${index + 1})',
+                                onChanged: (destination) {
+                                },
+                                isPassword: false,
+                                fieldType: 'airport',
+                                isRequired: true,
+                              ),
+                            ],
+                          ),
                         ),
-                        InitUserTripTextField(
-                          prefixIcon:
-                              AppIconsSecondaryGrey.connectingAirportsIcon,
-                          hintText: 'Aeroporto de destino',
-                          onChanged: (
-                            airportDestination,
-                          ) {
-                            _controller.setAirportDestination(
-                              airportDestination: airportDestination,
-                            );
-                          },
-                          isPassword: false,
-                          fieldType: 'airport',
-                          isRequired: true,
-                        ),
+                        // Botão de gerar viagem
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -207,9 +203,8 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                           ),
                           child: ElevatedButton(
                             style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(
-                                AppColors.primary,
-                              ),
+                              backgroundColor:
+                                  WidgetStateProperty.all(AppColors.primary),
                             ),
                             onPressed: () async {
                               final tripId=uuid.v4();
