@@ -12,9 +12,11 @@ class UserEntity
   final String password;
   final bool isActive;
   final DateTime createdAt;
+  final String? cpf;
 
   UserEntity({
     String? id,
+    this.cpf,
     required this.email,
     required this.fullName,
     required this.phone,
@@ -34,6 +36,7 @@ class UserEntity
     return UserEntity(
       id: json['id'].toString() ?? '',
       email: json['email'] ?? '',
+      cpf: json['cpf'] ?? '',
       fullName: json['full_name'] ?? json['fullName'] ?? '',
       phone: json['phone'] ?? '',
       role: json['type'] ?? json['role'] ?? 'TRAVELER',
@@ -53,6 +56,7 @@ class UserEntity
       'role': role,
       'isActive': isActive,
       'createdAt': createdAt.toIso8601String(),
+      'cpf': cpf
     };
   }
 
@@ -65,10 +69,12 @@ class UserEntity
     String? password,
     bool? isActive,
     DateTime? createdAt,
+    String? cpf
   }) {
     return UserEntity(
       id: id ?? this.id,
       email: email ?? this.email,
+      cpf: cpf?? this.cpf,
       fullName: fullName ?? this.fullName,
       phone: phone ?? this.phone,
       role: role ?? this.role,

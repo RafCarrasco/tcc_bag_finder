@@ -89,7 +89,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
             hint: 'Procure sua bagagem...',
           ),
         ),
-        Expanded(
+        Flexible(
           child: Consumer<TravelerProvider>(
             builder: (context, travelerProvider, _) {
               if (travelerProvider.isLoading) {

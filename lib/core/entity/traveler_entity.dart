@@ -3,7 +3,6 @@ import 'trip_entity.dart';
 import 'user_entity.dart';
 
 class TravelerEntity extends UserEntity {
-  final String cpf; // <- novo campo
   final List<TripEntity> bags;
 
   TravelerEntity({
@@ -12,10 +11,10 @@ class TravelerEntity extends UserEntity {
     required super.fullName,
     required super.phone,
     required super.role,
+    super.cpf,
     required super.password, // obrigatório
     required super.isActive,
     required DateTime super.createdAt,
-    required this.cpf, // <- obrigatório
     this.bags = const [],
   }) : super(id: id);
 
@@ -26,10 +25,10 @@ class TravelerEntity extends UserEntity {
     String? fullName,
     String? phone,
     String? role,
+    String? cpf,
     String? password,
     bool? isActive,
     DateTime? createdAt,
-    String? cpf,
     List<TripEntity>? bags,
   }) {
     return TravelerEntity(
@@ -41,7 +40,6 @@ class TravelerEntity extends UserEntity {
       password: password ?? this.password,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
-      cpf: cpf ?? this.cpf,
       bags: bags ?? this.bags,
     );
   }
@@ -56,7 +54,6 @@ class TravelerEntity extends UserEntity {
       password: json['password'] ?? '',
       isActive: json['isActive'] ?? true,
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      cpf: json['cpf'] ?? '', // <- mapeamento
       bags: (json['bags'] as List<dynamic>? ?? [])
           .map((e) => TripEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -67,7 +64,6 @@ class TravelerEntity extends UserEntity {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      'cpf': cpf, // <- incluir no JSON
       'bags': bags.map((e) => e.toJson()).toList(),
     };
   }
@@ -82,7 +78,6 @@ class TravelerEntity extends UserEntity {
       password: '',
       isActive: true,
       createdAt: DateTime.now(),
-      cpf: '',
       bags: [],
     );
   }

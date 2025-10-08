@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/entity/trip_entity.dart';
+import '../../core/entity/trip_history_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
 
@@ -103,6 +104,18 @@ class TripRemoteDataSource {
       return list.map((e) => TripEntity.fromJson(e)).toList();
     } else {
       throw Exception('Erro ao buscar viagens por ID: ${response.body}');
+    }
+  }
+  Future<List<TripHistoryEntity>> getTravelerHistory(String travelerId) async {
+    final url = Uri.parse('$baseUrl/bags/traveler/$travelerId/history');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      final history = jsonList.map((e) => TripHistoryEntity.fromJson(e)).toList();
+
+      return history;
+    } else {
+      throw Exception('Erro ao buscar histórico: ${response.body}');
     }
   }
 

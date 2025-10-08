@@ -167,7 +167,7 @@ class AppModule extends Module {
     }, children: [
       ChildRoute('/home', child: (_) => HomeTravelerPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/history-panel', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
-      ChildRoute('/profile', child: (_) => const ProfilePage()),
+      ChildRoute('/profile/', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),
     ]);
   }

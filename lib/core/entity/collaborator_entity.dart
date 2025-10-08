@@ -8,6 +8,7 @@ class CollaboratorEntity extends UserEntity {
     required this.company_id,
     required this.responsibleId,
     String? id,
+    super.cpf,
     required super.email,
     required super.fullName,
     required super.phone,
@@ -75,6 +76,7 @@ class CollaboratorEntity extends UserEntity {
     int? tripsCreated,
     String? company,
     String? responsibleId,
+    String? cpf
   }) {
     return CollaboratorEntity(
       id: id ?? this.id,

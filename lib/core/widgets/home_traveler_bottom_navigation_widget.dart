@@ -48,7 +48,7 @@ class _HomeTravelerBottomNavigationState
         break;
       case 2:
         Modular.to.pushNamed(
-          '/profile/${widget.travelerId}',
+          '/traveler/${widget.travelerId}/profile',
         );
         break;
     }

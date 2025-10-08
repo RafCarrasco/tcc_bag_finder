@@ -2,7 +2,6 @@ import '../enums/user_role_enum.dart';
 import 'user_entity.dart';
 
 class AdminEntity extends UserEntity {
-
   final String company;
 
   AdminEntity({
@@ -14,6 +13,7 @@ class AdminEntity extends UserEntity {
     required String password,
     required bool isActive,
     required DateTime createdAt,
+    String? cpf,
     this.company = '',
   }) : super(
           id: id,
@@ -24,6 +24,7 @@ class AdminEntity extends UserEntity {
           password: password,
           isActive: isActive,
           createdAt: createdAt,
+          cpf: cpf
         );
 
   factory AdminEntity.empty() {

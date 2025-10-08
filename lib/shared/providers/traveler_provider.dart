@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/traveler_entity.dart';
+import '../../core/entity/trip_history_entity.dart';
 import '../../repositories/trip_repository.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
 import '../../core/failures/traveler_failure.dart';
 import '../../features/auth/controller/auth_controller.dart';
+
 
 class TravelerProvider extends ChangeNotifier {
   final TravelerRepositoryImpl repository;
@@ -18,15 +22,16 @@ class TravelerProvider extends ChangeNotifier {
   List<BagEntity>? _bags;
   List<TripEntity>? _trips;
   bool _isLoading = false;
-
+  List<TripHistoryEntity> _history = [];
   bool _isTripComplete = false;
   int _checkedBags = 0;
+  Timer? _pollingTimer;
 
   TripEntity? get currentTrip => _currentTrip;
   List<BagEntity>? get bags => _bags;
   List<TripEntity>? get trips => _trips;
   bool get isLoading => _isLoading;
-
+  List<TripHistoryEntity> get history => _history;
   bool get isTripComplete => _isTripComplete;
   int get checkedBags => _checkedBags;
   List<TravelerEntity> _travelers = [];
@@ -41,33 +46,90 @@ class TravelerProvider extends ChangeNotifier {
     required String travelerId,
     required bool isDone,
   }) async {
+    print("Buscando viagens para o viajante $travelerId (isDone=$isDone)");
+
     _setLoading(true);
 
     final result = await tripRepository.getTripsByStatusAndId(
       travelerId: travelerId,
       isDone: isDone,
     );
+
     result.fold(
       (failure) {
+        print("Falha ao buscar viagens: $failure");
         _currentTrip = null;
         _bags = [];
         _trips = [];
       },
       (trips) {
-        _trips = trips;
+        print("Viagens recebidas: ${trips.length}");
         if (trips.isNotEmpty) {
+          print("Primeira viagem: ${trips.first.id}");
           _currentTrip = trips.first;
           _bags = _currentTrip?.bags ?? [];
+          _startPolling(travelerId);
         } else {
+          print("Nenhuma viagem encontrada");
           _currentTrip = null;
           _bags = [];
+          _stopPolling();
         }
       },
     );
 
     _setLoading(false);
   }
+  Future<void> getTravelerHistory(String travelerId) async {
+    _setLoading(true);
+    final result = await tripRepository.getTravelerHistory(travelerId: travelerId);
 
+    result.fold(
+      (failure) {
+        _history = [];
+      },
+      (history) {
+        _history = history;
+      },
+    );
+    print(_history);
+    _setLoading(false);
+  }
+
+  void _stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+  }
+
+  void _startPolling(String travelerId) {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      try {
+        final result = await tripRepository.getTripsByStatusAndId(
+          travelerId: travelerId,
+          isDone: false,
+        );
+
+        result.fold(
+          (failure) {},
+          (trips) {
+            if (trips.isNotEmpty) {
+              final updatedTrip = trips.first;
+              final updatedBags = updatedTrip.bags ?? [];
+
+              if (!listEquals(_bags, updatedBags)) {
+                _bags = updatedBags;
+                _currentTrip = updatedTrip;
+                notifyListeners();
+              }
+            }
+          },
+        );
+      } catch (e) {
+        if (kDebugMode) print('Polling error: $e');
+      }
+    });
+  }
 
   Future<void> checkIsTripDone({required TripEntity trip}) async {
     // final result = await repository.isTripDone(tripId: trip.id);

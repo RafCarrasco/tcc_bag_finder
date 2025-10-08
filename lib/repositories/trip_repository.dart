@@ -1,6 +1,7 @@
 
 import 'package:dartz/dartz.dart';
 import '../core/entity/trip_entity.dart';
+import '../core/entity/trip_history_entity.dart';
 import '../core/failures/trip_failure.dart';
 
 abstract class ITripRepository {
@@ -31,5 +32,8 @@ abstract class ITripRepository {
 
   Future<Either<TripFailure, List<TripEntity>>> getTripsById({
     required String tripId,
+  });
+  Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistory({
+    required String travelerId,
   });
 }

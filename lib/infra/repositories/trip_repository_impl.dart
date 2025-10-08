@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
+import '../../core/entity/trip_history_entity.dart';
 import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 import '../../data/datasources/trip_remote_datasource.dart';
@@ -95,6 +96,17 @@ class TripRepositoryImpl implements ITripRepository {
   }) async {
     try {
       final result = await remote.getTripsById(tripId);
+      return Right(result);
+    } catch (e) {
+      return Left(TripReadError());
+    }
+  }
+  @override
+  Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistory({
+    required String travelerId,
+  }) async {
+    try {
+      final result = await remote.getTravelerHistory(travelerId);
       return Right(result);
     } catch (e) {
       return Left(TripReadError());
