@@ -8,18 +8,18 @@ class TripEntity {
   static const Uuid _uuid = Uuid();
 
   final String id;
-  final TravelerEntity travelerEntity;
   final String responsibleCollaboratorId;
   final TripDescriptionEntity description;
   final List<BagEntity>? bags;
   final bool isDone;
+  final String? cpf;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
   TripEntity({
     String? id,
+    required this.cpf,
     required this.responsibleCollaboratorId,
-    TravelerEntity? travelerEntity,
     required TripDescriptionEntity description,
     required this.bags,
     this.isDone = false,
@@ -27,12 +27,11 @@ class TripEntity {
     this.updatedAt,
   })  : id = id ?? _uuid.v4(),
         description = description.copyWith(tripId: id ?? _uuid.v4()),
-        travelerEntity = travelerEntity ?? TravelerEntity.empty(),
         createdAt = createdAt ?? DateTime.now();
   TripEntity copyWith({
     String? id,
+    String? cpf,
     String? responsibleCollaboratorId,
-    TravelerEntity? travelerEntity,
     TripDescriptionEntity? description,
     List<BagEntity>? bags,
     bool? isDone,
@@ -41,9 +40,9 @@ class TripEntity {
   }) {
     return TripEntity(
       id: id ?? this.id,
+      cpf: cpf ?? this.cpf,
       responsibleCollaboratorId:
           responsibleCollaboratorId ?? this.responsibleCollaboratorId,
-      travelerEntity: travelerEntity ?? this.travelerEntity,
       description: description ?? this.description,
       bags: bags ?? this.bags,
       isDone: isDone ?? this.isDone,
@@ -54,6 +53,7 @@ class TripEntity {
 
   factory TripEntity.empty() {
     return TripEntity(
+      cpf: '',
       responsibleCollaboratorId: '',
       description: TripDescriptionEntity.empty(),
       bags: [],
@@ -66,8 +66,8 @@ class TripEntity {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'cpf': cpf,
       'responsibleCollaboratorId': responsibleCollaboratorId,
-      'travelerEntity': travelerEntity.toJson(),
       'description': description.toJson(),
       'bags': bags?.map((e) => e.toJson()).toList(),
       'isDone': isDone,
@@ -79,8 +79,8 @@ class TripEntity {
   factory TripEntity.fromJson(Map<String, dynamic> json) {
     return TripEntity(
       id: json['id'],
+      cpf: json['cpf'],
       responsibleCollaboratorId: json['responsible_collaborator_id'],
-      travelerEntity: TravelerEntity.fromJson(json['travelerEntity']),
       description: TripDescriptionEntity.fromJson(json['description']),
       bags: (json['bags'] as List<dynamic>?)
           ?.map((e) => BagEntity.fromJson(e))
@@ -93,41 +93,4 @@ class TripEntity {
       
     );
   }
-  static Future<TripEntity> fromJsonAsync(
-    Map<String, dynamic> json,
-    TravelerRepositoryImpl travelerRepository,
-  ) async {
-    TravelerEntity traveler;
-
-    final travelerData = json['travelerEntity'];
-
-    if (travelerData is String) {
-      final result = await travelerRepository.getTravelerById(id: travelerData);
-      traveler = result.fold(
-        (failure) => TravelerEntity.empty(),
-        (entity) => entity ?? TravelerEntity.empty(),
-      );
-    } else {
-      traveler = TravelerEntity.empty();
-    }
-
-    return TripEntity(
-      id: json['id'],
-      responsibleCollaboratorId: json['responsible_collaborator_id'] ?? '',
-      travelerEntity: traveler,
-      description: TripDescriptionEntity.fromJson(
-        json['description'] ?? <String, dynamic>{},
-      ),
-      bags: (json['bags'] as List<dynamic>?)
-          ?.map((e) => BagEntity.fromJson(e))
-          .toList(),
-      isDone: json['isDone'] ?? false,
-      createdAt: DateTime.tryParse(json['createdAt'] ?? json['created_at'] ?? '') ??
-          DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-                ? DateTime.tryParse(json['updatedAt'])
-                : null,
-    );
-  }
-
 }

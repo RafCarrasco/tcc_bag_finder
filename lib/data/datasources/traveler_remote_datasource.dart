@@ -63,19 +63,5 @@ class TravelerRemoteDataSource {
       throw Exception('Erro ao deletar viajante: ${response.body}');
     }
   }
-
-  Future<Map<String, dynamic>> addCpf(String cpf) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/travelers/cpf'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'cpf': cpf}),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Erro ao inserir CPF: ${response.statusCode}');
-    }
-  }
 }
 

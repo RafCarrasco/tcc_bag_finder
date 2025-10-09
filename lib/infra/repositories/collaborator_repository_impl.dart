@@ -12,18 +12,6 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
   CollaboratorRepositoryImpl(this.remote);
 
   @override
-  Future<Either<CollaboratorFailure, List<CollaboratorEntity>>> getCollaboratorsByResponsibleId({
-    required String id,
-  }) async {
-    try {
-      final result = await remote.getCollaboratorsByResponsibleId(id);
-      return Right(result);
-    } catch (e) {
-      return Left(CollaboratorReadError());
-    }
-  }
-
-  @override
   Future<Either<CollaboratorFailure, List<TripEntity>>> getTripsByTravelerId({
     required String travelerId,
     required String responsibleId,
@@ -61,23 +49,13 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
     }
   }
   
-  Future<void> setResponsibleId({
-    required String responsibleId,
-    required String userId,
-  }) async {
-    try {
-      final result = await remote.setResponsibleId(userId,responsibleId);
-      Right(result);
-    } catch (e) {
-      Left(CollaboratorTripsError());
-    }
-  }
-  
   Future<Either<CollaboratorFailure, Unit>> insertTag(TagEntity tag) async {
     try {
       await remote.insertTag(tag);
       return const Right(unit);
     } catch (e) {
+      print(e);
+      print('erroTAg');
       return Left(CollaboratorTripsError());
     }
   }

@@ -33,9 +33,7 @@ class _CollaboratorPanelPageState extends State<CollaboratorPanelPage> {
   }
 
   void getCollaborators() async {
-    await adminProvider.getCollaboratorsByResponsibleId(
-      id: widget.adminId,
-    );
+    await adminProvider.getCollaborators();
   }
 
   @override

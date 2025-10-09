@@ -26,10 +26,11 @@ class InitUserTripController {
     _travelerEntity = user ?? TravelerEntity.empty();
   }
 
-  void setCpf({
-    required String? cpf,
-  }) {
-    _cpf = cpf!;
+  void setCpf({required String? cpf}) {
+    if (cpf == null) return;
+    final cleanedCpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
+
+    _cpf = cleanedCpf;
   }
 
   void setDescription({

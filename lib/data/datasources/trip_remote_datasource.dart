@@ -19,6 +19,7 @@ class TripRemoteDataSource {
       body: jsonEncode(trip.toJson()),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
+      print(jsonDecode(response.body));
       return TripEntity.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Erro ao criar viagem: ${response.body}');
@@ -129,14 +130,11 @@ class TripRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List<dynamic>;
-      final trips = await Future.wait(
-        list.map(
-          (e) => TripEntity.fromJsonAsync(
-            e as Map<String, dynamic>,
-            travelerRepository,
-          ),
-        ),
-      );
+      final trips = list
+          .map(
+            (e) => TripEntity.fromJson(e as Map<String, dynamic>),
+          )
+          .toList();
       return trips;
     } else {
       throw Exception(

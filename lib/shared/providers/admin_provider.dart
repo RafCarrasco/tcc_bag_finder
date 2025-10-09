@@ -24,10 +24,10 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCollaboratorsByResponsibleId({required String id}) async {
+  Future<void> getCollaborators() async {
     _setLoading(true);
 
-    final result = await repository.getCollaboratorsByResponsibleId(id: id);
+    final result = await repository.getCollaborators();
 
     result.fold(
       (failure) => _collaborators = [],
@@ -62,7 +62,7 @@ class AdminProvider extends ChangeNotifier {
   }) async {
     _setLoading(true);
 
-    final result = await repository.getCollaboratorsByResponsibleId(id: responsibleId);
+    final result = await repository.getCollaborators();
 
     result.fold(
       (failure) => _collaborators = [],

@@ -56,11 +56,12 @@ class CollaboratorProvider extends ChangeNotifier {
     required List<TripEntity> list,
     required bool isAscending,
   }) {
-    _trips = [...list]..sort((a, b) {
-        final nameA = a.travelerEntity.fullName.toLowerCase();
-        final nameB = b.travelerEntity.fullName.toLowerCase();
-        return isAscending ? nameA.compareTo(nameB) : nameB.compareTo(nameA);
-      });
+    print('arrumar a funcao de order alfabetica colaborador provider');
+    // _trips = [...list]..sort((a, b) {
+    //     final nameA = a.travelerEntity.fullName.toLowerCase();
+    //     final nameB = b.travelerEntity.fullName.toLowerCase();
+    //     return isAscending ? nameA.compareTo(nameB) : nameB.compareTo(nameA);
+    //   });
     notifyListeners();
   }
 
@@ -85,17 +86,6 @@ class CollaboratorProvider extends ChangeNotifier {
       });
     notifyListeners();
   }
-  
-  void setResponsibleId({
-    required String userId,
-    required String responsibleId
-  })async{
-    try{
-      await repository.setResponsibleId(userId: userId,responsibleId: responsibleId);
-    }catch(e){
-      print(e);
-    }
-  }
   Future<void> getAllTripsByTravelerFullName({
     required String fullName,
   }) async {
@@ -112,7 +102,6 @@ class CollaboratorProvider extends ChangeNotifier {
   Future<void> insertTag(TagEntity tag) async {
     try {
       await repository.insertTag(tag);
-      debugPrint('Tag inserida com sucesso!');
     } catch (e) {
       debugPrint('Erro ao inserir tag: $e');
     }

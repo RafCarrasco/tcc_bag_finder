@@ -199,29 +199,4 @@ class TravelerProvider extends ChangeNotifier {
     _setLoading(false);
     return traveler;
   }
-
-  Future<void> addCpf(String cpf) async {
-    _setLoading(true);
-    final result = await repository.insertTravelerCpfIfNotExists(cpf: cpf);
-
-    result.fold(
-      (failure) {
-        if (failure is TravelerReadError) {
-          debugPrint('Erro ao inserir CPF: ${failure.errorMessage}');
-        } else {
-          debugPrint('Erro desconhecido ao inserir CPF: $failure');
-        }
-      },
-      (response) {
-        if (response['created'] == true) {
-          debugPrint('CPF cadastrado com sucesso: ${response['cpf']}');
-        } else {
-          debugPrint('CPF já existia, sem alterações: ${response['cpf']}');
-        }
-      },
-    );
-
-    _setLoading(false);
-  }
-
 }

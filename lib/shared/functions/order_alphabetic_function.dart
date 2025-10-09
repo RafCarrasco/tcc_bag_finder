@@ -29,21 +29,21 @@ List<TripEntity> orderTripsAlphabeticFunction({
   required List<TripEntity> list,
   bool isAscending = true,
 }) {
-  if (isAscending) {
-    list.sort(
-      (a, b) => a.travelerEntity.fullName.compareTo(
-        b.travelerEntity.fullName,
-      ),
-    );
+  // if (isAscending) {
+  //   list.sort(
+  //     (a, b) => a.travelerEntity.fullName.compareTo(
+  //       b.travelerEntity.fullName,
+  //     ),
+  //   );
 
-    return list;
-  }
+  //   return list;
+  // }
 
-  list.sort(
-    (a, b) => b.travelerEntity.fullName.compareTo(
-      a.travelerEntity.fullName,
-    ),
-  );
+  // list.sort(
+  //   (a, b) => b.travelerEntity.fullName.compareTo(
+  //     a.travelerEntity.fullName,
+  //   ),
+  // );
 
   return list;
 }

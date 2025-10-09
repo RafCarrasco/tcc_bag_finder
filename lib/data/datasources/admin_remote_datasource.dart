@@ -7,8 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AdminRemoteDataSource {
   final String baseUrl = dotenv.env['BASE_URL']!;
 
-  Future<List<CollaboratorEntity>> getCollaboratorsByResponsibleId(String id) async {
-    final response = await http.get(Uri.parse('$baseUrl/admins/$id/collaborators'));
+  Future<List<CollaboratorEntity>> getCollaborators() async {
+    final response = await http.get(Uri.parse('$baseUrl/admins/collaborators'));
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;

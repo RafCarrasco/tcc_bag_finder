@@ -142,15 +142,6 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                             });
                           },
                         ),
-                        // Selecionar passageiro
-                        InitUserTripDropdownField(
-                          hintText: 'Buscar passageiro por nome',
-                          onChanged: (user) {
-                            _controller.setUser(user: user);
-                          },
-                          isRequired: true,
-                          fieldType: '',
-                        ),
                         InitUserTripTextField(
                           prefixIcon: AppIconsSecondaryGrey.idCardIcon,
                           hintText: 'CPF',
@@ -215,35 +206,37 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                               final bags = List.generate(
                                 _controller.bagageQuantity ?? 0,
                                   (index) => BagEntity(
-                                    description: null,
+                                    id:uuid.v4(),
+                                    description: "Mala do passageiro ${_controller.cpf}",
                                     status: BagStatusEnum.CHECKED_IN,
-                                    ownerId: _controller.user.id,
+                                    cpf: _controller.cpf,
                                     tripId: tripId,
                                   ),
                                 );
                               if (_formKey.currentState!.validate()) {
-                                tripProvider.addTrip(
+                                await tripProvider.addTrip(
                                   trip: TripEntity(
                                     id: tripId,
+                                    cpf: _controller.cpf,
                                     responsibleCollaboratorId:
                                       userProvider.user!.id,
-                                    travelerEntity: _controller.user,
                                     description: TripDescriptionEntity(
-                                      airportOrigin: '_controller.airportOrigin',
-                                      airportDestination:'_controller.airportDestination',
+                                      airportOrigin: "_controller.airportOrigin",
+                                      airportDestination:"_controller.airportDestination",
                                     ),
                                     bags: bags
                                   ),
                                 );
-                                travelerProvider.addCpf(_controller.cpf);
+                                await Future.delayed(const Duration(milliseconds: 400));
                                 int cont = 0;
                                 for (final bag in bags) {
                                   await addBagUsecase.call(
                                     bag: bag);
-                                  provider.insertTag(
+                                  await provider.insertTag(
                                     TagEntity(
                                       code: _controller.codeTags[cont],
-                                      createdAt: DateTime.now()
+                                      createdAt: DateTime.now(),
+                                      bagId: bag.id
                                     )
                                   );
                                   cont =cont+1;

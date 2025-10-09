@@ -14,17 +14,6 @@ class CollaboratorRemoteDataSource {
     required this.travelerRepository,
   });
 
-  Future<List<CollaboratorEntity>> getCollaboratorsByResponsibleId(String id) async {
-    final response = await http.get(Uri.parse('$baseUrl/collaborators/responsible/$id'));
-
-    if (response.statusCode == 200) {
-      final list = jsonDecode(response.body) as List;
-      return list.map((e) => CollaboratorEntity.fromJson(e)).toList();
-    } else {
-      throw Exception('Erro ao buscar colaboradores por responsável: ${response.body}');
-    }
-  }
-
   Future<List<TripEntity>> getTripsByTravelerId({
     required String travelerId,
     required String responsibleId,
@@ -35,9 +24,9 @@ class CollaboratorRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
-      return Future.wait(
-        list.map((e) => TripEntity.fromJsonAsync(e, travelerRepository)),
-      );
+      return list
+          .map((e) => TripEntity.fromJson(e as Map<String, dynamic>))
+          .toList();
     } else {
       throw Exception('Erro ao buscar viagens do traveler: ${response.body}');
     }
@@ -48,9 +37,9 @@ class CollaboratorRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
-      return Future.wait(
-        list.map((e) => TripEntity.fromJsonAsync(e, travelerRepository)),
-      );
+      return list
+          .map((e) => TripEntity.fromJson(e as Map<String, dynamic>))
+          .toList();
     } else {
       throw Exception('Erro ao buscar viagens por responsável: ${response.body}');
     }
@@ -60,37 +49,20 @@ class CollaboratorRemoteDataSource {
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
-      return Future.wait(
-        list.map((e) => TripEntity.fromJsonAsync(e, travelerRepository)),
-      );
+      return list
+          .map((e) => TripEntity.fromJson(e as Map<String, dynamic>))
+          .toList();
     } else {
       throw Exception('Erro ao buscar viagens por responsável: ${response.body}');
     }
   }
 
-  Future<void> setResponsibleId(String userId, String responsibleId) async {
-    final url = Uri.parse('$baseUrl/collaborators/responsible');
-
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_id': userId,
-        'responsible_id': responsibleId,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Erro ao atualizar responsibleId: ${response.body}');
-    }
-  }
   Future<void> insertTag(TagEntity tag) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/tags'),
+      Uri.parse('$baseUrl/collaborators/tags'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(tag.toJson()),
     );
-
     if (response.statusCode != 201) {
       throw Exception('Erro ao inserir tag: ${response.body}');
     }

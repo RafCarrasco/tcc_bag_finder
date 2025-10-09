@@ -11,13 +11,12 @@ class AdminRepositoryImpl implements IAdminRepository {
   AdminRepositoryImpl(this.remote);
 
   @override
-  Future<Either<AdminFailure, List<CollaboratorEntity>>> getCollaboratorsByResponsibleId({
-    required String id,
-  }) async {
+  Future<Either<AdminFailure, List<CollaboratorEntity>>> getCollaborators() async {
     try {
-      final result = await remote.getCollaboratorsByResponsibleId(id);
+      final result = await remote.getCollaborators();
       return Right(result);
     } catch (e) {
+      print(e);
       return Left(AdminNotFound());
     }
   }

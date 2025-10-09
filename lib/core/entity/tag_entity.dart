@@ -5,11 +5,13 @@ class TagEntity {
 
   final String id;
   final String code;
+  final String bagId;
   final DateTime createdAt;
 
   TagEntity({
     String? id,
     required this.code,
+    required this.bagId,
     DateTime? createdAt,
   })  : id = id ?? _uuid.v4(),
         createdAt = createdAt ?? DateTime.now();
@@ -17,11 +19,13 @@ class TagEntity {
   TagEntity copyWith({
     String? id,
     String? code,
+    String? bagId,
     DateTime? createdAt,
   }) {
     return TagEntity(
       id: id ?? this.id,
       code: code ?? this.code,
+      bagId: bagId ?? this.bagId,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -30,6 +34,7 @@ class TagEntity {
     return TagEntity(
       id: json['id'],
       code: json['code'],
+      bagId: json['bag_id'],
       createdAt: DateTime.parse(json['created_at']),
     );
   }
@@ -38,6 +43,7 @@ class TagEntity {
     return {
       'id': id,
       'code': code,
+      'bag_id': bagId,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -46,6 +52,7 @@ class TagEntity {
     return TagEntity(
       id: '',
       code: '',
+      bagId: '',
       createdAt: DateTime.now(),
     );
   }

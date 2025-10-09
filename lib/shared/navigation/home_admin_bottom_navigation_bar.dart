@@ -55,11 +55,6 @@ class _HomeAdminBottomNavigationState extends State<HomeAdminBottomNavigation> {
           '/admin/${widget.adminId}/trip-collaborator-panel',
         );
         break;
-      case 4:
-        Modular.to.pushNamed(
-          '/profile/${widget.adminId}',
-        );
-        break;
     }
   }
 
@@ -126,17 +121,6 @@ class _HomeAdminBottomNavigationState extends State<HomeAdminBottomNavigation> {
                   : AppColors.secondaryGrey,
               onPressed: () => _navigateTo(
                 3,
-              ),
-            ),
-            IconButton(
-              padding: EdgeInsets.zero,
-              icon: AppIconsSecondary.personIcon,
-              iconSize: AppDimensions.iconExtraLarge,
-              color: widget.selectedIndex == 4
-                  ? AppColors.primary
-                  : AppColors.secondaryGrey,
-              onPressed: () => _navigateTo(
-                4,
               ),
             ),
           ],

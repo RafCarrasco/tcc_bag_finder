@@ -18,6 +18,7 @@ class BagRepositoryImpl implements IBagRepository {
       return Right(result);
     } catch (e) {
       print(e);
+      print(bag.toJson());
       return Left(BagCreateError());
     }
   }

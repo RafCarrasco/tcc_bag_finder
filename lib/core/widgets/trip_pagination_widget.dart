@@ -51,16 +51,14 @@ class _TripPaginationWidgetState extends State<TripPaginationWidget> {
             children: [
               AppIconsPrimary.personIcon,
               Text(
-                '(${trip.travelerEntity.id.length >= 4
-                    ? trip.travelerEntity.id.substring(0, 4)
-                    : trip.travelerEntity.id})',
+                '(${(trip.cpf?.length ?? 0) >= 4 ? trip.cpf?.substring(0, 4) ?? '' : trip.cpf ?? ''})',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(width: 5),
               Text(
-                trip.travelerEntity.fullName,
+                trip.cpf ?? '',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(),
               ),
             ],

@@ -173,8 +173,8 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                             role: 'COLLABORATOR',
                             isActive: true,
                             company_id: 'c-1',
-                            responsibleId: currentUser.id,
                             createdAt: DateTime.now(),
+                            cpf: '00000000000',
                           );
 
                           final newUser = await provider.registerNewUser(

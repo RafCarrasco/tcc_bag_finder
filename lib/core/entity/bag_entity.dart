@@ -6,14 +6,14 @@ class BagEntity {
 
   final String id;
   final String? description;
-  final String ownerId;
+  final String cpf;
   final BagStatusEnum status;
   final String? tripId;
   final DateTime createdAt;
 
   BagEntity({
     String? id,
-    required this.ownerId,
+    required this.cpf,
     required this.description,
     required this.status,
     this.tripId,
@@ -26,17 +26,17 @@ class BagEntity {
     String? id,
     String? description,
     BagStatusEnum? status,
-    String? ownerId,
-    String? tripId, // <-- adicionado
+    String? cpf,
+    String? tripId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return BagEntity(
       id: id ?? this.id,
-      ownerId: ownerId ?? this.ownerId,
+      cpf: cpf ?? this.cpf,
       description: description ?? this.description,
       status: status ?? this.status,
-      tripId: tripId ?? this.tripId, // <-- adicionado
+      tripId: tripId ?? this.tripId,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -45,7 +45,7 @@ class BagEntity {
   factory BagEntity.empty() {
     return BagEntity(
       id: '',
-      ownerId: '',
+      cpf: '',
       description: '',
       status: BagStatusEnum.UNKNOWN,
       createdAt: DateTime.now(),
@@ -56,9 +56,9 @@ class BagEntity {
     return {
       'id': id,
       'description': description,
-      'ownerId': ownerId,
+      'cpf': cpf,
       'status': status.name,
-      'tripId': tripId, // <-- adicionado
+      'tripId': tripId,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -67,12 +67,12 @@ class BagEntity {
     return BagEntity(
       id: json['id'],
       description: json['description'],
-      ownerId: json['ownerId'],
+      cpf: json['cpf'],
       status: BagStatusEnum.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => BagStatusEnum.UNKNOWN,
       ),
-      tripId: json['tripId'], // <-- adicionado
+      tripId: json['tripId'],
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
