@@ -1,3 +1,4 @@
+import 'package:bag_finder/core/exceptions/authentication_exceptions.dart';
 import 'package:bag_finder/data/datasources/user_remote_datasource.dart';
 import 'package:dartz/dartz.dart';
 import '../../../core/entity/user_entity.dart';
@@ -11,7 +12,8 @@ class UserRepositoryImpl implements IUserRepository {
   UserRepositoryImpl(this.remote);
 
   @override
-  Future<Either<AuthFailure, UserEntity>> addUser({required UserEntity user}) async {
+  Future<Either<AuthFailure, UserEntity>> addUser(
+      {required UserEntity user}) async {
     try {
       final result = await remote.addUser(user);
       return Right(result);
@@ -41,7 +43,8 @@ class UserRepositoryImpl implements IUserRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> updateUser({required UserEntity user}) async {
+  Future<Either<Failure, UserEntity>> updateUser(
+      {required UserEntity user}) async {
     try {
       final result = await remote.updateUser(user);
       return Right(result);
@@ -61,7 +64,8 @@ class UserRepositoryImpl implements IUserRepository {
   }
 
   @override
-  Future<Either<Failure, List<String>>> getAllUsersByIds({List<String>? ids}) async {
+  Future<Either<Failure, List<String>>> getAllUsersByIds(
+      {List<String>? ids}) async {
     try {
       if (ids == null || ids.isEmpty) return const Right([]);
       final result = await remote.getAllUsersByIds(ids);
@@ -72,7 +76,8 @@ class UserRepositoryImpl implements IUserRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> getUserByEmail({required String email}) async {
+  Future<Either<Failure, UserEntity>> getUserByEmail(
+      {required String email}) async {
     try {
       final result = await remote.getUserByEmail(email);
       if (result == null) return Left(NoDataFound());
@@ -83,7 +88,8 @@ class UserRepositoryImpl implements IUserRepository {
   }
 
   @override
-  Future<Either<Failure, List<UserEntity>>> getUsersByName({required String name}) async {
+  Future<Either<Failure, List<UserEntity>>> getUsersByName(
+      {required String name}) async {
     try {
       final result = await remote.getUsersByName(name);
       return Right(result);
@@ -99,10 +105,22 @@ class UserRepositoryImpl implements IUserRepository {
   }) async {
     try {
       final result = await remote.authenticateUser(email, password);
-      if (result == null) return Left(ApplicationExecutionError());
+      // Se o 401 fosse tratado retornando null, esta linha faria sentido.
+      // Como estamos lançando, o fluxo vai direto para o catch.
+      // if (result == null) return Left(ApplicationExecutionError());
       return Right(result);
-    } catch (e) {
-      return Left(UnknownError());
+    } on AuthenticationFailedException {
+      // 1. Captura a exceção de 401 (Credenciais Inválidas)
+      return Left(
+          AuthenticationFailure()); // Usa sua classe AuthenticationFailure
+    } on Exception catch (e, stack) {
+      // 2. Captura 500, erros de rede, ou outras falhas do servidor
+      print(e);
+      // Usa UnknownError ou uma falha específica para erro de servidor
+      return Left(UnknownError(stackTrace: stack));
+    } catch (e, stack) {
+      // 3. Captura erros que não são Exceptions (erros de runtime, etc.)
+      return Left(UnknownError(stackTrace: stack));
     }
   }
 }

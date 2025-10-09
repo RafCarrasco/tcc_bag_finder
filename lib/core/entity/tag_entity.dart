@@ -7,8 +7,10 @@ class TagEntity {
   final String code;
   final String bagId;
   final DateTime createdAt;
+  final String? printedCode;
 
-  TagEntity({
+  TagEntity( {
+    this.printedCode,
     String? id,
     required this.code,
     required this.bagId,

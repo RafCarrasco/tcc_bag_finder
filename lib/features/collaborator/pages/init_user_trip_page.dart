@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:bag_finder/core/entity/tag_entity.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
@@ -10,16 +13,13 @@ import '../../../core/entity/trip_entity.dart';
 import '../../../core/enums/bag_status_enum.dart';
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../../shared/providers/trip_provider.dart';
-import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
 import '../../../core/utils/global_snackbar.dart';
-import '../../../core/widgets/fields/init_user_trip_dropdown_field.dart';
 import '../../../core/widgets/fields/init_user_trip_text_field.dart';
-import '../../../core/widgets/fields/luggage_quantity_dropdown_field.dart';
 import '../../../usecase/bag/add_bag_usecase.dart';
 
 class InitUserTripPage extends StatefulWidget {
@@ -30,16 +30,78 @@ class InitUserTripPage extends StatefulWidget {
 }
 
 class _InitUserTripPageState extends State<InitUserTripPage> {
-  final signUpController = Modular.get<SignUpController>();
   final provider = Modular.get<CollaboratorProvider>();
   final addBagUsecase = Modular.get<AddBagUsecase>();
   final tripProvider = Modular.get<TripProvider>();
-  final travelerProvider = Modular.get<TravelerProvider>();
   final userProvider = Modular.get<UserProvider>();
   final _controller = Modular.get<InitUserTripController>();
 
   final uuid = const Uuid();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  late WebSocketChannel _channel;
+  final _tagControllers = <TextEditingController>[];
+  final _printedCodeControllers = <TextEditingController>[];
+  int _currentBagCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    final baseUrl = dotenv.env['BASE_URL']!;
+    final wsUrl = baseUrl.replaceFirst('http', 'ws');
+    _channel = WebSocketChannel.connect(
+      Uri.parse(wsUrl),
+    );
+
+    _channel.stream.listen((message) {
+      _handleRfidMessage(message.toString());
+    });
+  }
+
+  void _addBagSlot(String epc) {
+    _controller.addTagCodeAtIndex(_currentBagCount, epc);
+    _controller.addPrintedCodeAtIndex(_currentBagCount, '');
+    _tagControllers.add(TextEditingController(text: epc));
+    _printedCodeControllers.add(TextEditingController());
+    _currentBagCount++;
+  }
+
+  void _handleRfidMessage(String message) {
+    try {
+      final data = jsonDecode(message);
+      final epc = data['epc'] as String?;
+
+      if (epc != null && data['status'] == 'NAO_CADASTRADA') {
+        if (_controller.codeTags.contains(epc)) {
+          GlobalSnackBar.warning(
+              'TAG ${epc.substring(0, 8)}... já foi lida e adicionada!');
+          return;
+        }
+        setState(() {
+          _addBagSlot(epc);
+        });
+        GlobalSnackBar.success(
+            'Nova bagagem adicionada e TAG lida: ${epc.substring(0, 8)}...');
+      } else if (epc != null && data['status'] != 'NAO_CADASTRADA') {
+        GlobalSnackBar.error(
+            'Erro: A TAG ${epc.substring(0, 8)}... já está vinculada e em trânsito.');
+      }
+    } catch (e) {
+      GlobalSnackBar.error('Erro ao processar mensagem do WebSocket: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    for (var controller in _tagControllers) {
+      controller.dispose();
+    }
+    for (var controller in _printedCodeControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,19 +191,6 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                             ),
                           ],
                         ),
-                        // Quantidade de bagagens
-                        LuggageQuantityDropdownField(
-                          initialQuantity: 10,
-                          hintText: 'Quantidade de bagagem',
-                          isRequired: true,
-                          fieldType: '',
-                          onChanged: (bagQuantity) {
-                            setState(() {
-                              _controller.setBagageQuantity(
-                                  bagageQuantity: bagQuantity);
-                            });
-                          },
-                        ),
                         InitUserTripTextField(
                           prefixIcon: AppIconsSecondaryGrey.idCardIcon,
                           hintText: 'CPF',
@@ -156,15 +205,15 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                           prefixIcon: AppIconsSecondaryGrey.airPlaneModeIcon,
                           hintText: 'Destino',
                           onChanged: (destination) {
-                            _controller.setDestination(destination: destination);
+                            _controller.setDestination(
+                                destination: destination);
                           },
                           isPassword: false,
                           fieldType: 'destination',
                           isRequired: true,
                         ),
-                        // Campos dinâmicos de aeroportos (por bagagem)
                         ...List.generate(
-                          _controller.bagageQuantity ?? 0,
+                          _controller.codeTags.length,
                           (index) => Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -177,8 +226,11 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                   color: AppColors.primary,
                                 ),
                               ),
+                              // 1. CAMPO TAG-RFID (Preenchido pelo WebSocket)
                               InitUserTripTextField(
-                                prefixIcon: AppIconsSecondaryGrey.connectingAirportsIcon,
+                                controller: _tagControllers[index],
+                                prefixIcon: AppIconsSecondaryGrey
+                                    .connectingAirportsIcon,
                                 hintText: 'TAG-RFID (Bagagem ${index + 1})',
                                 onChanged: (code) {
                                   _controller.addTagCodeAtIndex(index, code);
@@ -187,10 +239,23 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                 fieldType: 'rfid',
                                 isRequired: true,
                               ),
+                              // 2. CAMPO PRINTED CODE (Manual)
+                              InitUserTripTextField(
+                                controller: _printedCodeControllers[index],
+                                prefixIcon: AppIconsSecondaryGrey.idCardIcon,
+                                hintText:
+                                    'Código Impresso (Bagagem ${index + 1})',
+                                onChanged: (code) {
+                                  _controller.addPrintedCodeAtIndex(
+                                      index, code);
+                                },
+                                isPassword: false,
+                                fieldType: 'printed_code',
+                                isRequired: false,
+                              ),
                             ],
                           ),
                         ),
-                        // Botão de gerar viagem
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -202,44 +267,53 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                   WidgetStateProperty.all(AppColors.primary),
                             ),
                             onPressed: () async {
-                              final tripId=uuid.v4();
+                              final tripId = uuid.v4();
                               final bags = List.generate(
-                                _controller.bagageQuantity ?? 0,
-                                  (index) => BagEntity(
-                                    id:uuid.v4(),
-                                    description: "Mala do passageiro ${_controller.cpf}",
-                                    status: BagStatusEnum.CHECKED_IN,
-                                    cpf: _controller.cpf,
-                                    tripId: tripId,
-                                  ),
-                                );
+                                _controller.codeTags.length,
+                                (index) => BagEntity(
+                                  id: uuid.v4(),
+                                  description:
+                                      "Mala do passageiro ${_controller.cpf}",
+                                  status: BagStatusEnum.CHECKED_IN,
+                                  cpf: _controller.cpf,
+                                  tripId: tripId,
+                                ),
+                              );
                               if (_formKey.currentState!.validate()) {
                                 await tripProvider.addTrip(
                                   trip: TripEntity(
                                     id: tripId,
                                     cpf: _controller.cpf,
                                     responsibleCollaboratorId:
-                                      userProvider.user!.id,
+                                        userProvider.user!.id,
                                     description: TripDescriptionEntity(
-                                      airportOrigin: "_controller.airportOrigin",
-                                      airportDestination:"_controller.airportDestination",
+                                      airportOrigin:
+                                          "_controller.airportOrigin",
+                                      airportDestination:
+                                          "_controller.airportDestination",
                                     ),
-                                    bags: bags
+                                    bags: bags,
                                   ),
                                 );
-                                await Future.delayed(const Duration(milliseconds: 400));
+                                await Future.delayed(
+                                    const Duration(milliseconds: 400));
                                 int cont = 0;
                                 for (final bag in bags) {
                                   await addBagUsecase.call(
-                                    bag: bag);
+                                    bag: bag,
+                                  );
                                   await provider.insertTag(
                                     TagEntity(
                                       code: _controller.codeTags[cont],
                                       createdAt: DateTime.now(),
-                                      bagId: bag.id
-                                    )
+                                      bagId: bag.id,
+                                      printedCode:
+                                          _controller.printedCodes.length > cont
+                                              ? _controller.printedCodes[cont]
+                                              : null,
+                                    ),
                                   );
-                                  cont =cont+1;
+                                  cont = cont + 1;
                                 }
                                 Modular.to.pushNamed(
                                   '/collaborator/${userProvider.user!.id}/home',

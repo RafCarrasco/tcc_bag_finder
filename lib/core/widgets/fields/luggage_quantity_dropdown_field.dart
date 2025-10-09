@@ -33,7 +33,7 @@ class _LuggageQuantityDropdownFieldState
     extends State<LuggageQuantityDropdownField> with ValidationMixin {
   String? errorMessage;
   int selectedQuantity = 1;
-  final List<int> quantities = List<int>.generate(10, (index) => index + 1);
+  final List<int> quantities = List<int>.generate(3, (index) => index + 1);
   final LuggageQuantityDropdownController _controller =
       Modular.get<LuggageQuantityDropdownController>();
 
@@ -133,7 +133,7 @@ class _LuggageQuantityDropdownFieldState
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        AppIconsSecondaryGrey.luggageIcon,
+                        //AppIconsSecondaryGrey.luggageIcon,
                         Text(
                           quantity.toString(),
                           style:

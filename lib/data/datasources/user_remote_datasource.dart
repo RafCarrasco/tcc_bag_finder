@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bag_finder/core/entity/admin_entity.dart';
 import 'package:bag_finder/core/entity/collaborator_entity.dart';
+import 'package:bag_finder/core/exceptions/authentication_exceptions.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/entity/user_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -26,7 +27,7 @@ class UserRemoteDataSource {
     if (response.statusCode == 200) {
       return UserEntity.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 404) {
-      return null; 
+      return null;
     } else {
       throw Exception('Erro ao buscar usuário por id: ${response.body}');
     }
@@ -113,14 +114,15 @@ class UserRemoteDataSource {
       final data = jsonDecode(response.body);
       if ((data['role'] as String) == 'ADMIN') {
         return AdminEntity.fromJson(data);
-      }else if((data['role'] as String) == 'COLLABORATOR'){
+      } else if ((data['role'] as String) == 'COLLABORATOR') {
         return CollaboratorEntity.fromJson(data);
       }
       return UserEntity.fromJson(data);
     } else if (response.statusCode == 401) {
-      return null;
+      throw AuthenticationFailedException();
     } else {
-      throw Exception('Erro ao autenticar usuário: ${response.body}');
+      throw Exception(
+          'Erro ao autenticar usuário (Status ${response.statusCode}): ${response.body}');
     }
   }
 }

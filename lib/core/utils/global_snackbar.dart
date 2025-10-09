@@ -50,4 +50,21 @@ abstract class GlobalSnackBar {
       ));
     }
   }
+
+  static void warning(String message) {
+    final Color warningColor = (AppColors.primary).withOpacity(0.8);
+
+    if (rootScaffoldMessengerKey.currentState != null) {
+      rootScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        backgroundColor: warningColor, 
+        width: 600,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
+        content: Text(
+          message,
+          style: AppTextStyles.bodyText1.copyWith(color: AppColors.secondary),
+        ),
+      ));
+    }
+  }
 }
