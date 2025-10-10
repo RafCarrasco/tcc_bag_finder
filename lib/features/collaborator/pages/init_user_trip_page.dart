@@ -203,6 +203,27 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                         ),
                         InitUserTripTextField(
                           prefixIcon: AppIconsSecondaryGrey.airPlaneModeIcon,
+                          hintText: 'Aeroporto de Origem',
+                          onChanged: (origin) {
+                            _controller.setAirportOrigin(airportOrigin: origin);
+                          },
+                          isPassword: false,
+                          fieldType: 'origin',
+                          isRequired: true,
+                        ),
+                        InitUserTripTextField(
+                          prefixIcon:
+                              AppIconsSecondaryGrey.connectingAirportsIcon,
+                          hintText: 'Aeroporto de Conexão (Opcional)',
+                          onChanged: (connection) {
+                            _controller.setConnection(connection: connection);
+                          },
+                          isPassword: false,
+                          fieldType: 'connection',
+                          isRequired: false,
+                        ),
+                        InitUserTripTextField(
+                          prefixIcon: AppIconsSecondaryGrey.airPlaneModeIcon,
                           hintText: 'Destino',
                           onChanged: (destination) {
                             _controller.setDestination(
@@ -268,64 +289,69 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                             ),
                             onPressed: () async {
                               final tripId = uuid.v4();
-                              final bags = List.generate(
-                                _controller.codeTags.length,
-                                (index) => BagEntity(
-                                  id: uuid.v4(),
-                                  description:
-                                      "Mala do passageiro ${_controller.cpf}",
-                                  status: BagStatusEnum.CHECKED_IN,
-                                  cpf: _controller.cpf,
-                                  tripId: tripId,
-                                ),
-                              );
                               if (_formKey.currentState!.validate()) {
-                                await tripProvider.addTrip(
-                                  trip: TripEntity(
-                                    id: tripId,
-                                    cpf: _controller.cpf,
-                                    responsibleCollaboratorId:
-                                        userProvider.user!.id,
-                                    description: TripDescriptionEntity(
-                                      airportOrigin:
-                                          "_controller.airportOrigin",
-                                      airportDestination:
-                                          "_controller.airportDestination",
-                                    ),
-                                    bags: bags,
-                                  ),
+                                // 1. Coletar dados das malas (EPCs e Printed Codes)
+                                final bagsData = List.generate(
+                                  _controller.codeTags.length,
+                                  (index) {
+                                    final printedCode =
+                                        _controller.printedCodes.length > index
+                                            ? _controller.printedCodes[index]
+                                            : null;
+
+                                    return {
+                                      "id": uuid.v4(),
+                                      "epc": _controller.codeTags[index],
+                                      "printedCode": printedCode,
+                                      "description":
+                                          "Mala do passageiro ${_controller.cpf}",
+                                    };
+                                  },
                                 );
-                                await Future.delayed(
-                                    const Duration(milliseconds: 400));
-                                int cont = 0;
-                                for (final bag in bags) {
-                                  await addBagUsecase.call(
-                                    bag: bag,
-                                  );
-                                  await provider.insertTag(
-                                    TagEntity(
-                                      code: _controller.codeTags[cont],
-                                      createdAt: DateTime.now(),
-                                      bagId: bag.id,
-                                      printedCode:
-                                          _controller.printedCodes.length > cont
-                                              ? _controller.printedCodes[cont]
-                                              : null,
-                                    ),
-                                  );
-                                  cont = cont + 1;
+
+                                // CRÍTICO: Validação de tags. Nenhuma mala deve ser zero.
+                                if (bagsData.isEmpty) {
+                                  GlobalSnackBar.error(
+                                      'Por favor, escaneie pelo menos uma TAG RFID.');
+                                  return;
                                 }
-                                Modular.to.pushNamed(
-                                  '/collaborator/${userProvider.user!.id}/home',
-                                );
+
+                                // Trecho do onPressed na InitUserTripPage
+                                final tripTransactionData = {
+                                  "tripId": tripId,
+                                  "collaboratorId": userProvider.user!.id,
+                                  "cpf": _controller.cpf,
+                                  "origin": _controller.airportOrigin,
+                                  "connection": _controller.connection,
+                                  "destination": _controller.destination, 
+                                  "bags": bagsData,
+                                };
+
+                                try {
+                                  // 3. CHAMAR A TRANSAÇÃO FINAL
+                                  await tripProvider.createFullTripTransaction(
+                                      tripTransactionData);
+
+                                  GlobalSnackBar.success(
+                                      "Viagem e bagagens vinculadas com sucesso!");
+
+                                  // Navegação após sucesso
+                                  Modular.to.pushNamed(
+                                    '/collaborator/${userProvider.user!.id}/home',
+                                  );
+                                } catch (e) {
+                                  // Trata a exceção do service (ex: erro de DB 500)
+                                  GlobalSnackBar.error(
+                                      'Falha na transação. Dados inválidos ou erro de servidor.');
+                                  print('Erro ao gerar viagem: $e');
+                                }
                               } else {
                                 GlobalSnackBar.error(
-                                  'Por favor, preencha todos os campos',
-                                );
+                                    'Por favor, preencha todos os campos obrigatórios.');
                               }
                             },
                             child: Text(
-                              'Gerar viagem',
+                              'Gerar vínculo',
                               style: AppTextStyles.button,
                             ),
                           ),

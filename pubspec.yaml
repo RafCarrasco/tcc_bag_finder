@@ -39,11 +39,13 @@ flutter:
   uses-material-design: true
   assets:
     - assets/.env
-    - images/flying-around.png
-    - images/group-interrogation.png
-    - images/luggage-two-persons.png
-    - images/paper-macute.png
-    - images/two-persons.png
+    - assets/images/flying-around.png
+    - assets/images/group-interrogation.png
+    - assets/images/luggage-two-persons.png
+    - assets/images/paper-macute.png
+    - assets/images/two-persons.png
+    - assets/images/bagfinder-login.png
+
 
 flutter_intl:
   enabled: true

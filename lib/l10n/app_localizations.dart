@@ -191,6 +191,12 @@ abstract class AppLocalizations {
   /// **'Find your account'**
   String get loginPageForgotPassword;
 
+  /// No description provided for @loginPageForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your account'**
+  String get loginPageRecoverAccess;
+
   /// No description provided for @loginPageRememberMe.
   ///
   /// In en, this message translates to:

@@ -40,7 +40,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
             ),
             LoginTextField(
-              prefixIcon: AppIconsSecondaryGrey.emailIcon,
+              suffixIcon: AppIconsSecondaryGrey.emailIcon,
               hint: "E-mail",
               isPassword: false,
               fieldType: 'email',

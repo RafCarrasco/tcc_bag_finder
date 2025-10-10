@@ -150,16 +150,16 @@ class AppThemes {
       backgroundColor: AppColors.primary,
     ),
     //Funciona no notebook:
-    bottomAppBarTheme: BottomAppBarThemeData(
-      color: AppColors.secondary,
-      surfaceTintColor: AppColors.secondary,
-    ),
-
-    // funciona no pc:
-    // bottomAppBarTheme: BottomAppBarTheme(
+    // bottomAppBarTheme: BottomAppBarThemeData(
     //   color: AppColors.secondary,
     //   surfaceTintColor: AppColors.secondary,
     // ),
+
+    // funciona no pc:
+    bottomAppBarTheme: BottomAppBarTheme(
+      color: AppColors.secondary,
+      surfaceTintColor: AppColors.secondary,
+    ),
     colorScheme: ColorScheme(
       brightness: Brightness.light,
       primary: AppColors.primary,

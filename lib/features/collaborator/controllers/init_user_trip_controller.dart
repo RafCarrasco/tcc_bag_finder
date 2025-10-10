@@ -6,6 +6,7 @@ class InitUserTripController {
   String _destination = '';
   String _airportOrigin = '';
   String _airportDestination = '';
+  String? _connection = null;
   String _cpf = '';
   String? _description = '';
   int? _bagageQuantity = 0;
@@ -22,6 +23,7 @@ class InitUserTripController {
   String get destination => _destination;
   String get airportOrigin => _airportOrigin;
   String get airportDestination => _airportDestination;
+  String? get connection => _connection;
   String get cpf => _cpf;
   String? get description => _description;
   TravelerEntity get user => _travelerEntity;
@@ -56,6 +58,14 @@ class InitUserTripController {
     required String airportOrigin,
   }) {
     _airportOrigin = airportOrigin;
+  }
+
+  void setConnection({
+    required String? connection,
+  }) {
+    // Se a string for vazia, definimos como null para o backend entender que é opcional
+    _connection =
+        (connection != null && connection.isEmpty) ? null : connection;
   }
 
   void setAirportDestination({

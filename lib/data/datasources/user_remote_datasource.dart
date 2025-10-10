@@ -7,7 +7,10 @@ import '../../../core/entity/user_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserRemoteDataSource {
-  final String baseUrl = dotenv.env['BASE_URL']!;
+  // final String baseUrl = dotenv.env['BASE_URL']!;
+  final String baseUrl;
+
+  UserRemoteDataSource({required this.baseUrl});
 
   Future<UserEntity> addUser(UserEntity user) async {
     final response = await http.post(

@@ -7,11 +7,13 @@ import '../../core/entity/trip_entity.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
 
 class CollaboratorRemoteDataSource {
-  final String baseUrl = dotenv.env['BASE_URL']!;
+  // final String baseUrl = dotenv.env['BASE_URL']!;
+  final String baseUrl;
   final TravelerRepositoryImpl travelerRepository;
 
   CollaboratorRemoteDataSource({
     required this.travelerRepository,
+    required this.baseUrl,
   });
 
   Future<List<TripEntity>> getTripsByTravelerId({

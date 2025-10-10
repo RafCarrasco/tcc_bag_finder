@@ -33,7 +33,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landingPageThirdText => 'Get notified when your bag is near the pickup area and follow the app\'s directions to retrieve it quickly!';
 
   @override
-  String get loginPageTitle => 'Sign in!';
+  String get loginPageTitle => 'Welcome!\n  Please sign in!';
 
   @override
   String get loginPageTitle2 => 'Welcome!';
@@ -51,10 +51,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginPageTitle5 => 'Find your account';
 
   @override
-  String get loginPageDoesntHaveAccount => 'Don\'t have an account?Sign-up';
+  String get loginPageDoesntHaveAccount => 'Don\'t have an account?';
 
   @override
-  String get loginPageForgotPassword => 'Find your account';
+  String get loginPageForgotPassword => 'Forgot your password?';
+
+  @override
+  String get loginPageRecoverAccess => 'Recover your access';
 
   @override
   String get loginPageRememberMe => 'Remember Me';

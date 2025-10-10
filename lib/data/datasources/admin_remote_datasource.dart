@@ -5,7 +5,10 @@ import '../../core/entity/trip_entity.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdminRemoteDataSource {
-  final String baseUrl = dotenv.env['BASE_URL']!;
+  // final String baseUrl = dotenv.env['BASE_URL']!;
+  final String baseUrl;
+
+  AdminRemoteDataSource({required this.baseUrl});
 
   Future<List<CollaboratorEntity>> getCollaborators() async {
     final response = await http.get(Uri.parse('$baseUrl/admins/collaborators'));

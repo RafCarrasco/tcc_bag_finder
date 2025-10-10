@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-
 import '../utils/app_colors.dart';
 import '../utils/app_dimensions.dart';
 import '../utils/app_text_styles.dart';
 import '../utils/user_validation_mixin.dart';
 
 class LoginTextField extends StatefulWidget {
-  final Icon prefixIcon;
+  final Icon suffixIcon;
   final String hint;
   final bool isPassword;
   final String fieldType;
@@ -15,12 +14,12 @@ class LoginTextField extends StatefulWidget {
 
   const LoginTextField({
     super.key,
-    required this.prefixIcon,
     required this.hint,
     this.onChanged,
     required this.isPassword,
     required this.fieldType,
     required this.isRequired,
+    required this.suffixIcon,
   });
 
   @override
@@ -46,7 +45,7 @@ class _LoginTextFieldState extends State<LoginTextField> with ValidationMixin {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppDimensions.paddingSmall,
-          vertical: AppDimensions.paddingLarge,
+          vertical: AppDimensions.paddingSmall,
         ),
         fillColor: AppColors.textFieldBackground,
         filled: true,
@@ -56,32 +55,37 @@ class _LoginTextFieldState extends State<LoginTextField> with ValidationMixin {
           color: AppColors.secondaryGrey,
           fontSize: AppDimensions.fontMedium,
         ),
-        prefixIcon: widget.prefixIcon,
-        prefixIconColor: AppColors.secondaryGrey,
+        suffixIconColor: AppColors.secondaryGrey,
         suffixIcon: widget.isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: AppColors.secondaryGrey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              )
-            : null,
+          ? IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility_off : Icons.visibility,
+                color: AppColors.secondaryGrey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            )
+          : widget.suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide.none
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: AppColors.primary,
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          borderSide: const BorderSide(color: Colors.red),
+          borderSide: BorderSide(
+            color: AppColors.error,
+            width: 1.5,
+          ),
         ),
       ),
       style: AppTextStyles.titleMedium.copyWith(
@@ -91,3 +95,4 @@ class _LoginTextFieldState extends State<LoginTextField> with ValidationMixin {
     );
   }
 }
+

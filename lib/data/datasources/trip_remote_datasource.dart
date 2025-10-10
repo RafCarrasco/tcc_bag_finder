@@ -6,10 +6,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
 
 class TripRemoteDataSource {
-  final String baseUrl = dotenv.env['BASE_URL']!;
+  // final String baseUrl = dotenv.env['BASE_URL']!;
+  final String baseUrl;
   final TravelerRepositoryImpl travelerRepository;
   TripRemoteDataSource({
     required this.travelerRepository,
+    required this.baseUrl,
   });
 
   Future<TripEntity> addTrip(TripEntity trip) async {
@@ -154,4 +156,16 @@ class TripRemoteDataSource {
       throw Exception('Erro ao verificar status da viagem: ${response.body}');
     }
   }
+
+  Future<void> initTripTransaction(Map<String, dynamic> tripTransactionData) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/trips/init'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(tripTransactionData),
+  );
+
+  if (response.statusCode != 201 && response.statusCode != 200) {
+    throw Exception('Falha na transação de viagem: ${response.body}');
+  }
+}
 }

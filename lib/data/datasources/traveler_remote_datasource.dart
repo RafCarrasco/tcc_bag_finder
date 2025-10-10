@@ -5,7 +5,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 class TravelerRemoteDataSource {
-    final String baseUrl = dotenv.env['BASE_URL']!;
+    // final String baseUrl = dotenv.env['BASE_URL']!;
+    final String baseUrl;
+
+  TravelerRemoteDataSource({required this.baseUrl});
 
   Future<TravelerEntity> addTraveler(TravelerEntity traveler) async {
     final response = await http.post(

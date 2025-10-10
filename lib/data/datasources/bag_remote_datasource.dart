@@ -6,7 +6,10 @@ import '../../core/enums/bag_status_enum.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BagRemoteDataSource {
-  final String baseUrl = dotenv.env['BASE_URL']!;
+  // final String baseUrl = dotenv.env['BASE_URL']!;
+  final String baseUrl;
+
+  BagRemoteDataSource({required this.baseUrl});
 
   Future<BagEntity> addBag(BagEntity bag) async {
     final response = await http.post(

@@ -33,7 +33,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get landingPageThirdText => 'Seja notificado quando sua mala estiver perto da retirada e siga as direções do app para recuperá-la rapidamente!';
 
   @override
-  String get loginPageTitle => 'Realize seu login!';
+  String get loginPageTitle => 'Seja bem-vindo(a)!\n  Realize seu login!';
 
   @override
   String get loginPageTitle2 => 'Seja bem-vindo!';
@@ -48,13 +48,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginPageTitle4 => 'Esqueceu a sua senha?';
 
   @override
-  String get loginPageTitle5 => 'Encontre a sua conta';
+  String get loginPageTitle5 => 'Não consegue acessar sua conta?';
 
   @override
-  String get loginPageDoesntHaveAccount => 'Não possui conta?';
+  String get loginPageDoesntHaveAccount => 'Ainda não possui uma conta?';
 
   @override
-  String get loginPageForgotPassword => 'Encontre sua conta';
+  String get loginPageForgotPassword => 'Esqueceu sua senha?';
+
+  @override
+  String get loginPageRecoverAccess => 'Recupere seu acesso';
 
   @override
   String get loginPageRememberMe => 'Lembrar-me';
@@ -66,7 +69,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginPageButtonLogin => 'Realizar login';
 
   @override
-  String get signUpPageButtonSignUp => 'Cadastre-se';
+  String get signUpPageButtonSignUp => 'Cadastre-se!';
 
   @override
   String get needHelpPageSend => 'Enviar';

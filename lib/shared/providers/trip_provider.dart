@@ -3,14 +3,16 @@ import 'package:dartz/dartz.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/failures/failure.dart';
 import '../../core/failures/trip_failure.dart';
+import '../../data/datasources/trip_remote_datasource.dart';
 import '../../infra/repositories/trip_repository_impl.dart';
 import '../../features/auth/controller/auth_controller.dart';
 
 class TripProvider extends ChangeNotifier {
   final TripRepositoryImpl repository;
   final AuthService authService;
+  final TripRemoteDataSource remoteDataSource;
 
-  TripProvider(this.repository, this.authService);
+  TripProvider(this.repository, this.authService, this.remoteDataSource);
 
   List<TripEntity>? _trips;
   bool _isLoading = false;
@@ -87,5 +89,12 @@ class TripProvider extends ChangeNotifier {
           : b.updatedAt!.compareTo(a.updatedAt!);
     });
     notifyListeners();
+  }
+  Future<void> createFullTripTransaction(Map<String, dynamic> tripTransactionData) async {
+    try {
+      await remoteDataSource.initTripTransaction(tripTransactionData);
+    } catch (e) {
+      rethrow; 
+    }
   }
 }

@@ -30,15 +30,21 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
+            height: 350,
             child: Image.asset(
-              'images/luggage-two-persons.png',
+              'images/bagfinder-login.png',
               filterQuality: FilterQuality.high,
+              fit: BoxFit.fitWidth,
             ),
+          ),
+          SizedBox(
+            height: 30,
           ),
           Text(
             AppLocalizations.of(context)!.loginPageTitle,
@@ -47,69 +53,44 @@ class _SignInPageState extends State<SignInPage> {
                 ),
           ),
           const SizedBox(height: AppDimensions.verticalSpaceMedium),
+          SizedBox(
+            height: 30,
+          ),
           Form(
             key: _formKey,
             child: Column(
               children: [
-                LoginTextField(
-                  onChanged: signInController.setEmail,
-                  prefixIcon: AppIconsSecondaryGrey.emailIcon,
-                  hint: AppLocalizations.of(context)!.emailPlaceholder,
-                  isPassword: false,
-                  fieldType: 'email',
-                  isRequired: true,
+                SizedBox(
+                  width: 400,
+                  child: LoginTextField(
+                    onChanged: signInController.setEmail,
+                    suffixIcon: AppIconsSecondaryGrey.emailIcon,
+                    hint: AppLocalizations.of(context)!.emailPlaceholder,
+                    isPassword: false,
+                    fieldType: 'email',
+                    isRequired: true,
+                  ),
                 ),
                 const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                LoginTextField(
+                SizedBox(
+                  width: 400,
+                  child: LoginTextField(
                   onChanged: signInController.setPassword,
-                  prefixIcon: AppIconsSecondaryGrey.passwordIcon,
+                  suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                   hint: AppLocalizations.of(context)!.passwordPlaceholder,
                   isPassword: true,
                   fieldType: '',
                   isRequired: true,
                 ),
+                ),
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Checkbox(
-                    value: signInController.rememberMe,
-                    onChanged: (value) {
-                      setState(() {
-                        signInController.setRememberMe(value);
-                      });
-                    },
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.loginPageRememberMe,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () {
-                  Modular.to.navigate('/login/find-your-account');
-                },
-                child: Text(
-                  AppLocalizations.of(context)!.loginPageForgotPassword,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.primary,
-                        decorationThickness: 2,
-                      ),
-                ),
-              ),
-            ],
+          SizedBox(
+            height: 50,
           ),
           SizedBox(
-            width: double.infinity,
+            width: 400,
             child: ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
@@ -117,7 +98,6 @@ class _SignInPageState extends State<SignInPage> {
                     email: signInController.email!,
                     password: signInController.password!,
                   );
-
                   result.fold(
                     (failure) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -140,63 +120,102 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          const SizedBox(height: 5),
+          SizedBox(
+            height: 50,
+          ),
           Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                      endIndent: 20,
+                      indent: 20,
+                    ),
+                  ),
                   Text(
-                    AppLocalizations.of(context)!.loginPageDoesntHaveAccount,
+                    'ou',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: AppColors.secondaryGrey,
                         ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Modular.to.navigate('/login/sign-up');
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.signUpPageButtonSignUp,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.primary,
-                            decorationThickness: 2,
-                          ),
+                  const Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                      endIndent: 20,
+                      indent: 20,
                     ),
-                  )
+                  ),
                 ],
               ),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)!.loginPageTitle3,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.loginPageDoesntHaveAccount,
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: AppColors.secondaryGrey,
                         ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Modular.to.navigate(
+                            '/login/find-your-account',
+                          );
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.signUpPageButtonSignUp,
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                decorationColor: AppColors.primary,
+                                decorationThickness: 2,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Modular.to.navigate('/login/contact-us');
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.loginPageContactSupport,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.primary,
-                            decorationThickness: 2,
-                          ),
-                    ),
-                  )
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.loginPageTitle5,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              color: AppColors.secondaryGrey,
+                            ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Modular.to.navigate('/login/sign-up');
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.loginPageRecoverAccess,
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                decorationColor: AppColors.primary,
+                                decorationThickness: 2,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
           )
         ],
       ),
+      )
     );
   }
 }

@@ -45,7 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Column(
                 children: [
                   LoginTextField(
-                    prefixIcon: AppIconsSecondaryGrey.personIcon,
+                    suffixIcon: AppIconsSecondaryGrey.personIcon,
                     hint: AppLocalizations.of(context)!.fullNamePlaceholder,
                     isPassword: false,
                     onChanged: signUpController.setFullName,
@@ -54,7 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: AppDimensions.verticalSpaceLarge),
                   LoginTextField(
-                    prefixIcon: AppIconsSecondaryGrey.emailIcon,
+                    suffixIcon: AppIconsSecondaryGrey.emailIcon,
                     hint: AppLocalizations.of(context)!.emailPlaceholder,
                     isPassword: false,
                     fieldType: 'email',
@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: AppDimensions.verticalSpaceLarge),
                   LoginTextField(
-                    prefixIcon: AppIconsSecondaryGrey.passwordIcon,
+                    suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                     hint: AppLocalizations.of(context)!.passwordPlaceholder,
                     isPassword: true,
                     onChanged: signUpController.setPassword,
