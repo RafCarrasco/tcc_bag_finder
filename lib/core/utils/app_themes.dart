@@ -149,7 +149,7 @@ class AppThemes {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: AppColors.primary,
     ),
-    bottomAppBarTheme: BottomAppBarThemeData(
+    bottomAppBarTheme: BottomAppBarTheme(
       color: AppColors.secondary,
       surfaceTintColor: AppColors.secondary,
     ),
