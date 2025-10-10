@@ -78,7 +78,7 @@ class AppModule extends Module {
     i.addLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource());
     i.addLazySingleton<TripRemoteDataSource>(
       () => TripRemoteDataSource(
-        travelerRepository: i<TravelerRepositoryImpl>()
+        travelerRepository: i<TravelerRepositoryImpl>(),
       )
       );
     i.addLazySingleton<AdminRemoteDataSource>(() => AdminRemoteDataSource());
