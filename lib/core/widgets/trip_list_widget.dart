@@ -25,9 +25,6 @@ class TripListWidget extends StatelessWidget {
           itemCount: bags.length,
           itemBuilder: (context, index) {
             final bag = bags[index];
-            print(
-              "Bag ${bag.printedCode} - Status: ${bag.status}, Destino: ${bag.destination}, Conexão: ${bag.flightConnection}",
-            );
             return _buildBagCard(bag);
           },
         );
@@ -69,6 +66,10 @@ class TripListWidget extends StatelessWidget {
               ),
               Text(
                 "Conexão: ${_formatText(bag.flightConnection)}",
+                style: const TextStyle(color: Colors.black87, fontSize: 14),
+              ),
+              Text(
+                "EPC: ${_formatText(bag.rfidTag)}",
                 style: const TextStyle(color: Colors.black87, fontSize: 14),
               ),
             ],

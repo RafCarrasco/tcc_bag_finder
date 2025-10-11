@@ -1,3 +1,4 @@
+import 'package:bag_finder/core/widgets/bag_item_widget.dart';
 import 'package:bag_finder/features/collaborator/controllers/init_user_trip_controller.dart';
 import 'package:bag_finder/infra/repositories/bag_repository_impl.dart';
 import 'package:bag_finder/shared/providers/bag_status_provider.dart';
@@ -89,8 +90,22 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
             ),
           ),
           const SizedBox(height: 10),
-          const Expanded(
-            child: TripListWidget(), // sem precisar passar travelerId
+          Expanded(
+            child: _rfidProvider.bags.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Nenhuma bagagem encontrada.',
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: _rfidProvider.bags.length,
+                    itemBuilder: (context, index) {
+                      final bag = _rfidProvider.bags[index];
+                      return BagItemWidget(bagStatus: bag);
+                    },
+                  ),
           ),
         ],
       ),

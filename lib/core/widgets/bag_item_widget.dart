@@ -1,26 +1,48 @@
+import 'package:bag_finder/core/entity/bag_entity.dart';
+import 'package:bag_finder/core/entity/bag_status_entity.dart';
 import 'package:bag_finder/core/enums/bag_status_enum.dart';
+import 'package:bag_finder/core/utils/app_colors.dart';
+import 'package:bag_finder/core/utils/app_dimensions.dart';
+import 'package:bag_finder/core/widgets/bag_tracking_timeline.dart';
+import 'package:bag_finder/core/widgets/dialogs/bag_confirmation_dialog.dart';
+import 'package:bag_finder/core/widgets/dialogs/edit_bag_description_dialog.dart';
+import 'package:bag_finder/shared/providers/traveler_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
-import '../entity/bag_entity.dart';
-import '../../shared/providers/traveler_provider.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import 'dialogs/bag_confirmation_dialog.dart';
-import 'dialogs/edit_bag_description_dialog.dart';
 
 class BagItemWidget extends StatefulWidget {
-  final BagEntity bag;
+  final BagStatusEntity bagStatus;
 
   const BagItemWidget({
     super.key,
-    required this.bag,
+    required this.bagStatus,
   });
 
   @override
   State<BagItemWidget> createState() => _BagItemWidgetState();
 }
-
+  BagStatusEnum bagStatusFromString(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'CHECKED_IN':
+        return BagStatusEnum.CHECKED_IN;
+      case 'IN_TRANSIT':
+        return BagStatusEnum.IN_TRANSIT;
+      case 'ARRIVED_AT_CONNECTION':
+        return BagStatusEnum.ARRIVED_AT_CONNECTION;
+      case 'IN_TRANSIT_CONNECTION':
+        return BagStatusEnum.IN_TRANSIT_CONNECTION;
+      case 'ARRIVED':
+        return BagStatusEnum.ARRIVED;
+      case 'READY_FOR_PICKUP':
+        return BagStatusEnum.READY_FOR_PICKUP;
+      case 'COLLECTED':
+        return BagStatusEnum.COLLECTED;
+      default:
+        return BagStatusEnum.NAO_CADASTRADA;
+    }
+  }
 class _BagItemWidgetState extends State<BagItemWidget> {
   bool _isProcessing = false;
 
@@ -91,7 +113,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                 Expanded(
                   child: Center(
                     child: Text(
-                      widget.bag.id,
+                      widget.bagStatus.id,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
@@ -104,8 +126,11 @@ class _BagItemWidgetState extends State<BagItemWidget> {
             ),
           ),
           Padding(
+            padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+            child: BagTrackingTimeline(currentStatus: bagStatusFromString(widget.bagStatus.status)),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(
-              vertical: AppDimensions.paddingLarge,
               horizontal: AppDimensions.paddingMedium,
             ),
             child: Row(
@@ -118,23 +143,28 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                     children: [
                       _buildInfoRow(
                         'Status:',
-                        widget.bag.status.toLiteral(),
+                        widget.bagStatus.status,
                         context,
                       ),
                       const SizedBox(
                         height: 4,
                       ),
-                      
+                      _buildInfoRow(
+                        'PrintedCode:',
+                        widget.bagStatus.printedCode ??
+                            'Nenhuma printedCode encontrado!',
+                        context,
+                      ),
                       const SizedBox(
                         height: 4,
                       ),
                       _buildInfoRow(
                         'Última alteração:',
-                        // widget.bag.updatedAt != null
-                        //     ? DateFormat('HH:mm').format(
-                        //         widget.bag.updatedAt!.toLocal(),
-                        //       )
-                            'Nenhuma alteração encontrada! Erro no bag item widget',
+                        widget.bagStatus.createdAt != null
+                            ? DateFormat('HH:mm').format(
+                                widget.bagStatus.createdAt!.toLocal(),
+                              )
+                            : 'Nenhuma alteração encontrada!',
                         context,
                       ),
                     ],
@@ -146,7 +176,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      widget.bag.status != BagStatusEnum.COLLECTED
+                      widget.bagStatus.status != BagStatusEnum.COLLECTED
                           ? Column(
                               children: [
                                 Padding(
@@ -168,15 +198,15 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return EditBagDescriptionDialog(
-                                            bag: widget.bag,
+                                            bagStatus: widget.bagStatus,
                                             onEditConfirmation: (text) async {
                                               // await provider.updateBag(
-                                              //   bag: widget.bag.copyWith(
+                                              //   bagStatus: widget.bagStatus.copyWith(
                                               //     description: text,
                                               //   ),
                                               // );
 
-                                              Modular.to.pop();
+                                              // Modular.to.pop();
                                             },
                                             onNotArrived: () {
                                               Modular.to.pop();
@@ -232,7 +262,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                                   onPressed: _isProcessing
                                       ? null
                                       : () async {
-                                          if (widget.bag.status ==
+                                          if (widget.bagStatus.status ==
                                               BagStatusEnum.ARRIVED) {
                                             setState(() {
                                               _isProcessing = true;
@@ -242,16 +272,16 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return BagConfirmationDialog(
-                                                  bag: widget.bag,
+                                                  bagStatus: widget.bagStatus,
                                                   onConfirmArrival: () async {
                                                     // await provider.updateBag(
-                                                    //   bag: widget.bag.copyWith(
+                                                    //   bagStatus: widget.bagStatus.copyWith(
                                                     //     status: BagStatusEnum
                                                     //         .CLAIMED,
                                                     //   ),
                                                     // );
 
-                                                    Modular.to.pop();
+                                                    // Modular.to.pop();
                                                   },
                                                   onNotArrived: () {
                                                     Modular.to.pop();
@@ -266,7 +296,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                                           }
                                         },
                                   style: TextButton.styleFrom(
-                                    backgroundColor: widget.bag.status ==
+                                    backgroundColor: widget.bagStatus.status ==
                                             BagStatusEnum.ARRIVED
                                         ? AppColors.primary
                                         : AppColors.secondaryGrey,

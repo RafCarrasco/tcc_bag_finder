@@ -1,10 +1,10 @@
+import 'package:bag_finder/core/entity/bag_status_entity.dart';
 import 'package:flutter/material.dart';
-import '../entity/bag_entity.dart';
 import '../utils/app_dimensions.dart';
 import 'bag_item_widget.dart';
 
 class BagPaginationWidget extends StatelessWidget {
-  final List<BagEntity> bags;
+  final List<BagStatusEntity> bags;
   final String airportOriginCode;
   final String airportDestinationCode;
 
@@ -37,7 +37,7 @@ class BagPaginationWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final bag = bags[index];
         return BagItemWidget(
-          bag: bag,
+          bagStatus: bag,
         );
       },
     );

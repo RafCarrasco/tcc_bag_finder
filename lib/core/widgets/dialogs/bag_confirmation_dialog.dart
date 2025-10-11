@@ -1,17 +1,16 @@
-import 'package:bag_finder/core/enums/bag_status_enum.dart';
+import 'package:bag_finder/core/entity/bag_status_entity.dart';
 import 'package:flutter/material.dart';
-import '../../entity/bag_entity.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 
 class BagConfirmationDialog extends StatelessWidget {
-  final BagEntity bag;
+  final BagStatusEntity bagStatus;
   final VoidCallback onConfirmArrival;
   final VoidCallback onNotArrived;
 
   const BagConfirmationDialog({
     super.key,
-    required this.bag,
+    required this.bagStatus,
     required this.onConfirmArrival,
     required this.onNotArrived,
   });
@@ -80,7 +79,7 @@ class BagConfirmationDialog extends StatelessWidget {
               children: [
                 _buildInfoRow(
                   'Status:',
-                  bag.status.toLiteral(),
+                  bagStatus.status,
                 ),
                 
               ],
