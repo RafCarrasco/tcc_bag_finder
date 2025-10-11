@@ -102,7 +102,7 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
-    Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId(
+  Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId(
     {required String tripId}) async {
     try {
       final result = await remote.getBagsByTripId(tripId);
@@ -112,7 +112,7 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
-    @override
+
   Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById(
     {required String userId}) async {
     try {
@@ -120,6 +120,18 @@ class BagRepositoryImpl implements IBagRepository {
       return Right(result);
     } catch (e) {
       print(e);
+      return Left(BagReadError());
+    }
+  }
+    @override
+  Future<Either<BagFailure, BagStatusEntity>> findBagByEpc({
+    required String epc,
+  }) async {
+    try {
+      final result = await remote.findBagByEpc(epc);
+      return Right(result);
+    } catch (e) {
+      print('[BagRepository] Erro ao buscar bag por EPC: $e');
       return Left(BagReadError());
     }
   }

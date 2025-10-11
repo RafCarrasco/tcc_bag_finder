@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/bag_status_entity.dart';
@@ -125,6 +126,23 @@ class BagRemoteDataSource {
       return [];
     } else {
       throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
+    }
+  }
+  Future<BagStatusEntity> findBagByEpc(String epc) async {
+    try {
+      final url = Uri.parse('$baseUrl/bags/status/epc/$epc');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return BagStatusEntity.fromJson(data);
+      } else if (response.statusCode == 404) {
+        throw Exception('Bag com EPC $epc não encontrada.');
+      } else {
+        throw Exception('Erro ${response.statusCode}: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao buscar bag por EPC: $e');
     }
   }
 }
