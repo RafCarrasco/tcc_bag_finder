@@ -78,20 +78,6 @@ class TripProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-<<<<<<< HEAD
-  // void orderTripsByUpdatedTime({bool ascending = true}) {
-  //   if (_trips == null) return;
-  //   _trips!.sort((a, b) {
-  //     if (a.updatedAt == null && b.updatedAt == null) return 0;
-  //     if (a.updatedAt == null) return ascending ? -1 : 1;
-  //     if (b.updatedAt == null) return ascending ? 1 : -1;
-  //     return ascending
-  //         ? a.updatedAt!.compareTo(b.updatedAt!)
-  //         : b.updatedAt!.compareTo(a.updatedAt!);
-  //   });
-  //   notifyListeners();
-  // }
-=======
   void orderTripsByUpdatedTime({bool ascending = true}) {
     if (_trips == null) return;
     _trips!.sort((a, b) {
@@ -104,7 +90,6 @@ class TripProvider extends ChangeNotifier {
     });
     notifyListeners();
   }
->>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
   Future<void> createFullTripTransaction(Map<String, dynamic> tripTransactionData) async {
     try {
       await remoteDataSource.initTripTransaction(tripTransactionData);

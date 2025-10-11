@@ -46,46 +46,6 @@ List<BagEntity> orderBagsByUpdatedTimeFunction({
   return list;
 }
 
-<<<<<<< HEAD
-// List<TripEntity> orderTripsByUpdatedTimeFunction({
-//   required List<TripEntity> list,
-//   bool isAscending = true,
-// }) {
-//   list.sort((a, b) {
-//     if (a.updatedAt == null && b.updatedAt == null) return 0;
-//     if (a.updatedAt == null) return 1;
-//     if (b.updatedAt == null) return -1;
-
-//     return isAscending
-//         ? a.updatedAt!.compareTo(
-//             b.updatedAt!,
-//           )
-//         : b.updatedAt!.compareTo(
-//             a.updatedAt!,
-//           );
-//   });
-=======
-List<TripEntity> orderTripsByUpdatedTimeFunction({
-  required List<TripEntity> list,
-  bool isAscending = true,
-}) {
-  list.sort((a, b) {
-    if (a.createdAt == null && b.createdAt == null) return 0;
-    if (a.createdAt == null) return 1;
-    if (b.createdAt == null) return -1;
-
-    return isAscending
-        ? a.createdAt!.compareTo(
-            b.createdAt!,
-          )
-        : b.createdAt!.compareTo(
-            a.createdAt!,
-          );
-  });
->>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
-
-//   return list;
-// }
 
 List<TripEntity> orderTripsByCreatedTimeFunction({
   required List<TripEntity> list,

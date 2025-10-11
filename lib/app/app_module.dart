@@ -178,7 +178,7 @@ class AppModule extends Module {
       final id = r.args.params['travelerId'];
       return LandingTravelerPage(travelerId: id);
     }, children: [
-      ChildRoute('/home', child: (_) => HomeTravelerPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/home', child: (_) => const HomeTravelerPage()),
       ChildRoute('/history-panel/', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/profile/', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),

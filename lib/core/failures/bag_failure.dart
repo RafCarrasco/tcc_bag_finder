@@ -1,6 +1,6 @@
 import 'failure.dart';
 
-abstract class BagFailure extends Failure {
+class BagFailure extends Failure {
   BagFailure({required super.errorMessage});
 }
 

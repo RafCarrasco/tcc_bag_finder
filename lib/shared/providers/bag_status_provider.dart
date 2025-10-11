@@ -19,7 +19,7 @@ class RfidBagProvider extends ChangeNotifier {
     channel.stream.listen(_onMessage);
   }
 
-  // opcional: apenas se quiser que o provider também monitore direto o canal
+
   void _onMessage(dynamic message) async {
     try {
       final data = jsonDecode(message);
@@ -27,19 +27,26 @@ class RfidBagProvider extends ChangeNotifier {
       if (epc == null) return;
 
       final bag = await getBagByEpc(epc);
-      if (bag != null) {
-        final index = _bags.indexWhere((b) => b.rfidTag == epc);
-        if (index != -1) {
-          _bags[index] = bag;
-        } else {
-          _bags.add(bag);
-        }
-        notifyListeners();
+
+      if (bag == null || bag.status == 'NAO_CADASTRADA') {
+        GlobalSnackBar.warning('⚠️ A TAG ${epc.substring(0, 8)}... não está cadastrada!');
+        return;
       }
+
+      final index = _bags.indexWhere((b) => b.rfidTag == epc);
+      if (index != -1) {
+        _bags[index] = bag;
+      } else {
+        _bags.add(bag);
+        GlobalSnackBar.success('✅ Bagagem detectada: ${bag.printedCode}');
+      }
+
+      notifyListeners();
     } catch (e) {
       GlobalSnackBar.error('Erro ao processar mensagem do WebSocket: $e');
     }
   }
+
 
   Future<BagStatusEntity?> getBagByEpc(String epc) async {
     try {

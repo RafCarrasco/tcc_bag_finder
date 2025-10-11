@@ -68,7 +68,6 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
       backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
-          // 🔹 AppBar customizada
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -87,8 +86,6 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
               hint: 'Pesquise sua viagem...',
             ),
           ),
-
-          // 🔹 Conteúdo
           Expanded(
             child: history.isEmpty
                 ? const Center(
@@ -99,7 +96,7 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
                   )
                 : Center(
                     child: SizedBox(
-                      width: 700, // 🔸 largura máxima para centralizar em telas grandes
+                      width: 700,
                       child: ListView.builder(
                         padding: const EdgeInsets.all(24),
                         itemCount: history.length,
@@ -129,7 +126,6 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // 🔹 Cabeçalho da viagem
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,

@@ -10,6 +10,10 @@ abstract class IBagRepository {
     required BagEntity bag,
   });
 
+  Future<Either<BagFailure, List<BagEntity>>> getBagsByEPC({
+    required String epc,
+  });
+
   Future<Either<BagFailure, List<BagEntity>>> getBagsById({
     required String bagId,
   });

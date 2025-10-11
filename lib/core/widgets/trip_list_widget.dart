@@ -44,65 +44,6 @@ class _TripListWidgetState extends State<TripListWidget> {
           return const Center(child: CircularProgressIndicator());
         }
 
-<<<<<<< HEAD
-              return TripHeaderWidget(
-                airportDestination: airportDestination,
-                airportOrigin: airportOrigin,
-                tripId: travelerProvider.currentTrip!.id,
-                date: date,
-                collaboratorName: widget.collaboratorName,
-                checkedBags: checkedBags,
-                bags: widget.bags.length,
-              );
-            },
-          ),
-        ),
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 10.0,
-          ),
-          child: Divider(
-            color: AppColors.secondaryGrey.withOpacity(0.3),
-            thickness: 4,
-          ),
-        ),
-        Consumer<TravelerProvider>(
-          builder: (context, provider, child) {
-            if (provider.isTripComplete) {
-              return Expanded(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: AppColors.primary,
-                        size: 100,
-                      ),
-                      Text(
-                        'Todos os bagagens foram entregues',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return Expanded(
-                child: BagPaginationWidget(
-                  bags: widget.bags,
-                  airportOriginCode:
-                      travelerProvider.currentTrip!.origin,
-                  airportDestinationCode: travelerProvider
-                      .currentTrip!.destination,
-                ),
-              );
-            }
-=======
         if (provider.bagStatus == null || provider.bagStatus!.isEmpty) {
           return const Center(
             child: Text(
@@ -119,7 +60,6 @@ class _TripListWidgetState extends State<TripListWidget> {
           itemBuilder: (context, index) {
             final bag = bags[index];
             return _buildBagCard(bag);
->>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
           },
         );
       },

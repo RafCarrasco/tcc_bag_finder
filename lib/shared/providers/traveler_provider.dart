@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bag_finder/core/enums/bag_status_enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../../core/entity/trip_entity.dart';
@@ -146,12 +147,12 @@ class TravelerProvider extends ChangeNotifier {
   }
 
   Future<void> checkIsTripDone({required TripEntity trip}) async {
-    // final result = await repository.isTripDone(tripId: trip.id);
-    // result.fold(
-    //   (_) => _isTripComplete = false,
-    //   (isDone) => _isTripComplete = isDone,
-    // );
-    // notifyListeners();
+    final result = await tripRepository.isTripDone(tripId: trip.id);
+    result.fold(
+      (_) => _isTripComplete = false,
+      (isDone) => _isTripComplete = isDone,
+    );
+    notifyListeners();
   }
 
   void updateCheckedBags(int value) {
@@ -237,31 +238,6 @@ class TravelerProvider extends ChangeNotifier {
     }
   }
 
-<<<<<<< HEAD
-  Future<bool> validateTravelerEmailAndCPF(String email, String cpf) async {
-  final result = await repository.getAllTravelers();
-  bool isValid = false;
-
-  result.fold(
-    (failure) {
-      debugPrint("Erro ao buscar viajantes: $failure");
-    },
-    (travelers) {
-      isValid = travelers.any(
-        (traveler) =>
-            traveler.email != null &&
-            traveler.cpf != null &&
-            traveler.email.toLowerCase() == email.toLowerCase() &&
-            traveler.cpf!.replaceAll(RegExp(r'\D'), '') ==
-                cpf.replaceAll(RegExp(r'\D'), ''),
-      );
-    },
-  );
-
-  return isValid;
-  }
-
-=======
   Future<void> getBagsStatusById(String userId) async {
     _setLoading(true);
     debugPrint('🔍 Iniciando monitoramento do status da bag: $userId');
@@ -280,8 +256,6 @@ class TravelerProvider extends ChangeNotifier {
               '✅ Status iniciais da bag $userId carregados (${statuses.length})');
           _bagStatus = statuses;
           notifyListeners();
-
-          // inicia o polling após primeira busca
           _startBagStatusPolling(userId);
         },
       );
@@ -377,5 +351,4 @@ class TravelerProvider extends ChangeNotifier {
 
     return isValid;
   }
->>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
 }
