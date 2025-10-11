@@ -51,16 +51,16 @@ List<TripEntity> orderTripsByUpdatedTimeFunction({
   bool isAscending = true,
 }) {
   list.sort((a, b) {
-    if (a.updatedAt == null && b.updatedAt == null) return 0;
-    if (a.updatedAt == null) return 1;
-    if (b.updatedAt == null) return -1;
+    if (a.createdAt == null && b.createdAt == null) return 0;
+    if (a.createdAt == null) return 1;
+    if (b.createdAt == null) return -1;
 
     return isAscending
-        ? a.updatedAt!.compareTo(
-            b.updatedAt!,
+        ? a.createdAt!.compareTo(
+            b.createdAt!,
           )
-        : b.updatedAt!.compareTo(
-            a.updatedAt!,
+        : b.createdAt!.compareTo(
+            a.createdAt!,
           );
   });
 

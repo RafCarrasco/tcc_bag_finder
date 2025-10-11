@@ -34,11 +34,9 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
   }
 
   void init() async {
-    await travelerProvider.getTripsByStatus(
-      travelerId: widget.travelerId,
-      isDone: false,
-    );
-
+    await travelerProvider.getBagsByUserId(widget.travelerId);
+    await travelerProvider.getBagsStatusById(widget.travelerId);
+    
     if (travelerProvider.currentTrip == null) {
       setState(() {
         isLoading = false;
@@ -65,7 +63,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
         ),
       );
     }
-
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -125,7 +122,6 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                 return TripListWidget(
                   travelerId: widget.travelerId,
                   bags: travelerProvider.bags ?? [],
-                  collaboratorName: collaboratorName ?? "",
                 );
               }
 

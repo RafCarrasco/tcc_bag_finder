@@ -78,11 +78,11 @@ class GetDescriptionDialogWidget extends StatelessWidget {
           ),
           _buildRoundedInfoContainer(
             label: 'Aeroporto de Origem',
-            value: trip.description.airportOrigin,
+            value: trip.origin,
           ),
           _buildRoundedInfoContainer(
             label: 'Aeroporto de Destino',
-            value: trip.description.airportDestination,
+            value: trip.destination,
           ),
           _buildRoundedInfoContainer(
             label: 'Malas',

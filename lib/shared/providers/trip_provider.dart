@@ -81,12 +81,12 @@ class TripProvider extends ChangeNotifier {
   void orderTripsByUpdatedTime({bool ascending = true}) {
     if (_trips == null) return;
     _trips!.sort((a, b) {
-      if (a.updatedAt == null && b.updatedAt == null) return 0;
-      if (a.updatedAt == null) return ascending ? -1 : 1;
-      if (b.updatedAt == null) return ascending ? 1 : -1;
+      if (a.createdAt == null && b.createdAt == null) return 0;
+      if (a.createdAt == null) return ascending ? -1 : 1;
+      if (b.createdAt == null) return ascending ? 1 : -1;
       return ascending
-          ? a.updatedAt!.compareTo(b.updatedAt!)
-          : b.updatedAt!.compareTo(a.updatedAt!);
+          ? a.createdAt!.compareTo(b.createdAt!)
+          : b.createdAt!.compareTo(a.createdAt!);
     });
     notifyListeners();
   }

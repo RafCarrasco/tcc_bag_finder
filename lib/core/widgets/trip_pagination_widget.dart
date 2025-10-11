@@ -47,7 +47,7 @@ class _TripPaginationWidgetState extends State<TripPaginationWidget> {
             ),
           ),
           style: ListTileStyle.list,
-          title:Row(
+          title: Row(
             children: [
               AppIconsPrimary.personIcon,
               Text(
@@ -64,41 +64,33 @@ class _TripPaginationWidgetState extends State<TripPaginationWidget> {
             ],
           ),
           subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   AppIconsPrimary.calendarIcon,
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'Erro em trip_pagination_widget',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Status: ',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                  ),
-                  Icon(
-                    Icons.circle,
-                    color: trip.isDone ? AppColors.green : AppColors.red,
-                    size: AppDimensions.iconSmall,
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      '${trip.origin} → ${trip.destination}',
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: AppColors.secondaryGrey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
                   ),
                 ],
               ),
+              if (trip.connection != null && trip.connection!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2, left: 28),
+                  child: Text(
+                    'Conexão: ${trip.connection}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: AppColors.secondaryGrey,
+                        ),
+                  ),
+                ),
             ],
           ),
           trailing: Row(

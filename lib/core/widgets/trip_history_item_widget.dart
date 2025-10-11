@@ -105,17 +105,6 @@ class TripHistoryItemWidget extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      _buildInfoRow(
-                        'Última atualização:',
-                        trip.updatedAt != null
-                            ? DateFormat(
-                                'dd/MM/yyyy HH:mm',
-                              ).format(
-                                trip.updatedAt!,
-                              )
-                            : ' - ',
-                        context,
-                      ),
                       const SizedBox(
                         height: 4,
                       ),

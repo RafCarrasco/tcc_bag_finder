@@ -7,7 +7,6 @@ import '../../core/entity/trip_entity.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
 
 class CollaboratorRemoteDataSource {
-  // final String baseUrl = dotenv.env['BASE_URL']!;
   final String baseUrl;
   final TravelerRepositoryImpl travelerRepository;
 
@@ -58,6 +57,39 @@ class CollaboratorRemoteDataSource {
       throw Exception('Erro ao buscar viagens por responsável: ${response.body}');
     }
   }
+
+    Future<List<TripEntity>> getAllTrips() async {
+  final url = Uri.parse('$baseUrl/trips');
+  //print('[DEBUG] Chamando: $url');
+
+  final response = await http.get(url);
+
+  // print('[DEBUG] Status: ${response.statusCode}');
+  // print('[DEBUG] Body: ${response.body}');
+
+  if (response.statusCode == 200) {
+    try {
+      final list = jsonDecode(response.body) as List;
+      // print('[DEBUG] Decodificado: ${list.length} registros');
+
+      final trips = list
+          .map((e) => TripEntity.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // print('[DEBUG] Trips parseadas: ${trips.length}');
+      return trips;
+    } catch (e) {
+      // print('[ERROR] Falha ao converter trips: $e');
+      rethrow;
+    }
+  } else {
+    throw Exception(
+      'Erro ao buscar todas as viagens (Status ${response.statusCode}): ${response.body}',
+    );
+  }
+}
+
+
 
   Future<void> insertTag(TagEntity tag) async {
     final response = await http.post(

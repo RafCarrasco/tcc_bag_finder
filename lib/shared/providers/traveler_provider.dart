@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../../core/entity/trip_entity.dart';
+import '../../core/entity/bag_status_entity.dart';
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/traveler_entity.dart';
 import '../../core/entity/trip_history_entity.dart';
@@ -10,15 +11,22 @@ import '../../infra/repositories/traveler_repository_impl.dart';
 import '../../infra/repositories/bag_repository_impl.dart';
 import '../../core/failures/traveler_failure.dart';
 import '../../features/auth/controller/auth_controller.dart';
-
+import '../../usecase/bag/get_user_bags_usecase.dart';
 
 class TravelerProvider extends ChangeNotifier {
   final TravelerRepositoryImpl repository;
   final BagRepositoryImpl bagRepository;
   final AuthService authService;
   final ITripRepository tripRepository;
+  final IGetUserBagsUsecase getUserBagsUsecase;
 
-  TravelerProvider(this.repository, this.authService,this.tripRepository,this.bagRepository);
+  TravelerProvider(
+    this.repository,
+    this.authService,
+    this.tripRepository,
+    this.bagRepository,
+    this.getUserBagsUsecase,
+  );
 
   TripEntity? _currentTrip;
   List<BagEntity>? _bags;
@@ -28,7 +36,10 @@ class TravelerProvider extends ChangeNotifier {
   bool _isTripComplete = false;
   int _checkedBags = 0;
   Timer? _pollingTimer;
+  Timer? _bagStatusPollingTimer;
+  List<BagStatusEntity> _bagStatus = [];
 
+  List<BagStatusEntity> get bagStatus => _bagStatus;
   TripEntity? get currentTrip => _currentTrip;
   List<BagEntity>? get bags => _bags;
   List<TripEntity>? get trips => _trips;
@@ -82,9 +93,11 @@ class TravelerProvider extends ChangeNotifier {
 
     _setLoading(false);
   }
+
   Future<void> getTravelerHistory(String travelerId) async {
     _setLoading(true);
-    final result = await tripRepository.getTravelerHistory(travelerId: travelerId);
+    final result =
+        await tripRepository.getTravelerHistory(travelerId: travelerId);
 
     result.fold(
       (failure) {
@@ -94,7 +107,6 @@ class TravelerProvider extends ChangeNotifier {
         _history = history;
       },
     );
-    print(result);
     _setLoading(false);
   }
 
@@ -160,11 +172,10 @@ class TravelerProvider extends ChangeNotifier {
       return;
     }
 
-    final currentUser = authService.user; 
+    final currentUser = authService.user;
     debugPrint("Usuário logado: ${currentUser?.fullName}");
 
-    final result = await repository.getAllTravelers(
-    );
+    final result = await repository.getAllTravelers();
 
     result.fold(
       (failure) {
@@ -178,7 +189,7 @@ class TravelerProvider extends ChangeNotifier {
       },
     );
   }
-  
+
   Future<TravelerEntity?> getTravelerById(String id) async {
     _setLoading(true);
 
@@ -226,4 +237,121 @@ class TravelerProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> getBagsStatusById(String userId) async {
+    _setLoading(true);
+    debugPrint('🔍 Iniciando monitoramento do status da bag: $userId');
+
+    try {
+      final result = await bagRepository.getBagsStatusById(userId: userId);
+
+      result.fold(
+        (failure) {
+          debugPrint('❌ Erro ao buscar status da bag $userId: $failure');
+          _bagStatus = [];
+          _stopBagStatusPolling();
+        },
+        (statuses) {
+          debugPrint(
+              '✅ Status iniciais da bag $userId carregados (${statuses.length})');
+          _bagStatus = statuses;
+          notifyListeners();
+
+          // inicia o polling após primeira busca
+          _startBagStatusPolling(userId);
+        },
+      );
+    } catch (e, st) {
+      debugPrint('🚨 Exceção em getBagsStatusById: $e');
+      debugPrint(st.toString());
+      _bagStatus = [];
+      _stopBagStatusPolling();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  void _startBagStatusPolling(String userId) {
+    _bagStatusPollingTimer?.cancel();
+
+    _bagStatusPollingTimer =
+        Timer.periodic(const Duration(seconds: 5), (_) async {
+      try {
+        final result = await bagRepository.getBagsStatusById(userId: userId);
+
+        result.fold(
+          (failure) {
+            debugPrint('⚠️ Falha ao atualizar status da bag $userId: $failure');
+          },
+          (statuses) {
+            // Atualiza somente se houve mudança nos status
+            if (!listEquals(_bagStatus, statuses)) {
+              debugPrint(
+                  '♻️ Status da bag $userId atualizados (${statuses.length})');
+              _bagStatus = statuses;
+              notifyListeners();
+            }
+          },
+        );
+      } catch (e) {
+        debugPrint('Polling bag $userId error: $e');
+      }
+    });
+  }
+
+  void _stopBagStatusPolling() {
+    _bagStatusPollingTimer?.cancel();
+    _bagStatusPollingTimer = null;
+    debugPrint('🛑 Polling de status de bag parado.');
+  }
+
+  Future<void> getBagsByUserId(String userId) async {
+    _setLoading(true);
+    debugPrint('🎒 Buscando malas do usuário: $userId');
+
+    try {
+      final result = await getUserBagsUsecase(userId: userId);
+
+      result.fold(
+        (failure) {
+          debugPrint('❌ Erro ao buscar malas do usuário $userId: $failure');
+          _bags = [];
+        },
+        (bagsList) {
+          debugPrint(
+              '✅ ${bagsList.length} malas encontradas para o usuário $userId');
+          _bags = bagsList;
+        },
+      );
+    } catch (e, st) {
+      debugPrint('🚨 Exceção em getBagsByUserId: $e');
+      debugPrint(st.toString());
+      _bags = [];
+    } finally {
+      _setLoading(false);
+    }
+
+    notifyListeners();
+  }
+  Future<bool> validateTravelerEmailAndCPF(String email, String cpf) async {
+    final result = await repository.getAllTravelers();
+    bool isValid = false;
+
+    result.fold(
+      (failure) {
+        debugPrint("Erro ao buscar viajantes: $failure");
+      },
+      (travelers) {
+        isValid = travelers.any(
+          (traveler) =>
+              traveler.email != null &&
+              traveler.cpf != null &&
+              traveler.email.toLowerCase() == email.toLowerCase() &&
+              traveler.cpf!.replaceAll(RegExp(r'\D'), '') ==
+                  cpf.replaceAll(RegExp(r'\D'), ''),
+        );
+      },
+    );
+
+    return isValid;
+  }
 }

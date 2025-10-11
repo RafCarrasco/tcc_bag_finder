@@ -31,14 +31,10 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
 
   Future<void> init() async {
     await travelerProvider.getTravelerHistory(widget.travelerId);
-
     for (var trip in travelerProvider.history) {
       await travelerProvider.getBagsByTripId(trip.tripId);
     }
-
-    if (mounted) {
-      setState(() => isLoading = false);
-    }
+    if (mounted) setState(() => isLoading = false);
   }
 
   Color _statusColor(String status) {
@@ -72,12 +68,12 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
       backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
+          // 🔹 AppBar customizada
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius:
-                  BorderRadius.circular(AppDimensions.radiusExtraLarge),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusExtraLarge),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
@@ -91,111 +87,166 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
               hint: 'Pesquise sua viagem...',
             ),
           ),
+
+          // 🔹 Conteúdo
           Expanded(
             child: history.isEmpty
                 ? const Center(
                     child: Text(
                       'Nenhuma viagem passada encontrada.',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                   )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: history.length,
-                    itemBuilder: (context, index) {
-                      final trip = history[index];
-                      final date =
-                          DateFormat('dd/MM/yyyy').format(trip.statusTime);
+                : Center(
+                    child: SizedBox(
+                      width: 700, // 🔸 largura máxima para centralizar em telas grandes
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(24),
+                        itemCount: history.length,
+                        itemBuilder: (context, index) {
+                          final trip = history[index];
+                          final date = DateFormat('dd/MM/yyyy').format(trip.statusTime);
 
-                      // Filtra as malas associadas a esta viagem
-                      final tripBags = allBags
-                          .where((b) => b.tripId == trip.tripId)
-                          .toList();
+                          final tripBags = allBags
+                              .where((b) => b.tripId == trip.tripId)
+                              .toList();
 
-                      return Card(
-                        elevation: 3,
-                        margin: const EdgeInsets.only(bottom: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${trip.origin} → ${trip.destination}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 24),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Data: $date',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Status: ${trip.status}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: _statusColor(trip.status),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const Divider(height: 24),
-
-                              if (tripBags.isNotEmpty)
-                                const Text(
-                                  'Malas associadas:',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              const SizedBox(height: 8),
-
-                              ...tripBags.map((bag) {
-                                final bagDate = bag.createdAt != null
-                                    ? DateFormat('dd/MM/yyyy HH:mm')
-                                        .format(bag.createdAt!)
-                                    : '-';
-                                return Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 🔹 Cabeçalho da viagem
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        'Printed Code: ${bag.printedCode ?? '-'}',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w600),
+                                      Expanded(
+                                        child: Text(
+                                          '${trip.origin} → ${trip.destination}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                          ),
+                                        ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Criada em: $bagDate',
-                                        style:
-                                            const TextStyle(fontSize: 12),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: _statusColor(trip.status)
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: _statusColor(trip.status),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          trip.status,
+                                          style: TextStyle(
+                                            color: _statusColor(trip.status),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                );
-                              }).toList(),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    'Data: $date',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+
+                                  const Divider(height: 28),
+
+                                  if (tripBags.isNotEmpty)
+                                    const Text(
+                                      'Malas associadas:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+
+                                  const SizedBox(height: 8),
+
+                                  ...tripBags.map((bag) {
+                                    final bagDate = bag.createdAt != null
+                                        ? DateFormat('dd/MM/yyyy HH:mm')
+                                            .format(bag.createdAt!)
+                                        : '-';
+
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade50,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: Colors.grey.shade300,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Printed Code: ${bag.printedCode ?? '-'}',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                'Criada em: $bagDate',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const Icon(
+                                            Icons.luggage,
+                                            color: Colors.teal,
+                                            size: 28,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
           ),
         ],

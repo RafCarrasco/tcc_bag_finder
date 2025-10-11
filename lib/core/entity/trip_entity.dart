@@ -1,53 +1,54 @@
 import 'package:uuid/uuid.dart';
 import 'bag_entity.dart';
-import 'traveler_entity.dart';
-import 'trip_description_entity.dart';
-import '../../infra/repositories/traveler_repository_impl.dart';
 
 class TripEntity {
   static const Uuid _uuid = Uuid();
 
   final String id;
+  final String cpf;
   final String responsibleCollaboratorId;
-  final TripDescriptionEntity description;
   final List<BagEntity>? bags;
   final bool isDone;
-  final String? cpf;
   final DateTime createdAt;
-  final DateTime? updatedAt;
+  final String origin;
+  final String destination;
+  final String? connection;
 
   TripEntity({
     String? id,
     required this.cpf,
     required this.responsibleCollaboratorId,
-    required TripDescriptionEntity description,
     required this.bags,
     this.isDone = false,
     DateTime? createdAt,
-    this.updatedAt,
+    required this.origin,
+    required this.destination,
+    this.connection,
   })  : id = id ?? _uuid.v4(),
-        description = description.copyWith(tripId: id ?? _uuid.v4()),
         createdAt = createdAt ?? DateTime.now();
+
   TripEntity copyWith({
     String? id,
     String? cpf,
     String? responsibleCollaboratorId,
-    TripDescriptionEntity? description,
     List<BagEntity>? bags,
     bool? isDone,
     DateTime? createdAt,
-    DateTime? updatedAt,
+    String? origin,
+    String? destination,
+    String? connection,
   }) {
     return TripEntity(
       id: id ?? this.id,
       cpf: cpf ?? this.cpf,
       responsibleCollaboratorId:
           responsibleCollaboratorId ?? this.responsibleCollaboratorId,
-      description: description ?? this.description,
       bags: bags ?? this.bags,
       isDone: isDone ?? this.isDone,
       createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      origin: origin ?? this.origin,
+      destination: destination ?? this.destination,
+      connection: connection ?? this.connection,
     );
   }
 
@@ -55,11 +56,12 @@ class TripEntity {
     return TripEntity(
       cpf: '',
       responsibleCollaboratorId: '',
-      description: TripDescriptionEntity.empty(),
       bags: [],
       isDone: false,
       createdAt: DateTime.now(),
-      updatedAt: null,
+      origin: '',
+      destination: '',
+      connection: '',
     );
   }
 
@@ -68,29 +70,34 @@ class TripEntity {
       'id': id,
       'cpf': cpf,
       'responsibleCollaboratorId': responsibleCollaboratorId,
-      'description': description.toJson(),
       'bags': bags?.map((e) => e.toJson()).toList(),
       'isDone': isDone,
       'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
+      'origin': origin,
+      'destination': destination,
+      'connection': connection,
     };
   }
 
   factory TripEntity.fromJson(Map<String, dynamic> json) {
     return TripEntity(
-      id: json['id'],
-      cpf: json['cpf'],
-      responsibleCollaboratorId: json['responsible_collaborator_id'],
-      description: TripDescriptionEntity.fromJson(json['description']),
+      id: json['id'] ?? '',
+      cpf: json['cpf'] ?? '',
+      responsibleCollaboratorId: json['responsible_collaborator_id'] ??
+          json['user_id'] ??
+          '',
       bags: (json['bags'] as List<dynamic>?)
           ?.map((e) => BagEntity.fromJson(e))
           .toList(),
-      isDone: json['isDone'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'])
-          : null,
-      
+      isDone: json['isDone'] == 1 ||
+          json['isDone'] == true ||
+          json['is_done'] == 1 ||
+          json['is_done'] == true,
+      createdAt: DateTime.tryParse(json['created_at'] ?? json['createdAt'] ?? '') ??
+          DateTime.now(),
+      origin: json['origin'] ?? '',
+      destination: json['destination'] ?? '',
+      connection: json['connection'],
     );
   }
 }
