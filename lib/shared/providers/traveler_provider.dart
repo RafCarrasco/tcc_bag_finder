@@ -285,8 +285,6 @@ class TravelerProvider extends ChangeNotifier {
           (statuses) {
             // Atualiza somente se houve mudança nos status
             if (!listEquals(_bagStatus, statuses)) {
-              debugPrint(
-                  '♻️ Status da bag $userId atualizados (${statuses.length})');
               _bagStatus = statuses;
               notifyListeners();
             }

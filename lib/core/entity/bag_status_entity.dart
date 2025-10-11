@@ -5,7 +5,7 @@ class BagStatusEntity {
 
   final String id;
   final String bagId;
-  final String status;
+  String status;
   final DateTime createdAt;
   final String? destination;
   final String? rfidTag;
