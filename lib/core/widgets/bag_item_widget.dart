@@ -124,12 +124,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                       const SizedBox(
                         height: 4,
                       ),
-                      _buildInfoRow(
-                        'Descrição:',
-                        widget.bag.description ??
-                            'Nenhuma descrição encontrada!',
-                        context,
-                      ),
+                      
                       const SizedBox(
                         height: 4,
                       ),

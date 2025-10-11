@@ -4,26 +4,46 @@ import 'package:bag_finder/core/entity/collaborator_entity.dart';
 import 'package:bag_finder/core/exceptions/authentication_exceptions.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/entity/user_entity.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserRemoteDataSource {
-  // final String baseUrl = dotenv.env['BASE_URL']!;
   final String baseUrl;
 
   UserRemoteDataSource({required this.baseUrl});
 
-  Future<UserEntity> addUser(UserEntity user) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/users'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(user.toJson()),
-    );
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return UserEntity.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Erro ao adicionar usuário: ${response.body}');
-    }
+ Future<UserEntity> addUser(UserEntity user) async {
+  final payload = {
+    'cpf': user.cpf?.replaceAll(RegExp(r'\D'), ''),
+    'fullName': user.fullName.trim(),
+    'email': user.email.trim().toLowerCase(),
+    'password': user.password,
+    'phone': user.phone.isEmpty ? null : user.phone,
+    'role': user.role.isEmpty ? 'TRAVELER' : user.role,
+    'isActive': user.isActive,
+  };
+
+  final resp = await http.post(
+    Uri.parse('$baseUrl/users'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(payload),
+  );
+
+  final body = resp.body.isNotEmpty ? jsonDecode(resp.body) : null;
+  final err = (body is Map && body['error'] is String)
+      ? body['error'] as String
+      : 'Erro ao adicionar usuário';
+
+  if (resp.statusCode == 200 || resp.statusCode == 201) {
+    return UserEntity.fromJson(body as Map<String, dynamic>);
+  } else if (resp.statusCode == 409) {
+    throw UserAlreadyInUseException();
+  } else if (resp.statusCode == 400) {
+    throw Exception(err); // exibe "Campos obrigatórios ausentes: ..."
+  } else {
+    throw Exception('Erro (HTTP ${resp.statusCode}): $err');
   }
+}
+
+
 
   Future<UserEntity?> getUserById(String id) async {
     final response = await http.get(Uri.parse('$baseUrl/users/$id'));
@@ -128,4 +148,23 @@ class UserRemoteDataSource {
           'Erro ao autenticar usuário (Status ${response.statusCode}): ${response.body}');
     }
   }
+
+Future<UserEntity?> getUserByCpf(String cpf) async {
+  final clean = cpf.replaceAll(RegExp(r'\D'), '');
+  final response = await http.get(Uri.parse('$baseUrl/users/cpf/$clean'));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if ((data['role'] as String) == 'ADMIN') {
+        return AdminEntity.fromJson(data);
+    } else if ((data['role'] as String) == 'COLLABORATOR') {
+        return CollaboratorEntity.fromJson(data);
+    }
+    return UserEntity.fromJson(data);
+  } else if (response.statusCode == 404) {
+    return null; 
+  } else {
+    throw Exception('Erro ao verificar CPF: ${response.body}');
+  }
+}
 }

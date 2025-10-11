@@ -82,10 +82,7 @@ class BagConfirmationDialog extends StatelessWidget {
                   'Status:',
                   bag.status.toLiteral(),
                 ),
-                _buildInfoRow(
-                  'Descrição:',
-                  bag.description == null ? 'Sem descrição' : bag.description!,
-                ),
+                
               ],
             ),
           ),

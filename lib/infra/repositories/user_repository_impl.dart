@@ -11,13 +11,17 @@ class UserRepositoryImpl implements IUserRepository {
 
   UserRepositoryImpl(this.remote);
 
-  @override
-  Future<Either<AuthFailure, UserEntity>> addUser(
-      {required UserEntity user}) async {
-    try {
-      final result = await remote.addUser(user);
-      return Right(result);
-    } catch (e) {
+@override
+Future<Either<AuthFailure, UserEntity>> addUser({required UserEntity user}) async {
+  try {
+
+    final result = await remote.addUser(user);
+    return Right(result);
+  } on UserAlreadyInUseException {
+
+    return Left(UserAlreadyInUse()); 
+    
+  } catch (e) {
       return Left(UserAlreadyInUse());
     }
   }
@@ -105,22 +109,30 @@ class UserRepositoryImpl implements IUserRepository {
   }) async {
     try {
       final result = await remote.authenticateUser(email, password);
-      // Se o 401 fosse tratado retornando null, esta linha faria sentido.
-      // Como estamos lançando, o fluxo vai direto para o catch.
-      // if (result == null) return Left(ApplicationExecutionError());
       return Right(result);
     } on AuthenticationFailedException {
-      // 1. Captura a exceção de 401 (Credenciais Inválidas)
-      return Left(
-          AuthenticationFailure()); // Usa sua classe AuthenticationFailure
+      return Left(AuthenticationFailure());
     } on Exception catch (e, stack) {
-      // 2. Captura 500, erros de rede, ou outras falhas do servidor
       print(e);
-      // Usa UnknownError ou uma falha específica para erro de servidor
       return Left(UnknownError(stackTrace: stack));
     } catch (e, stack) {
-      // 3. Captura erros que não são Exceptions (erros de runtime, etc.)
       return Left(UnknownError(stackTrace: stack));
     }
+  }
+
+  Future<Either<Failure, UserEntity?>> getUserByCpf(
+      {required String cpf}) async {
+    try {
+      final result = await remote.getUserByCpf(cpf);
+      return Right(result);
+    } catch (e) {
+      print("Erro ao buscar CPF no repositório: $e");
+      return Left(UnknownError());
+    }
+  }
+
+  Future<Either<Failure, UserEntity?>> checkIfCpfExists(
+      {required String cpf}) async {
+    return getUserByCpf(cpf: cpf);
   }
 }

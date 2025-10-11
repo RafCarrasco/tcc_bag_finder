@@ -112,4 +112,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get greetingsFromBagFinder => 'BagFinder te deseja uma ótima viagem!';
+
+  @override
+  String get cpfPlaceholder => 'CPF';
+
+  @override
+  String get cellPhonePlaceholder => 'Telefone';
 }

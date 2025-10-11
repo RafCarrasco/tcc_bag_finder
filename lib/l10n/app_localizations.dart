@@ -263,6 +263,18 @@ abstract class AppLocalizations {
   /// **'Password'**
   String get passwordPlaceholder;
 
+  /// No description provided for @passwordPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get cpfPlaceholder;
+
+  /// No description provided for @passwordPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get cellPhonePlaceholder;
+
   /// No description provided for @fullNamePlaceholder.
   ///
   /// In en, this message translates to:

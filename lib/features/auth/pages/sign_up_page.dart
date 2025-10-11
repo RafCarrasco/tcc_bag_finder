@@ -40,16 +40,39 @@ class _SignUpPageState extends State<SignUpPage> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
+            
             Form(
               key: _formKey,
               child: Column(
                 children: [
                   LoginTextField(
+                    suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                    hint: AppLocalizations.of(context)!.cpfPlaceholder,
+                    isPassword: false,
+                    onChanged: (value) => signUpController.setCpf(value),
+                    fieldType: 'cpf',
+                    isRequired: true,
+                  ),
+                  const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                  LoginTextField(
                     suffixIcon: AppIconsSecondaryGrey.personIcon,
                     hint: AppLocalizations.of(context)!.fullNamePlaceholder,
                     isPassword: false,
-                    onChanged: signUpController.setFullName,
+                    onChanged: (value) => signUpController.setFullName(value),
                     fieldType: 'fullName',
+                    isRequired: true,
+                  ),
+                  const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                  LoginTextField(
+                    suffixIcon: AppIconsSecondaryGrey.phoneIcon,
+                    hint: AppLocalizations.of(context)!.cellPhonePlaceholder,
+                    isPassword: false,
+                    onChanged: (value) {
+                      signUpController.setPhone(
+                        value,
+                      );
+                    },
+                    fieldType: 'cellPhone',
                     isRequired: true,
                   ),
                   const SizedBox(height: AppDimensions.verticalSpaceLarge),
@@ -58,7 +81,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     hint: AppLocalizations.of(context)!.emailPlaceholder,
                     isPassword: false,
                     fieldType: 'email',
-                    onChanged: signUpController.setEmail,
+                    onChanged: (value) => signUpController.setEmail(value),
                     isRequired: true,
                   ),
                   const SizedBox(height: AppDimensions.verticalSpaceLarge),
@@ -66,10 +89,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                     hint: AppLocalizations.of(context)!.passwordPlaceholder,
                     isPassword: true,
-                    onChanged: signUpController.setPassword,
+                    onChanged: (value) => signUpController.setPassword(value),
                     fieldType: 'password',
                     isRequired: true,
                   ),
+                  
+                  
                 ],
               ),
             ),

@@ -51,6 +51,7 @@ class _SignInPageState extends State<SignInPage> {
             style: Theme.of(context).textTheme.displayLarge!.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
+                 textAlign: TextAlign.center
           ),
           const SizedBox(height: AppDimensions.verticalSpaceMedium),
           SizedBox(
@@ -170,7 +171,8 @@ class _SignInPageState extends State<SignInPage> {
                       TextButton(
                         onPressed: () {
                           Modular.to.navigate(
-                            '/login/find-your-account',
+                            
+                            '/login/sign-up',
                           );
                         },
                         child: Text(
@@ -196,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Modular.to.navigate('/login/sign-up');
+                          Modular.to.navigate('/login/find-your-account');
                         },
                         child: Text(
                           AppLocalizations.of(context)!.loginPageRecoverAccess,

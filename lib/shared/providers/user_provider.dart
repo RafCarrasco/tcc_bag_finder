@@ -176,5 +176,14 @@ class UserProvider extends ChangeNotifier {
       },
     );
   }
+
+Future<Either<Failure, UserEntity?>> checkIfCpfExists(String cpf) async {
+  _setLoading(true);
+  
+  final result = await repository.getUserByCpf(cpf: cpf); 
+  
+  _setLoading(false);
+  return result;
+}
 }
 

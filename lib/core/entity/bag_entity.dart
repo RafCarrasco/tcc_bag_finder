@@ -5,75 +5,87 @@ class BagEntity {
   static const Uuid _uuid = Uuid();
 
   final String id;
-  final String? description;
-  final String cpf;
-  final BagStatusEnum status;
   final String? tripId;
+  final BagStatusEnum status;
+  
+
   final DateTime createdAt;
+  final DateTime updatedAt;
+  final String? printedCode;
+  final String? epc;
 
   BagEntity({
     String? id,
-    required this.cpf,
-    required this.description,
     required this.status,
     this.tripId,
     DateTime? createdAt,
-  })  : id = id ?? _uuid.v4(),
-        createdAt = createdAt ?? DateTime.now();
+    DateTime? updatedAt,
+    this.printedCode,
+    this.epc,
+  }) 
+    : id = id ?? _uuid.v4(),
+      createdAt = createdAt ?? DateTime.now(),
+      updatedAt = updatedAt ?? createdAt ?? DateTime.now();
 
 
   BagEntity copyWith({
     String? id,
-    String? description,
-    BagStatusEnum? status,
-    String? cpf,
     String? tripId,
+    BagStatusEnum? status,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? printedCode,
+    String? epc,
   }) {
     return BagEntity(
       id: id ?? this.id,
-      cpf: cpf ?? this.cpf,
-      description: description ?? this.description,
-      status: status ?? this.status,
       tripId: tripId ?? this.tripId,
+      status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      printedCode: printedCode ?? this.printedCode,
+      epc: epc ?? this.epc,
     );
   }
 
 
   factory BagEntity.empty() {
+    final now = DateTime.now();
     return BagEntity(
       id: '',
-      cpf: '',
-      description: '',
       status: BagStatusEnum.UNKNOWN,
-      createdAt: DateTime.now(),
+      createdAt: now,
+      updatedAt: now,
+      printedCode: null,
+      epc: null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'description': description,
-      'cpf': cpf,
+      'trip_id': tripId,
       'status': status.name,
-      'tripId': tripId,
-      'createdAt': createdAt.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'printed_code': printedCode,
+      'epc': epc,
     };
   }
+
 
   factory BagEntity.fromJson(Map<String, dynamic> json) {
     return BagEntity(
       id: json['id'],
-      description: json['description'],
-      cpf: json['cpf'],
+      tripId: json['trip_id'],
       status: BagStatusEnum.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => BagStatusEnum.UNKNOWN,
       ),
-      tripId: json['tripId'],
-      createdAt: DateTime.parse(json['createdAt']),
+      createdAt: DateTime.parse(json['created_at']), 
+      updatedAt: DateTime.parse(json['updated_at']),
+      printedCode: json['printed_code'],
+      epc: json['epc'],
     );
   }
 }

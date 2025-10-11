@@ -11,39 +11,74 @@ class SignUpController {
   String? password;
   String? fullName;
   String? phone;
+  String _cpf = '';
 
-  void setEmail(String? value) => email = value;
-  void setPassword(String? value) => password = value;
-  void setFullName(String? value) => fullName = value;
-  void setPhone(String? value) => phone = value;
+  void setPhone(String? value) {
+        phone = value;
+    }
 
-  void resetFields() {
-    email = null;
-    password = null;
-    fullName = null;
-    phone = null;
+  void setPassword(String? value) {
+        password = value;
+    }
+    
+    void setFullName(String? value) { 
+        fullName = value; 
+    }
+    
+    void setEmail(String? value) { 
+        email = value; 
+    }
+
+  void setCpf(String? cpf) {
+    if (cpf == null) return;
+    _cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
   }
+
+  String get cpf => _cpf;
 
   bool areFieldsValid() {
     return email?.isNotEmpty == true &&
         password?.isNotEmpty == true &&
-        fullName?.isNotEmpty == true;
+        fullName?.isNotEmpty == true &&
+        _cpf.length == 11;
   }
 
   Future<void> signUp(BuildContext context) async {
     if (!areFieldsValid()) {
-      GlobalSnackBar.error('Preencha todos os campos obrigatórios.');
+      GlobalSnackBar.error(
+          'Preencha todos os campos obrigatórios (CPF deve ter 11 dígitos).');
       return;
     }
-    final newUser= TravelerEntity(
+
+    // final existingUserResult = await _provider.checkIfCpfExists(_cpf);
+
+    // bool isCpfAlreadyRegistered = false;
+    // existingUserResult.fold(
+    //   (_) {},
+    //   (user) {
+    //     if (user != null && user.email != email) {
+    //       GlobalSnackBar.error('CPF já está registrado em outra conta.');
+    //       isCpfAlreadyRegistered = true;
+    //     } else if (user != null && user.role == 'TRAVELER') {
+    //       GlobalSnackBar.error('CPF já está registrado como viajante.');
+    //       isCpfAlreadyRegistered = true;
+    //     }
+    //   },
+    // );
+
+    // if (isCpfAlreadyRegistered) {
+    //   return;
+    // }
+
+    final newUser = TravelerEntity(
       email: email!,
       fullName: fullName!,
       phone: phone ?? '',
-      role: 'TRAVELER',
+      role: '',
       isActive: true,
-      password: password!, // <- campo adicionado
+      password: password!,
       createdAt: DateTime.now(),
-      cpf: '11111111112'
+      cpf: _cpf,
     );
 
     final result = await _provider.addUser(newUser);
