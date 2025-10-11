@@ -109,8 +109,9 @@ class TripRemoteDataSource {
       throw Exception('Erro ao buscar viagens por ID: ${response.body}');
     }
   }
+
   Future<List<TripHistoryEntity>> getTravelerHistory(String travelerId) async {
-    final url = Uri.parse('$baseUrl/bags/traveler/$travelerId/history');
+    final url = Uri.parse('$baseUrl/trips/$travelerId/history');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -164,8 +165,8 @@ class TripRemoteDataSource {
     body: jsonEncode(tripTransactionData),
   );
 
-  if (response.statusCode != 201 && response.statusCode != 200) {
-    throw Exception('Falha na transação de viagem: ${response.body}');
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Falha na transação de viagem: ${response.body}');
+    }
   }
-}
 }

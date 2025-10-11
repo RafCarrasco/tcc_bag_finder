@@ -54,13 +54,13 @@ List<BagEntity> orderBagsByStatusFunction({
   bool isAscending = true,
 }) {
   const statusPriority = {
-    BagStatusEnum.CLAIMED: 0,
+    BagStatusEnum.COLLECTED: 0,
     BagStatusEnum.READY_FOR_PICKUP: 1,
     BagStatusEnum.ARRIVED: 2,
     BagStatusEnum.IN_TRANSIT: 3,
     BagStatusEnum.CHECKED_IN: 4,
-    BagStatusEnum.LOST: 5,
-    BagStatusEnum.UNKNOWN: 6,
+    BagStatusEnum.IN_TRANSIT_CONNECTION: 5,
+    BagStatusEnum.NAO_CADASTRADA: 6,
   };
 
   if (isAscending) {

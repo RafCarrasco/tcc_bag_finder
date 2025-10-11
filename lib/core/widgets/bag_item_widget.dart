@@ -146,7 +146,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      widget.bag.status != BagStatusEnum.CLAIMED
+                      widget.bag.status != BagStatusEnum.COLLECTED
                           ? Column(
                               children: [
                                 Padding(

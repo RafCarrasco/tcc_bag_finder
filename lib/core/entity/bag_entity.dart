@@ -7,10 +7,8 @@ class BagEntity {
   final String id;
   final String? tripId;
   final BagStatusEnum status;
-  
-
   final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
   final String? printedCode;
   final String? epc;
 
@@ -53,7 +51,7 @@ class BagEntity {
     final now = DateTime.now();
     return BagEntity(
       id: '',
-      status: BagStatusEnum.UNKNOWN,
+      status: BagStatusEnum.NAO_CADASTRADA,
       createdAt: now,
       updatedAt: now,
       printedCode: null,
@@ -67,7 +65,7 @@ class BagEntity {
       'trip_id': tripId,
       'status': status.name,
       'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String() ?? '',
       'printed_code': printedCode,
       'epc': epc,
     };
@@ -80,10 +78,12 @@ class BagEntity {
       tripId: json['trip_id'],
       status: BagStatusEnum.values.firstWhere(
         (e) => e.name == json['status'],
-        orElse: () => BagStatusEnum.UNKNOWN,
+        orElse: () => BagStatusEnum.NAO_CADASTRADA,
       ),
       createdAt: DateTime.parse(json['created_at']), 
-      updatedAt: DateTime.parse(json['updated_at']),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
       printedCode: json['printed_code'],
       epc: json['epc'],
     );

@@ -53,16 +53,16 @@ List<BagEntity> orderBagsAlphabeticFunction({
   bool isAscending = true,
 }) {
   list.sort((a, b) {
-    final isADescriptionNull = a.description == null;
-    final isBDescriptionNull = b.description == null;
+    final isADescriptionNull = a.printedCode == null;
+    final isBDescriptionNull = b.printedCode == null;
 
     if (isADescriptionNull && !isBDescriptionNull) return 1;
     if (!isADescriptionNull && isBDescriptionNull) return -1;
     if (isADescriptionNull && isBDescriptionNull) return 0;
 
     return isAscending
-        ? a.description!.compareTo(b.description!)
-        : b.description!.compareTo(a.description!);
+        ? a.printedCode!.compareTo(b.printedCode!)
+        : b.printedCode!.compareTo(a.printedCode!);
   });
 
   return list;

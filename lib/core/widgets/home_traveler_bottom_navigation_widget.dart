@@ -43,7 +43,7 @@ class _HomeTravelerBottomNavigationState
         break;
       case 1:
         Modular.to.pushNamed(
-          '/traveler/${widget.travelerId}/history-panel',
+          '/traveler/${widget.travelerId}/history-panel/',
         );
         break;
       case 2:

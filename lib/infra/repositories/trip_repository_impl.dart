@@ -102,17 +102,6 @@ class TripRepositoryImpl implements ITripRepository {
       return Left(TripReadError());
     }
   }
-  @override
-  Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistory({
-    required String travelerId,
-  }) async {
-    try {
-      final result = await remote.getTravelerHistory(travelerId);
-      return Right(result);
-    } catch (e) {
-      return Left(TripReadError());
-    }
-  }
 
   @override
   Future<Either<TripFailure, List<TripEntity>>> getTripsByStatusAndId({
@@ -131,6 +120,18 @@ class TripRepositoryImpl implements ITripRepository {
   Future<Either<TripFailure, bool>> isTripDone({required String tripId}) async {
     try {
       final result = await remote.isTripDone(tripId);
+      return Right(result);
+    } catch (e) {
+      return Left(TripReadError());
+    }
+  }
+
+  @override
+  Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistory({
+    required String travelerId,
+  }) async {
+    try {
+      final result = await remote.getTravelerHistory(travelerId);
       return Right(result);
     } catch (e) {
       return Left(TripReadError());

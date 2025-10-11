@@ -7,16 +7,18 @@ import '../../core/entity/traveler_entity.dart';
 import '../../core/entity/trip_history_entity.dart';
 import '../../repositories/trip_repository.dart';
 import '../../infra/repositories/traveler_repository_impl.dart';
+import '../../infra/repositories/bag_repository_impl.dart';
 import '../../core/failures/traveler_failure.dart';
 import '../../features/auth/controller/auth_controller.dart';
 
 
 class TravelerProvider extends ChangeNotifier {
   final TravelerRepositoryImpl repository;
+  final BagRepositoryImpl bagRepository;
   final AuthService authService;
   final ITripRepository tripRepository;
 
-  TravelerProvider(this.repository, this.authService,this.tripRepository);
+  TravelerProvider(this.repository, this.authService,this.tripRepository,this.bagRepository);
 
   TripEntity? _currentTrip;
   List<BagEntity>? _bags;
@@ -92,7 +94,7 @@ class TravelerProvider extends ChangeNotifier {
         _history = history;
       },
     );
-    print(_history);
+    print(result);
     _setLoading(false);
   }
 
@@ -176,6 +178,7 @@ class TravelerProvider extends ChangeNotifier {
       },
     );
   }
+  
   Future<TravelerEntity?> getTravelerById(String id) async {
     _setLoading(true);
 
@@ -199,4 +202,28 @@ class TravelerProvider extends ChangeNotifier {
     _setLoading(false);
     return traveler;
   }
+
+  Future<void> getBagsByTripId(String tripId) async {
+    _setLoading(true);
+    try {
+      final result = await bagRepository.getBagsByTripId(tripId: tripId);
+
+      result.fold(
+        (failure) {
+          debugPrint('Erro ao buscar malas da viagem $tripId: $failure');
+          _bags = [];
+        },
+        (bags) {
+          debugPrint('Malas carregadas (${bags.length}) para tripId: $tripId');
+          _bags = bags;
+        },
+      );
+    } catch (e) {
+      debugPrint('Exceção em getBagsByTripId: $e');
+      _bags = [];
+    } finally {
+      _setLoading(false);
+    }
+  }
+
 }

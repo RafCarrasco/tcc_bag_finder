@@ -3,8 +3,7 @@ class TripHistoryEntity {
   final String origin;
   final String destination;
   final String bagId;
-  final String description;
-  final String lastStatus;
+  final String status;
   final DateTime statusTime;
 
   TripHistoryEntity({
@@ -12,20 +11,25 @@ class TripHistoryEntity {
     required this.origin,
     required this.destination,
     required this.bagId,
-    required this.description,
-    required this.lastStatus,
+    required this.status,
     required this.statusTime,
   });
 
   factory TripHistoryEntity.fromJson(Map<String, dynamic> json) {
+    final isDone = json['is_done'];
+    String status;
+    if (isDone == 1 || isDone == '1') {
+      status = 'DELIVERED';
+    } else {
+      status = 'CHECKED_IN';
+    }
     return TripHistoryEntity(
-      tripId: json['trip_id'] ?? '',
+      tripId: json['id'] ?? '',
       origin: json['origin'] ?? '',
       destination: json['destination'] ?? '',
       bagId: json['bag_id'] ?? '',
-      description: json['description'] ?? '',
-      lastStatus: json['last_status'] ?? '',
-      statusTime: DateTime.tryParse(json['status_time'] ?? '') ?? DateTime.now(),
+      status: status,
+      statusTime: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }
 }

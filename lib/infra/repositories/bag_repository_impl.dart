@@ -101,4 +101,14 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
+    Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId(
+    {required String tripId}) async {
+    try {
+      final result = await remote.getBagsByTripId(tripId);
+      return Right(result);
+    } catch (e) {
+      print(e);
+      return Left(BagReadError());
+    }
+  }
 }

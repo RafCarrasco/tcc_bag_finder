@@ -3,10 +3,8 @@ import 'package:http/http.dart' as http;
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/enums/bag_status_enum.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BagRemoteDataSource {
-  // final String baseUrl = dotenv.env['BASE_URL']!;
   final String baseUrl;
 
   BagRemoteDataSource({required this.baseUrl});
@@ -104,4 +102,16 @@ class BagRemoteDataSource {
       throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
   }
+  
+  Future<List<BagEntity>> getBagsByTripId(String tripId) async {
+    final response = await http.get(Uri.parse('$baseUrl/bags/trips/$tripId'));
+
+    if (response.statusCode == 200) {
+      final list = jsonDecode(response.body) as List;
+      return list.map((e) => BagEntity.fromJson(e)).toList();
+    } else {
+      throw Exception('Erro ao buscar bags da viagem: ${response.statusCode} - ${response.body}');
+    }
+  }
+
 }

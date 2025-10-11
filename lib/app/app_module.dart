@@ -75,6 +75,20 @@ class AppModule extends Module {
     i.addSingleton<EventBus>(() => EventBus());
 
     final String baseUrl = dotenv.env['BASE_URL']!;
+    
+    i.addSingleton<Logger>(() => Logger());
+    i.addLazySingleton<BagRepositoryImpl>(() => BagRepositoryImpl(i()));
+    i.addLazySingleton<IBagRepository>(() => BagRepositoryImpl(i()));
+    i.addLazySingleton<UserRepositoryImpl>(() => UserRepositoryImpl(i()));
+    i.addLazySingleton<TripRepositoryImpl>(() => TripRepositoryImpl(i()));
+    i.addLazySingleton<ITripRepository>(() => TripRepositoryImpl(i()));
+    i.addLazySingleton<IAdminRepository>(() => AdminRepositoryImpl(i()));
+    i.addLazySingleton<ICollaboratorRepository>(() => CollaboratorRepositoryImpl(i()));
+    i.addLazySingleton<CollaboratorRepositoryImpl>(() => CollaboratorRepositoryImpl(i()));
+    i.addLazySingleton<TravelerRepositoryImpl>(() => TravelerRepositoryImpl(i()));
+    i.addLazySingleton<AddBagUsecase>(() => AddBagUsecase(repository: i()));
+    i.addLazySingleton<IUpdateUserUsecase>(() => UpdateUserUsecase(repository: i()));
+    i.addLazySingleton<IDeleteUserUsecase>(() => DeleteUserUsecase(repository: i()));
 
     i.addLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource(baseUrl: baseUrl));
     i.addLazySingleton<TripRemoteDataSource>(() => TripRemoteDataSource(
@@ -89,19 +103,6 @@ class AppModule extends Module {
         ));
     i.addLazySingleton<BagRemoteDataSource>(() => BagRemoteDataSource(baseUrl: baseUrl));
 
-    i.addSingleton<Logger>(() => Logger());
-    i.addLazySingleton<UserRepositoryImpl>(() => UserRepositoryImpl(i()));
-    i.addLazySingleton<TripRepositoryImpl>(() => TripRepositoryImpl(i()));
-    i.addLazySingleton<ITripRepository>(() => TripRepositoryImpl(i()));
-    i.addLazySingleton<IAdminRepository>(() => AdminRepositoryImpl(i()));
-    i.addLazySingleton<IBagRepository>(() => BagRepositoryImpl(i()));
-    i.addLazySingleton<ICollaboratorRepository>(() => CollaboratorRepositoryImpl(i()));
-    i.addLazySingleton<CollaboratorRepositoryImpl>(() => CollaboratorRepositoryImpl(i()));
-    i.addLazySingleton<TravelerRepositoryImpl>(() => TravelerRepositoryImpl(i()));
-
-    i.addLazySingleton<AddBagUsecase>(() => AddBagUsecase(repository: i()));
-    i.addLazySingleton<IUpdateUserUsecase>(() => UpdateUserUsecase(repository: i()));
-    i.addLazySingleton<IDeleteUserUsecase>(() => DeleteUserUsecase(repository: i()));
 
     i.addSingleton<UserProvider>(() => UserProvider(i()));
     i.addLazySingleton<AdminProvider>(() => AdminProvider(i()));
@@ -110,6 +111,7 @@ class AppModule extends Module {
     i.get<TravelerRepositoryImpl>(),
     i.get<AuthService>(),
     i.get<ITripRepository>(),
+    i.get<BagRepositoryImpl>(),
   ),
 );
 
@@ -172,7 +174,7 @@ class AppModule extends Module {
       return LandingTravelerPage(travelerId: id);
     }, children: [
       ChildRoute('/home', child: (_) => HomeTravelerPage(travelerId: r.args.params['travelerId'])),
-      ChildRoute('/history-panel', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/history-panel/', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/profile/', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),
     ]);
