@@ -226,4 +226,27 @@ class TravelerProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> validateTravelerEmailAndCPF(String email, String cpf) async {
+  final result = await repository.getAllTravelers();
+  bool isValid = false;
+
+  result.fold(
+    (failure) {
+      debugPrint("Erro ao buscar viajantes: $failure");
+    },
+    (travelers) {
+      isValid = travelers.any(
+        (traveler) =>
+            traveler.email != null &&
+            traveler.cpf != null &&
+            traveler.email.toLowerCase() == email.toLowerCase() &&
+            traveler.cpf!.replaceAll(RegExp(r'\D'), '') ==
+                cpf.replaceAll(RegExp(r'\D'), ''),
+      );
+    },
+  );
+
+  return isValid;
+  }
+
 }

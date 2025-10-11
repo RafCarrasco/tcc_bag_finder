@@ -30,9 +30,9 @@ class _TripHistoryListPageState extends State<TripHistoryListPage> {
   DateTime get date =>
       travelerProvider.currentTrip?.createdAt ?? DateTime.now();
   String get airportDestination =>
-      travelerProvider.currentTrip?.description.airportDestination ?? '';
+      travelerProvider.currentTrip?.destination ?? '';
   String get airportOrigin =>
-      travelerProvider.currentTrip?.description.airportOrigin ?? '';
+      travelerProvider.currentTrip?.origin ?? '';
 
   @override
   void initState() {

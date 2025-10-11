@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:bag_finder/l10n/app_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:bag_finder/l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/utils/app_colors.dart';
+import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
-import '../../../core/widgets/login_text_field.dart';
+import '../../../core/widgets/forgot_password_text_field.dart';
+import '../../../shared/providers/user_provider.dart';
+import '../../../shared/providers/traveler_provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -15,78 +19,178 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final travelerProvider = Modular.get<TravelerProvider>();
+  final userProvider = Modular.get<UserProvider>();
+
+  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  Future<void> _onSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final isValid = await travelerProvider.validateTravelerEmailAndCPF(
+      _emailController.text,
+      _cpfController.text,
+    );
+
+    if (isValid) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Senha redefinida com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Modular.to.navigate('/login/sign-in');
+    } else {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('CPF ou e-mail inválidos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
+
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const SizedBox(
-              width: 300,
-              height: 200,
-            ),
-            Text(
-              AppLocalizations.of(context)!.loginPageTitle2,
-              style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Text(
-              AppLocalizations.of(context)!.loginPageTitle2SecondLine,
-              style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            LoginTextField(
-              suffixIcon: AppIconsSecondaryGrey.emailIcon,
-              hint: "E-mail",
-              isPassword: false,
-              fieldType: 'email',
-              isRequired: true,
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  'oi',
-                  style: AppTextStyles.button,
+      body: Center(
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'images/group-interrogation.png',
+                      height: 220,
+                      filterQuality: FilterQuality.high,
+                    ),
+                    const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                    Text(
+                      localization.loginPageTitle5,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall!
+                          .copyWith(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                    ForgotPasswordTextField(
+                      controller: _cpfController,
+                      suffixIcon: AppIconsSecondaryGrey.personIcon,
+                      hint: 'Digite seu CPF',
+                      isPassword: false,
+                      fieldType: 'cpf',
+                      isRequired: true,
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: AppDimensions.verticalSpaceMedium),
+                    ForgotPasswordTextField(
+                      controller: _emailController,
+                      suffixIcon: AppIconsSecondaryGrey.emailIcon,
+                      hint: localization.emailForContactPlaceholder,
+                      isPassword: false,
+                      fieldType: 'email',
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Informe o e-mail';
+                        }
+                        if (!value.contains('@') || !value.contains('.')) {
+                          return 'E-mail inválido';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: AppDimensions.verticalSpaceMedium),
+                    ForgotPasswordTextField(
+                      controller: _newPasswordController,
+                      suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                      hint: 'Nova senha',
+                      isPassword: true,
+                      fieldType: '',
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Digite uma nova senha';
+                        }
+                        if (value.length < 6) {
+                          return 'A senha deve ter pelo menos 6 caracteres';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: AppDimensions.verticalSpaceMedium),
+                    ForgotPasswordTextField(
+                      controller: _confirmPasswordController,
+                      suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                      hint: 'Confirmar senha',
+                      isPassword: true,
+                      fieldType: '',
+                      isRequired: true,
+                      validator: (value) {
+                        if (value != _newPasswordController.text) {
+                          return 'As senhas não coincidem';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 100),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _isLoading ? null : _onSubmit,
+                        icon: _isLoading
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.send),
+                        label: Text(
+                          localization.needHelpPageSend,
+                          style: AppTextStyles.button,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.verticalSpaceMedium),
+                    TextButton(
+                      onPressed: () => Modular.to.navigate('/login/sign-in'),
+                      child: Text(
+                        localization.comeBackToHomepage,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.primary,
+                            ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.loginPageAlreadyHaveAccount,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: AppColors.secondaryGrey,
-                      ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Modular.to.navigate(
-                      '/login/sign-in',
-                    );
-                  },
-                  child: Text(
-                    'oi',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.primary,
-                          decorationThickness: 2,
-                        ),
-                  ),
-                )
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

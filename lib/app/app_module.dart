@@ -52,7 +52,6 @@ import '../features/auth/pages/login_landing_page.dart';
 import '../features/auth/pages/sign_in_page.dart';
 import '../features/auth/pages/sign_up_page.dart';
 import '../features/auth/pages/forgot_password_page.dart';
-import '../features/auth/pages/find_your_account_page.dart';
 import '../features/admin/pages/landing_admin_page.dart';
 import '../features/admin/pages/home_admin_page.dart';
 import '../features/admin/pages/add_collaborator_page.dart';
@@ -143,8 +142,7 @@ class AppModule extends Module {
     r.child('/login', child: (_) => const LoginLandingPage(), children: [
       ChildRoute('/sign-in', child: (_) => const SignInPage()),
       ChildRoute('/sign-up', child: (_) => const SignUpPage()),
-      ChildRoute('/forgot-password', child: (_) => const ForgotPasswordPage()),
-      ChildRoute('/find-your-account', child: (_) => const FindYourAccountPage()),
+      ChildRoute('/forgot-password', child: (_) => ForgotPasswordPage()),
     ]);
 
     r.child('/admin/:adminId', child: (_) {

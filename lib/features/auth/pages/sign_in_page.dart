@@ -191,14 +191,14 @@ class _SignInPageState extends State<SignInPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.loginPageTitle5,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: AppColors.secondaryGrey,
-                            ),
+                        AppLocalizations.of(context)!.loginPageAlreadyHaveAccount,
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: AppColors.secondaryGrey,
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
-                          Modular.to.navigate('/login/find-your-account');
+                          Modular.to.navigate('/login/forgot-password');
                         },
                         child: Text(
                           AppLocalizations.of(context)!.loginPageRecoverAccess,

@@ -29,9 +29,9 @@ class _TripListWidgetState extends State<TripListWidget> {
 
   DateTime get date => travelerProvider.currentTrip!.createdAt;
   String get airportDestination =>
-      travelerProvider.currentTrip!.description.airportDestination;
+      travelerProvider.currentTrip!.destination;
   String get airportOrigin =>
-      travelerProvider.currentTrip!.description.airportOrigin;
+      travelerProvider.currentTrip!.origin;
 
   @override
   void initState() {
@@ -107,9 +107,9 @@ class _TripListWidgetState extends State<TripListWidget> {
                 child: BagPaginationWidget(
                   bags: widget.bags,
                   airportOriginCode:
-                      travelerProvider.currentTrip!.description.airportOrigin,
+                      travelerProvider.currentTrip!.origin,
                   airportDestinationCode: travelerProvider
-                      .currentTrip!.description.airportDestination,
+                      .currentTrip!.destination,
                 ),
               );
             }
