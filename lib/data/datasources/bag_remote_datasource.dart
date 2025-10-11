@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/entity/bag_entity.dart';
+import '../../core/entity/bag_status_entity.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/enums/bag_status_enum.dart';
 
@@ -114,4 +115,16 @@ class BagRemoteDataSource {
     }
   }
 
+  Future<List<BagStatusEntity>> getBagsStatusById(String userId) async {
+    final response = await http.get(Uri.parse('$baseUrl/bags/status/user/$userId'));
+
+    if (response.statusCode == 200) {
+      final list = jsonDecode(response.body) as List;
+      return list.map((e) => BagStatusEntity.fromJson(e)).toList();
+    } else if (response.statusCode == 404) {
+      return [];
+    } else {
+      throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
+    }
+  }
 }

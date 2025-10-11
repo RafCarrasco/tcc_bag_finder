@@ -2,22 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '../entity/bag_entity.dart';
+import '../entity/bag_status_entity.dart';
 import '../../shared/providers/traveler_provider.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import 'bag_pagination_widget.dart';
-import 'trip_header_widget.dart';
 
 class TripListWidget extends StatefulWidget {
   final String travelerId;
   final List<BagEntity> bags;
-  final String collaboratorName;
 
   const TripListWidget({
     super.key,
     required this.travelerId,
     required this.bags,
-    required this.collaboratorName,
   });
 
   @override
@@ -41,21 +36,15 @@ class _TripListWidgetState extends State<TripListWidget> {
     );
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingMedium,
-          ),
-          child: Selector<TravelerProvider, int>(
-            selector: (_, provider) => provider.checkedBags,
-            builder: (context, checkedBags, child) {
-              if (checkedBags == widget.bags.length) {
-                travelerProvider.checkTripCompletion();
-              }
+    return Consumer<TravelerProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
+<<<<<<< HEAD
               return TripHeaderWidget(
                 airportDestination: airportDestination,
                 airportOrigin: airportOrigin,
@@ -113,9 +102,70 @@ class _TripListWidgetState extends State<TripListWidget> {
                 ),
               );
             }
+=======
+        if (provider.bagStatus == null || provider.bagStatus!.isEmpty) {
+          return const Center(
+            child: Text(
+              "Nenhuma bagagem encontrada.",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          );
+        }
+
+        final bags = provider.bagStatus!;
+
+        return ListView.builder(
+          itemCount: bags.length,
+          itemBuilder: (context, index) {
+            final bag = bags[index];
+            return _buildBagCard(bag);
+>>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
           },
-        ),
-      ],
+        );
+      },
     );
   }
+
+  Widget _buildBagCard(BagStatusEntity bag) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 3,
+      child: ListTile(
+        leading: Icon(
+          Icons.luggage,
+          color: _getStatusColor(bag.status),
+          size: 40,
+        ),
+        title: Text(
+          bag.printedCode ?? "Código desconhecido",
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Status: ${bag.status ?? 'Indefinido'}"),
+            Text("Destino: ${bag.destination ?? 'N/A'}"),
+            Text("Conexão: ${bag.flightConnection ?? 'N/A'}"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'checked_in':
+        return Colors.orange;
+      case 'in_transit':
+        return Colors.blue;
+      case 'arrived':
+        return Colors.green;
+      case 'lost':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
 }

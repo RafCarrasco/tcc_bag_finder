@@ -80,6 +80,7 @@ class TripEntity {
   }
 
   factory TripEntity.fromJson(Map<String, dynamic> json) {
+<<<<<<< HEAD
   return TripEntity(
     id: json['id'] ?? '',
     cpf: json['cpf'] ?? '',
@@ -99,5 +100,27 @@ class TripEntity {
     destination: json['destination'] ?? '',
     connection: json['connection'],
   );
+=======
+    return TripEntity(
+      id: json['id'] ?? '',
+      cpf: json['cpf'] ?? '',
+      responsibleCollaboratorId: json['responsible_collaborator_id'] ??
+          json['user_id'] ??
+          '',
+      bags: (json['bags'] as List<dynamic>?)
+          ?.map((e) => BagEntity.fromJson(e))
+          .toList(),
+      isDone: json['isDone'] == 1 ||
+          json['isDone'] == true ||
+          json['is_done'] == 1 ||
+          json['is_done'] == true,
+      createdAt: DateTime.tryParse(json['created_at'] ?? json['createdAt'] ?? '') ??
+          DateTime.now(),
+      origin: json['origin'] ?? '',
+      destination: json['destination'] ?? '',
+      connection: json['connection'],
+    );
+  }
+>>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
 }
 }

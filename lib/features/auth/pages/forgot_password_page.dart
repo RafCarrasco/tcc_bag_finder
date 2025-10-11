@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
+<<<<<<< HEAD
 
+=======
+>>>>>>> b04f833112c61e0543a3408d3291b0d7d7a61cc8
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';

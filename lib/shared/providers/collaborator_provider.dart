@@ -5,7 +5,7 @@ import '../../core/entity/tag_entity.dart';
 
 class CollaboratorProvider extends ChangeNotifier {
   final CollaboratorRepositoryImpl repository;
-
+  
   CollaboratorProvider(this.repository);
 
   bool _isLoading = false;
@@ -106,4 +106,22 @@ class CollaboratorProvider extends ChangeNotifier {
       debugPrint('Erro ao inserir tag: $e');
     }
   }
+
+    Future<void> getAllTrips() async {
+    _setLoading(true);
+    try {
+      final result = await repository.getAllTrips();
+      result.fold(
+        (failure) => _trips = [],
+        (list) => _trips = list,
+      );
+    } catch (e) {
+      debugPrint('Erro ao buscar todas as trips: $e');
+      _trips = [];
+    } finally {
+      _setLoading(false);
+    }
+  }
+
 }
+

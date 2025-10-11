@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../core/entity/bag_entity.dart';
+import '../../core/entity/bag_status_entity.dart';
 import '../../core/entity/trip_entity.dart';
 import '../../core/enums/bag_status_enum.dart';
 import '../../core/failures/bag_failure.dart';
@@ -105,6 +106,17 @@ class BagRepositoryImpl implements IBagRepository {
     {required String tripId}) async {
     try {
       final result = await remote.getBagsByTripId(tripId);
+      return Right(result);
+    } catch (e) {
+      print(e);
+      return Left(BagReadError());
+    }
+  }
+    @override
+  Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById(
+    {required String userId}) async {
+    try {
+      final result = await remote.getBagsStatusById(userId);
       return Right(result);
     } catch (e) {
       print(e);

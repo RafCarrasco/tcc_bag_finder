@@ -48,6 +48,17 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
       return Left(CollaboratorTripsError());
     }
   }
+
+    Future<Either<CollaboratorFailure, List<TripEntity>>> getAllTrips() async {
+    try {
+      final result = await remote.getAllTrips();
+      return Right(result);
+    } catch (e) {
+      print('Erro ao buscar todas as trips: $e');
+      return Left(CollaboratorTripsError());
+    }
+  }
+
   
   Future<Either<CollaboratorFailure, Unit>> insertTag(TagEntity tag) async {
     try {

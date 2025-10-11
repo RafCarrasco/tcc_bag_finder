@@ -109,6 +109,7 @@ class TripRepositoryImpl implements ITripRepository {
     required String travelerId,
   }) async {
     try {
+      print('Repo implt');
       final result = await remote.getTripsByStatusAndId(isDone, travelerId);
       return Right(result);
     } catch (e) {
