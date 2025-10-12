@@ -8,7 +8,8 @@ import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
 import '../../../core/widgets/forgot_password_text_field.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../shared/providers/traveler_provider.dart';
+// O travelerProvider não é mais necessário aqui para o fluxo de reset.
+// import '../../../shared/providers/traveler_provider.dart'; 
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -18,7 +19,8 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final travelerProvider = Modular.get<TravelerProvider>();
+  // Removendo o travelerProvider pois a lógica de reset está no userProvider
+  // final travelerProvider = Modular.get<TravelerProvider>(); 
   final userProvider = Modular.get<UserProvider>();
 
   final TextEditingController _cpfController = TextEditingController();
@@ -30,34 +32,74 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _cpfController.dispose();
+    _emailController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _onSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
-    final isValid = await travelerProvider.validateTravelerEmailAndCPF(
-      _emailController.text,
-      _cpfController.text,
+    // 1. ✅ PASSO ÚNICO: Verifica Credenciais, Checa a Role (TRAVELER) E Reseta a Senha.
+    // Usamos o método verifyTravelerCredentials apenas para checar se o usuário existe
+    // e é um TRAVELER. Se for bem-sucedido, chamamos o resetPassword.
+
+    final verificationResult = await userProvider.verifyTravelerCredentials(
+      email: _emailController.text,
+      cpf: _cpfController.text,
     );
 
-    if (isValid) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Senha redefinida com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      Modular.to.navigate('/login/sign-in');
-    } else {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('CPF ou e-mail inválidos.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    await verificationResult.fold(
+      // Falha na verificação de credenciais/role (ex: Não é Traveler, CPF/Email inválido)
+      (failure) async {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(failure.errorMessage), 
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+      // Sucesso na verificação (Usuário Traveler encontrado)
+      (userEntity) async {
+        // 2. Tenta redefinir a senha
+        final resetResult = await userProvider.resetPassword(
+          email: _emailController.text,
+          cpf: _cpfController.text,
+          newPassword: _newPasswordController.text,
+        );
+
+        setState(() => _isLoading = false);
+
+        resetResult.fold(
+          // Falha na redefinição (Ex: Erro de servidor ao atualizar o DB)
+          (failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(failure.errorMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          },
+          // Sucesso Total na Redefinição
+          (_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Senha redefinida com sucesso!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Modular.to.navigate('/login/sign-in');
+          },
+        );
+      },
+    );
   }
 
   @override

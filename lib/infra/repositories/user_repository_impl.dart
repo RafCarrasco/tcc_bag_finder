@@ -135,4 +135,26 @@ Future<Either<AuthFailure, UserEntity>> addUser({required UserEntity user}) asyn
       {required String cpf}) async {
     return getUserByCpf(cpf: cpf);
   }
+
+  @override
+Future<Either<Failure, void>> resetPassword({
+  required String email,
+  required String cpf,
+  required String newPassword,
+}) async {
+  try {
+    // Chama o DataSource para fazer a requisição HTTP de atualização
+    await remote.resetPassword(
+      email: email,
+      cpf: cpf,
+      newPassword: newPassword,
+    );
+    // Retorna sucesso (void)
+    return const Right(null);
+  } catch (e) {
+    print('[UserRepository] Erro ao redefinir senha: $e');
+    // Retorna uma falha genérica de autenticação ou de servidor
+    return Left(ResetPasswordFailure());
+  }
+}
 }
