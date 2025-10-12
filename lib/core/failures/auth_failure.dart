@@ -46,4 +46,16 @@ class InvalidEmail extends AuthFailure {
         );
 }
 
+class ResetPasswordFailure extends AuthFailure {
+  ResetPasswordFailure({String errorMessage = "Não foi possível redefinir a senha. Tente novamente."})
+      : super(errorMessage: errorMessage);
+}
+
+class InvalidCredentials extends AuthFailure {
+  InvalidCredentials()
+      : super(
+            errorMessage:
+                "CPF, e-mail ou perfil de usuário inválido para a redefinição de senha. Apenas TRAVELERS podem resetar.");
+}
+
 

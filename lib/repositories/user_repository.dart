@@ -38,4 +38,13 @@ abstract class IUserRepository {
     required String email,
     required String password,
   });
+
+  Future<Either<Failure, void>> resetPassword({
+    required String email,
+    required String cpf,
+    required String newPassword,
+  });
+
+  // Método usado para checar a role (TRAVELER)
+  Future<Either<Failure, UserEntity?>> getUserByCpf({required String cpf});
 }

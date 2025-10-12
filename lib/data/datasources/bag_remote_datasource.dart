@@ -23,6 +23,19 @@ class BagRemoteDataSource {
     }
   }
 
+  Future<List<BagEntity>> getBagsByEPC(String epc) async {
+    final response = await http.get(Uri.parse('$baseUrl/bags/epc/$epc'));
+
+    if (response.statusCode == 200) {
+      final list = jsonDecode(response.body) as List;
+      return list.map((e) => BagEntity.fromJson(e)).toList();
+    } else if (response.statusCode == 404) {
+      return [];
+    } else {
+      throw Exception('Erro ao buscar bag por EPC: ${response.statusCode} - ${response.body}');
+    }
+  }
+
   Future<List<BagEntity>> getBagsById(String bagId) async {
     final response = await http.get(Uri.parse('$baseUrl/bags/$bagId'));
 

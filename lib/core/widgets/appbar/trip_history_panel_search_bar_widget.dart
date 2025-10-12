@@ -74,18 +74,18 @@ class _TripHistoryPanelSearchBarWidgetState
                   },
                   iconColor: AppColors.secondary,
                 ),
-                FilterOption(
-                  icon: Icons.check_circle,
-                  label: 'Data de atualização',
-                  onTap: () {
-                    tripProvider.orderTripsByUpdatedTime(
-                    );
-                    setState(() {
-                      isAscendingByUpdatedTime = !isAscendingByUpdatedTime;
-                    });
-                  },
-                  iconColor: AppColors.secondary,
-                ),
+                // FilterOption(
+                //   icon: Icons.check_circle,
+                //   label: 'Data de atualização',
+                //   onTap: () {
+                //     tripProvider.orderTripsByUpdatedTime(
+                //     );
+                //     setState(() {
+                //       isAscendingByUpdatedTime = !isAscendingByUpdatedTime;
+                //     });
+                //   },
+                //   iconColor: AppColors.secondary,
+                // ),
               ],
             ),
           ),

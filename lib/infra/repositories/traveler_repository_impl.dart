@@ -1,3 +1,4 @@
+import 'package:bag_finder/core/failures/traveler_failure.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/traveler_entity.dart';
 import '../../core/failures/failure.dart';
@@ -56,6 +57,20 @@ class TravelerRepositoryImpl implements ITravelerRepository {
       return const Right(null);
     } catch (e) {
       return Left(UnknownError());
+    }
+  }
+
+  @override
+  Future<Either<TravelerFailure, TravelerEntity?>> getTravelerByCpfAndEmail({
+    required String cpf,
+    required String email,
+  }) async {
+    try {
+      final result = await remote.getTravelerByCpfAndEmail(cpf, email);
+      return Right(result);
+    } catch (e) {
+      // Retorna TravelerReadError em caso de falha de comunicação/servidor
+      return Left(TravelerReadError());
     }
   }
 }

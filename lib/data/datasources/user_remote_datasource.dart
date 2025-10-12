@@ -149,22 +149,54 @@ class UserRemoteDataSource {
     }
   }
 
-Future<UserEntity?> getUserByCpf(String cpf) async {
-  final clean = cpf.replaceAll(RegExp(r'\D'), '');
-  final response = await http.get(Uri.parse('$baseUrl/users/cpf/$clean'));
+  Future<UserEntity?> getUserByCpf(String cpf) async {
+    final clean = cpf.replaceAll(RegExp(r'\D'), '');
+    final response = await http.get(Uri.parse('$baseUrl/users/cpf/$clean'));
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    if ((data['role'] as String) == 'ADMIN') {
-        return AdminEntity.fromJson(data);
-    } else if ((data['role'] as String) == 'COLLABORATOR') {
-        return CollaboratorEntity.fromJson(data);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if ((data['role'] as String) == 'ADMIN') {
+          return AdminEntity.fromJson(data);
+      } else if ((data['role'] as String) == 'COLLABORATOR') {
+          return CollaboratorEntity.fromJson(data);
+      }
+      return UserEntity.fromJson(data);
+    } else if (response.statusCode == 404) {
+      return null; 
+    } else {
+      throw Exception('Erro ao verificar CPF: ${response.body}');
     }
-    return UserEntity.fromJson(data);
-  } else if (response.statusCode == 404) {
-    return null; 
-  } else {
-    throw Exception('Erro ao verificar CPF: ${response.body}');
   }
-}
+
+  Future<void> resetPassword({
+    required String email,
+    required String cpf,
+    required String newPassword,
+  }) async {
+    final cleanCpf = cpf.replaceAll(RegExp(r'\D'), '');
+    final payload = {
+      // O seu backend deve receber esses três dados
+      'email': email,
+      'cpf': cleanCpf,
+      'newPassword': newPassword,
+    };
+
+    final response = await http.post(
+      // 💡 IMPORTANTE: Este endpoint deve ser o que o seu backend usa para resetar senhas
+      Uri.parse('$baseUrl/auth/reset-password'), 
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+
+    // 400, 404, 401: Erro de credencial ou validação no servidor
+    if (response.statusCode == 400 || response.statusCode == 404 || response.statusCode == 401) {
+      final body = jsonDecode(response.body);
+      throw Exception(body['error'] ?? 'Erro desconhecido ao redefinir.'); // Correto!
+    }
+    // 200 ou 204: Sucesso na redefinição
+    else if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Erro ao redefinir a senha (Status ${response.statusCode}): ${response.body}');
+    }
+    // Se for 200/204, o método retorna void (sucesso).
+  }
 }

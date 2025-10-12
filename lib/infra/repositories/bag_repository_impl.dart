@@ -25,6 +25,18 @@ class BagRepositoryImpl implements IBagRepository {
   }
 
   @override
+  Future<Either<BagFailure, List<BagEntity>>> getBagsByEPC({
+    required String epc,
+  }) async {
+    try {
+      final result = await remote.getBagsByEPC(epc);
+      return Right(result);
+    } catch (e) {
+      return Left(BagFailure(errorMessage: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<BagFailure, List<BagEntity>>> getBagsById(
       {required String bagId}) async {
     try {

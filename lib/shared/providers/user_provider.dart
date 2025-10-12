@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bag_finder/core/failures/auth_failure.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/entity/user_entity.dart';
@@ -176,14 +177,65 @@ class UserProvider extends ChangeNotifier {
       },
     );
   }
+  
+  Future<Either<Failure, UserEntity?>> verifyTravelerCredentials({
+    required String email,
+    required String cpf,
+  }) async {
+    _setLoading(true);
 
-Future<Either<Failure, UserEntity?>> checkIfCpfExists(String cpf) async {
-  _setLoading(true);
-  
-  final result = await repository.getUserByCpf(cpf: cpf); 
-  
-  _setLoading(false);
-  return result;
-}
+    // Tenta encontrar o usuário no repositório (que busca no banco)
+    final cpfResult = await repository.getUserByCpf(cpf: cpf);
+
+    _setLoading(false);
+    
+    return cpfResult.fold(
+      (failure) => Left(failure), // Falha na busca (ex: erro de rede)
+      (user) {
+        if (user == null) {
+          // Garanta que você tem a classe UserNotFound
+          return Left(UserNotFound()); 
+        }
+        
+        // **LÓGICA CRÍTICA:** Checa se a role é 'TRAVELER' E se o email combina
+        if (user.role == 'TRAVELER' && user.email.toLowerCase() == email.toLowerCase()) {
+          return Right(user); // Válido: É um Traveler e os dados batem
+        } else {
+          // Garanta que você tem a classe InvalidCredentials (adicionada no passo 3 da resposta anterior)
+          return Left(InvalidCredentials()); 
+        }
+      },
+    );
+  }
+
+  Future<Either<Failure, UserEntity?>> checkIfCpfExists(String cpf) async {
+    _setLoading(true);
+    
+    final result = await repository.getUserByCpf(cpf: cpf); 
+    
+    _setLoading(false);
+    return result;
+  }
+  Future<Either<Failure, bool>> resetPassword({
+      required String email,
+      required String cpf,
+      required String newPassword,
+    }) async {
+      _setLoading(true);
+      
+      final result = await repository.resetPassword(
+        email: email,
+        cpf: cpf,
+        newPassword: newPassword,
+      );
+      
+      _setLoading(false);
+      
+      // Retorna 'true' se o repositório retornar sucesso (Right)
+      return result.fold(
+        (failure) => Left(failure),
+        (_) => const Right(true),
+      );
+    }
 }
 

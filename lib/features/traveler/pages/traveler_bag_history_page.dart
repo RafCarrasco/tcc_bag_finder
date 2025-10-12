@@ -43,7 +43,6 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
       backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
-          // 🔹 AppBar customizada
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -63,8 +62,6 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
               hint: 'Pesquise sua viagem...',
             ),
           ),
-
-          // 🔹 Conteúdo
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
