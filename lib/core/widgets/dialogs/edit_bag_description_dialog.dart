@@ -1,17 +1,17 @@
+import 'package:bag_finder/core/entity/bag_status_entity.dart';
 import 'package:flutter/material.dart';
-import '../../entity/bag_entity.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 
 class EditBagDescriptionDialog extends StatelessWidget {
-  final BagEntity bag;
+  final BagStatusEntity bagStatus;
   final Future<void> Function(String) onEditConfirmation;
   final VoidCallback onNotArrived;
   final TextEditingController descriptionController = TextEditingController();
 
   EditBagDescriptionDialog({
     super.key,
-    required this.bag,
+    required this.bagStatus,
     required this.onEditConfirmation,
     required this.onNotArrived,
   });
@@ -58,7 +58,7 @@ class EditBagDescriptionDialog extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Edição da descrição',
+                    'Edição da Printed Code',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: AppDimensions.fontMedium,
@@ -86,7 +86,7 @@ class EditBagDescriptionDialog extends StatelessWidget {
                   controller: descriptionController,
                   maxLines: 8,
                   decoration: InputDecoration(
-                    hintText: "Atualize a descrição",
+                    hintText: "Atualize a Printed Code",
                     filled: true,
                     fillColor: Colors.transparent,
                     hintStyle: TextStyle(
