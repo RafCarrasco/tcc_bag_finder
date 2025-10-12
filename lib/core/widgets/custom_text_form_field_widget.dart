@@ -1,104 +1,111 @@
+import 'package:bag_finder/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
-
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import '../utils/app_text_styles.dart';
-import '../utils/user_validation_mixin.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final String hintText;
-  final Icon prefixIcon;
+  final TextEditingController? controller;
+  final String? initialValue;
+  final void Function(String)? onChanged;
   final bool isPassword;
   final String fieldType;
   final bool isRequired;
-  final void Function(String)? onChanged;
+  final Widget? prefixIcon;
 
   const CustomTextFormField({
     super.key,
-    required this.prefixIcon,
     required this.hintText,
+    this.controller,
+    this.initialValue,
     this.onChanged,
-    required this.isPassword,
-    required this.fieldType,
-    required this.isRequired,
+    this.isPassword = false,
+    this.fieldType = '',
+    this.isRequired = false,
+    this.prefixIcon,
   });
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
 }
 
-class _CustomTextFormFieldState extends State<CustomTextFormField>
-    with ValidationMixin {
-  String? errorMessage;
+class _CustomTextFormFieldState extends State<CustomTextFormField> {
+  bool _obscureText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword;
+  }
+
+  String? _validator(String? value) {
+    if (widget.isRequired && (value == null || value.trim().isEmpty)) {
+      return 'Campo obrigatório';
+    }
+
+    if (widget.fieldType == 'email' &&
+        value != null &&
+        value.isNotEmpty &&
+        !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+      return 'E-mail inválido';
+    }
+
+    if (widget.fieldType == 'phone' &&
+        value != null &&
+        value.isNotEmpty &&
+        !RegExp(r'^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$').hasMatch(value)) {
+      return 'Telefone inválido';
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: AppDimensions.paddingSmall,
-      ),
-      child: TextFormField(
-        validator: (value) {
-          final error = validateField(
-            value,
-            widget.hintText,
-            widget.fieldType,
-            widget.isRequired,
-          );
-          setState(() {
-            errorMessage = error;
-          });
-
-          return error;
-        },
-        onChanged: (value) {
-          widget.onChanged?.call(value);
-        },
-        style: AppTextStyles.titleMedium.copyWith(
-          color: AppColors.secondaryGrey,
-          fontWeight: FontWeight.bold,
+    return TextFormField(
+      controller: widget.controller,
+      initialValue: widget.controller == null ? widget.initialValue : null,
+      onChanged: widget.onChanged,
+      obscureText: _obscureText,
+      validator: _validator,
+      keyboardType: _getKeyboardType(widget.fieldType),
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          fillColor: AppColors.primary.withOpacity(
-            0.3,
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingMedium,
-            vertical: AppDimensions.paddingLarge,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: BorderSide.none,
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          hintStyle: const TextStyle(
-            color: Colors.black87,
-            fontSize: 16,
-          ),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingSmall,
-            ),
-            child: widget.prefixIcon,
-          ),
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 24,
-            minHeight: 24,
-          ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(12),
         ),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
     );
+  }
+
+  TextInputType _getKeyboardType(String fieldType) {
+    switch (fieldType) {
+      case 'email':
+        return TextInputType.emailAddress;
+      case 'phone':
+        return TextInputType.phone;
+      case 'number':
+        return TextInputType.number;
+      default:
+        return TextInputType.text;
+    }
   }
 }

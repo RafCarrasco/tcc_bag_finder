@@ -45,6 +45,8 @@ flutter:
     - assets/images/paper-macute.png
     - assets/images/two-persons.png
     - assets/images/bagfinder-login.png
+    - assets/images/bagfinder-sign-up.png
+    - assets/images/logo_appbar.png
 
 
 flutter_intl:

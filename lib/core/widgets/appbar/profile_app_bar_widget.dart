@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import 'home_welcome_user_widget.dart';
-import 'trip_history_panel_search_bar_widget.dart';
 
-class HomeTravelerAppBarWidget extends StatelessWidget {
+class ProfileTravelerAppBarWidget extends StatelessWidget {
   final String userName;
   final String hint;
-  const HomeTravelerAppBarWidget({
+  const ProfileTravelerAppBarWidget({
     super.key,
     required this.userName,
     required this.hint,
@@ -39,9 +38,6 @@ class HomeTravelerAppBarWidget extends StatelessWidget {
           ),       
           const SizedBox(
             height: AppDimensions.verticalSpaceMedium,
-          ),
-          TripHistoryPanelSearchBarWidget(
-            hint: hint,
           ),
         ],
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../shared/providers/traveler_provider.dart';
+import 'package:bag_finder/core/widgets/appbar/profile_app_bar_widget.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,13 +12,18 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  static const Color _primaryColor = Color(0xFF4CAF50);
+  static const double _avatarRadius = 48.0;
+
   @override
   void initState() {
     super.initState();
     final provider = Modular.get<UserProvider>();
     final travelerId = Modular.args.params['travelerId'];
     if (provider.user == null && travelerId != null) {
-      provider.getUserById(travelerId);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        provider.getUserById(travelerId);
+      });
     }
   }
 
@@ -34,138 +39,138 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }
 
+        final userName = user.fullName.isEmpty ? "Usuário" : user.fullName;
+        final displayName =
+            user.fullName.split(' ').isNotEmpty ? user.fullName.split(' ')[0] : "Usuário";
+
         return Scaffold(
+          backgroundColor: Colors.white,
           body: SafeArea(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AppBar(
-                  title: const Text(
-                    'SEUS DADOS',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  centerTitle: true,
-                  backgroundColor: Colors.white,
-                  elevation: 0,
+                ProfileTravelerAppBarWidget(
+                  userName: userName,
+                  hint: '',
                 ),
-                const Divider(height: 1, thickness: 1, color: Colors.grey),
-                const SizedBox(height: 24),
-                const CircleAvatar(
-                  radius: 48,
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, size: 64, color: Colors.white),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  "Olá, ${user.fullName.isEmpty ? "Usuário" : user.fullName}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 16),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Dados pessoais",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.green,
-                          ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 24),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Center(
+                                  child: CircleAvatar(
+                                    radius: _avatarRadius,
+                                    backgroundColor: Colors.grey,
+                                    child: const Icon(Icons.person, size: 60, color: Colors.white),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: _avatarRadius - (_avatarRadius / 2),
+                                  child: Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Modular.to.pushNamed(
+                                            '/traveler/${user.id}/profile/edit',
+                                          );
+                                        },
+                                        child: Container(
+                                          width: _avatarRadius,
+                                          height: _avatarRadius,
+                                          decoration: BoxDecoration(
+                                            color: _primaryColor,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.2),
+                                                spreadRadius: 1,
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Icon(
+                                            Icons.settings,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const Text(
+                                        'Editar',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              "Olá, $displayName",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle("Dados pessoais", _primaryColor),
+                            _buildInfo("CPF", _formatCpf(user.cpf ?? "")),
+                            _buildInfo(
+                              "Nome Completo",
+                              user.fullName.isEmpty ? "Não informado" : user.fullName,
+                            ),
+                            _buildInfo(
+                              "Número de celular",
+                              user.phone.isEmpty ? "Não informado" : _formatPhone(user.phone),
+                            ),
+                            _buildInfo("Cargo", user.role.isEmpty ? "Não informado" : user.role),
+                            const SizedBox(height: 12),
+                            _buildSectionTitle("Dados de acesso", _primaryColor),
+                            _buildInfo("E-mail", user.email),
+                            _buildInfo("Senha", "********"),
+                            const SizedBox(height: 12),
+                          ],
                         ),
-                        const SizedBox(height: 12),
-                        _buildInfo("CPF", user.cpf ?? "Não informado"),
-                        _buildInfo(
-                            "Nome Completo",
-                            user.fullName.isEmpty
-                                ? "Não informado"
-                                : user.fullName),
-                        _buildInfo("Número de celular",
-                            user.phone.isEmpty ? "Não informado" : user.phone),
-                        _buildInfo("Cargo",
-                            user.role.isEmpty ? "Não informado" : user.role),
-                        const SizedBox(height: 24),
-                        const Text(
-                          "Dados de acesso",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.green,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfo("E-mail", user.email),
-                        _buildInfo("Senha", "********"),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          onPressed: () {
-                            Modular.to.pushNamed(
-                                '/traveler/:travelerId/profile');
-                          },
-                          child: const Text(
-                            "Editar Perfil",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red.shade700,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          onPressed: () {
-                            provider.logout();
-                            Modular.to.navigate('/login');
-                          },
-                          child: const Text(
-                            "Logout",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSectionTitle(String title, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: 18,
+          color: color,
+          letterSpacing: 0.5,
+        ),
+      ),
     );
   }
 
@@ -176,18 +181,44 @@ class _ProfilePageState extends State<ProfilePage> {
         Text(
           title,
           style: const TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             fontSize: 14,
-            color: Colors.black87,
+            color: Colors.black54,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           content,
-          style: const TextStyle(fontSize: 16, color: Colors.black),
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const Divider(height: 20, thickness: 1),
+        const Divider(height: 20, thickness: 1, color: Colors.green),
       ],
     );
+  }
+
+  String _formatCpf(String cpf) {
+    final cleanCpf = cpf.replaceAll(RegExp(r'\D'), '');
+    if (cleanCpf.length == 11) {
+      return cleanCpf.replaceAllMapped(
+        RegExp(r'(\d{3})(\d{3})(\d{3})(\d{2})'),
+        (match) =>
+            '${match.group(1)}.${match.group(2)}.${match.group(3)}-${match.group(4)}',
+      );
+    }
+    return cpf.isEmpty ? "Não informado" : cpf;
+  }
+
+  String _formatPhone(String phone) {
+    final clean = phone.replaceAll(RegExp(r'\D'), '');
+    if (clean.length == 11) {
+      return '(${clean.substring(0, 2)}) ${clean.substring(2, 7)}-${clean.substring(7)}';
+    } else if (clean.length == 10) {
+      return '(${clean.substring(0, 2)}) ${clean.substring(2, 6)}-${clean.substring(6)}';
+    }
+    return phone;
   }
 }

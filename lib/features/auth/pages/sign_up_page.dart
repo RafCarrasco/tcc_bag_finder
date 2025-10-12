@@ -21,133 +21,152 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
+    
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const SizedBox(width: 300, height: 200),
-            Text(
-              AppLocalizations.of(context)!.loginPageTitle2,
-              style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Text(
-              AppLocalizations.of(context)!.loginPageTitle2SecondLine,
-              style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            
-            Form(
-              key: _formKey,
+        child: Center( 
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  LoginTextField(
-                    suffixIcon: AppIconsSecondaryGrey.passwordIcon,
-                    hint: AppLocalizations.of(context)!.cpfPlaceholder,
-                    isPassword: false,
-                    onChanged: (value) => signUpController.setCpf(value),
-                    fieldType: 'cpf',
-                    isRequired: true,
+                  Image.asset(
+                      'images/bagfinder-sign-up.png',
+
+                      filterQuality: FilterQuality.high,
+                    ),
+                  Text(
+                    AppLocalizations.of(context)!.loginPageTitle2,
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                  const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                  LoginTextField(
-                    suffixIcon: AppIconsSecondaryGrey.personIcon,
-                    hint: AppLocalizations.of(context)!.fullNamePlaceholder,
-                    isPassword: false,
-                    onChanged: (value) => signUpController.setFullName(value),
-                    fieldType: 'fullName',
-                    isRequired: true,
+                  Text(
+                    AppLocalizations.of(context)!.loginPageTitle2SecondLine,
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                  const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                  LoginTextField(
-                    suffixIcon: AppIconsSecondaryGrey.phoneIcon,
-                    hint: AppLocalizations.of(context)!.cellPhonePlaceholder,
-                    isPassword: false,
-                    onChanged: (value) {
-                      signUpController.setPhone(
-                        value,
-                      );
+                  SizedBox(
+                    height: AppDimensions.verticalSpaceExtraLarge,
+                  ),
+                  const SizedBox(height: AppDimensions.verticalSpaceExtraLarge), 
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        LoginTextField(
+                          suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                          hint: localization.cpfPlaceholder,
+                          isPassword: false,
+                          onChanged: (value) => signUpController.setCpf(value),
+                          fieldType: 'cpf',
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                        LoginTextField(
+                          suffixIcon: AppIconsSecondaryGrey.personIcon,
+                          hint: localization.fullNamePlaceholder,
+                          isPassword: false,
+                          onChanged: (value) => signUpController.setFullName(value),
+                          fieldType: 'fullName',
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                        LoginTextField(
+                          suffixIcon: AppIconsSecondaryGrey.phoneIcon,
+                          hint: localization.cellPhonePlaceholder,
+                          isPassword: false,
+                          onChanged: (value) {
+                            signUpController.setPhone(value);
+                          },
+                          fieldType: 'cellPhone',
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                        LoginTextField(
+                          suffixIcon: AppIconsSecondaryGrey.emailIcon,
+                          hint: localization.emailPlaceholder,
+                          isPassword: false,
+                          fieldType: 'email',
+                          onChanged: (value) => signUpController.setEmail(value),
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                        LoginTextField(
+                          suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                          hint: localization.passwordPlaceholder,
+                          isPassword: true,
+                          onChanged: (value) => signUpController.setPassword(value),
+                          fieldType: 'password',
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: 50),
+                      ],
+                    ),
+                  ),
+                  
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                        (Set<WidgetState> states) {
+                          if (signUpController.areFieldsValid() && !states.contains(WidgetState.disabled)) {
+                            return AppColors.primary;
+                          }
+                          return AppColors.primary.withOpacity(0.5); 
+                        },
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await signUpController.signUp(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(localization.loginPageAlreadyHaveAccount)), 
+                        );
+                      }
                     },
-                    fieldType: 'cellPhone',
-                    isRequired: true,
+                    child: Text(
+                      localization.signUpPageButtonSignUp,
+                      style: AppTextStyles.button,
+                    ),
                   ),
-                  const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                  LoginTextField(
-                    suffixIcon: AppIconsSecondaryGrey.emailIcon,
-                    hint: AppLocalizations.of(context)!.emailPlaceholder,
-                    isPassword: false,
-                    fieldType: 'email',
-                    onChanged: (value) => signUpController.setEmail(value),
-                    isRequired: true,
-                  ),
-                  const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                  LoginTextField(
-                    suffixIcon: AppIconsSecondaryGrey.passwordIcon,
-                    hint: AppLocalizations.of(context)!.passwordPlaceholder,
-                    isPassword: true,
-                    onChanged: (value) => signUpController.setPassword(value),
-                    fieldType: 'password',
-                    isRequired: true,
-                  ),
+
+                  const SizedBox(height: AppDimensions.verticalSpaceMedium),
                   
-                  
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        localization.loginPageAlreadyHaveAccount,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              color: AppColors.secondaryGrey,
+                            ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Modular.to.navigate('/login/sign-in');
+                        },
+                        child: Text(
+                          localization.loginPageClickHere,
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                                decorationColor: AppColors.primary,
+                                decorationThickness: 2,
+                              ),
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: signUpController.areFieldsValid()
-                      ? WidgetStateProperty.all(AppColors.primary)
-                      : WidgetStateProperty.all(AppColors.primary.withOpacity(0.5)),
-                ),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await signUpController.signUp(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Preencha todos os campos')),
-                    );
-                  }
-                },
-                child: Text(
-                  AppLocalizations.of(context)!.signUpPageButtonSignUp,
-                  style: AppTextStyles.button,
-                ),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.loginPageAlreadyHaveAccount,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: AppColors.secondaryGrey,
-                      ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Modular.to.navigate('/login/sign-in');
-                  },
-                  child: Text(
-                    AppLocalizations.of(context)!.loginPageClickHere,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.primary,
-                          decorationThickness: 2,
-                        ),
-                  ),
-                )
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

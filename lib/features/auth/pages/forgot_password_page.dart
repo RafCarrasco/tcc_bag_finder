@@ -134,7 +134,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                    ForgotPasswordTextField(
+                    AppInputTextField(
                       controller: _cpfController,
                       suffixIcon: AppIconsSecondaryGrey.personIcon,
                       hint: 'Digite seu CPF',
@@ -144,7 +144,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
-                    ForgotPasswordTextField(
+                    AppInputTextField(
                       controller: _emailController,
                       suffixIcon: AppIconsSecondaryGrey.emailIcon,
                       hint: localization.emailForContactPlaceholder,
@@ -162,7 +162,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
-                    ForgotPasswordTextField(
+                    AppInputTextField(
                       controller: _newPasswordController,
                       suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                       hint: 'Nova senha',
@@ -180,7 +180,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
-                    ForgotPasswordTextField(
+                    AppInputTextField(
                       controller: _confirmPasswordController,
                       suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                       hint: 'Confirmar senha',

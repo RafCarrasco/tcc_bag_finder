@@ -129,7 +129,8 @@ class _SignInPageState extends State<SignInPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
+              ConstrainedBox(constraints:const BoxConstraints(maxWidth: 400),
+                child: Row(
                 children: [
                   const Expanded(
                     child: Divider(
@@ -154,6 +155,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                 ],
+              ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
