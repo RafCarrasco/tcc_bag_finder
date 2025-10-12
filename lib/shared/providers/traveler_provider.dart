@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bag_finder/core/enums/bag_status_enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../../core/entity/trip_entity.dart';
@@ -35,10 +36,8 @@ class TravelerProvider extends ChangeNotifier {
   List<TripHistoryEntity> _history = [];
   bool _isTripComplete = false;
   int _checkedBags = 0;
-  Timer? _pollingTimer;
-  Timer? _bagStatusPollingTimer;
   List<BagStatusEntity> _bagStatus = [];
-
+  
   List<BagStatusEntity> get bagStatus => _bagStatus;
   TripEntity? get currentTrip => _currentTrip;
   List<BagEntity>? get bags => _bags;
@@ -55,45 +54,6 @@ class TravelerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTripsByStatus({
-    required String travelerId,
-    required bool isDone,
-  }) async {
-    print("Buscando viagens para o viajante $travelerId (isDone=$isDone)");
-
-    _setLoading(true);
-
-    final result = await tripRepository.getTripsByStatusAndId(
-      travelerId: travelerId,
-      isDone: isDone,
-    );
-
-    result.fold(
-      (failure) {
-        print("Falha ao buscar viagens: $failure");
-        _currentTrip = null;
-        _bags = [];
-        _trips = [];
-      },
-      (trips) {
-        print("Viagens recebidas: ${trips.length}");
-        if (trips.isNotEmpty) {
-          print("Primeira viagem: ${trips.first.id}");
-          _currentTrip = trips.first;
-          _bags = _currentTrip?.bags ?? [];
-          _startPolling(travelerId);
-        } else {
-          print("Nenhuma viagem encontrada");
-          _currentTrip = null;
-          _bags = [];
-          _stopPolling();
-        }
-      },
-    );
-
-    _setLoading(false);
-  }
-
   Future<void> getTravelerHistory(String travelerId) async {
     _setLoading(true);
     final result =
@@ -108,41 +68,6 @@ class TravelerProvider extends ChangeNotifier {
       },
     );
     _setLoading(false);
-  }
-
-  void _stopPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = null;
-  }
-
-  void _startPolling(String travelerId) {
-    _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
-      try {
-        final result = await tripRepository.getTripsByStatusAndId(
-          travelerId: travelerId,
-          isDone: false,
-        );
-
-        result.fold(
-          (failure) {},
-          (trips) {
-            if (trips.isNotEmpty) {
-              final updatedTrip = trips.first;
-              final updatedBags = updatedTrip.bags ?? [];
-
-              if (!listEquals(_bags, updatedBags)) {
-                _bags = updatedBags;
-                _currentTrip = updatedTrip;
-                notifyListeners();
-              }
-            }
-          },
-        );
-      } catch (e) {
-        if (kDebugMode) print('Polling error: $e');
-      }
-    });
   }
 
   Future<void> checkIsTripDone({required TripEntity trip}) async {
@@ -225,7 +150,6 @@ class TravelerProvider extends ChangeNotifier {
           _bags = [];
         },
         (bags) {
-          debugPrint('Malas carregadas (${bags.length}) para tripId: $tripId');
           _bags = bags;
         },
       );
@@ -235,71 +159,6 @@ class TravelerProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
-  }
-
-  Future<void> getBagsStatusById(String userId) async {
-    _setLoading(true);
-    debugPrint('🔍 Iniciando monitoramento do status da bag: $userId');
-
-    try {
-      final result = await bagRepository.getBagsStatusById(userId: userId);
-
-      result.fold(
-        (failure) {
-          debugPrint('❌ Erro ao buscar status da bag $userId: $failure');
-          _bagStatus = [];
-          _stopBagStatusPolling();
-        },
-        (statuses) {
-          debugPrint(
-              '✅ Status iniciais da bag $userId carregados (${statuses.length})');
-          _bagStatus = statuses;
-          notifyListeners();
-
-          // inicia o polling após primeira busca
-          _startBagStatusPolling(userId);
-        },
-      );
-    } catch (e, st) {
-      debugPrint('🚨 Exceção em getBagsStatusById: $e');
-      debugPrint(st.toString());
-      _bagStatus = [];
-      _stopBagStatusPolling();
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  void _startBagStatusPolling(String userId) {
-    _bagStatusPollingTimer?.cancel();
-
-    _bagStatusPollingTimer =
-        Timer.periodic(const Duration(seconds: 5), (_) async {
-      try {
-        final result = await bagRepository.getBagsStatusById(userId: userId);
-
-        result.fold(
-          (failure) {
-            debugPrint('⚠️ Falha ao atualizar status da bag $userId: $failure');
-          },
-          (statuses) {
-            // Atualiza somente se houve mudança nos status
-            if (!listEquals(_bagStatus, statuses)) {
-              _bagStatus = statuses;
-              notifyListeners();
-            }
-          },
-        );
-      } catch (e) {
-        debugPrint('Polling bag $userId error: $e');
-      }
-    });
-  }
-
-  void _stopBagStatusPolling() {
-    _bagStatusPollingTimer?.cancel();
-    _bagStatusPollingTimer = null;
-    debugPrint('🛑 Polling de status de bag parado.');
   }
 
   Future<void> getBagsByUserId(String userId) async {
@@ -330,6 +189,7 @@ class TravelerProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
   Future<bool> validateTravelerEmailAndCPF(String email, String cpf) async {
     final result = await repository.getAllTravelers();
     bool isValid = false;
@@ -351,5 +211,21 @@ class TravelerProvider extends ChangeNotifier {
     );
 
     return isValid;
+  }
+
+  Future<void> deleteBagStatusByBagId(String bagId) async {
+    try {
+      await bagRepository.deleteBagStatusByBagId(epc: bagId);
+    } catch (e) {
+      print('Erro ao deletar status da bag: $e');
+    }
+  }
+
+  Future<void> updateBag(String bagId) async {
+    try {
+      await bagRepository.updateBag(bag: bagId);
+    } catch (e) {
+      print('Erro ao deletar status da bag: $e');
+    }
   }
 }

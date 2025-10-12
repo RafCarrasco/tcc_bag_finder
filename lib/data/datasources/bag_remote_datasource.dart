@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/bag_status_entity.dart';
@@ -37,17 +36,17 @@ class BagRemoteDataSource {
     }
   }
 
-  Future<void> updateBag(BagEntity bag) async {
+  Future<void> updateBag(String bagId) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/bags/${bag.id}'),
+      Uri.parse('$baseUrl/bags/$bagId'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(bag.toJson()),
     );
 
     if (response.statusCode != 200) {
       throw Exception('Erro ao atualizar bag: ${response.statusCode} - ${response.body}');
     }
   }
+
 
   Future<void> deleteBag(String bagId) async {
     final response = await http.delete(Uri.parse('$baseUrl/bags/$bagId'));
@@ -143,6 +142,17 @@ class BagRemoteDataSource {
       }
     } catch (e) {
       throw Exception('Erro ao buscar bag por EPC: $e');
+    }
+  }
+  Future<void> deleteBagStatusByBagId(String bagId) async {
+    final response = await http.put(Uri.parse('$baseUrl/bags/status/delete/$bagId'));
+
+    if (response.statusCode == 200) {
+      print('Status da bag $bagId deletado com sucesso.');
+    } else if (response.statusCode == 404) {
+      print('Status $response');
+    } else {
+      throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
   }
 }

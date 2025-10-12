@@ -14,8 +14,8 @@ abstract class IBagRepository {
     required String bagId,
   });
 
-  Future<Either<BagFailure, void>> updateBag({
-    required BagEntity bag,
+  Future<void> updateBag({
+    required String bag,
   });
 
   Future<Either<BagFailure, void>> deleteBag({

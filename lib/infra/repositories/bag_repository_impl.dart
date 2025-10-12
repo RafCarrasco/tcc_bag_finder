@@ -36,12 +36,11 @@ class BagRepositoryImpl implements IBagRepository {
   }
 
   @override
-  Future<Either<BagFailure, void>> updateBag({required BagEntity bag}) async {
+  Future<void> updateBag({required String bag}) async {
     try {
       await remote.updateBag(bag);
-      return const Right(null);
     } catch (e) {
-      return Left(BagUpdateError());
+      Left(BagUpdateError());
     }
   }
 
@@ -133,6 +132,18 @@ class BagRepositoryImpl implements IBagRepository {
     } catch (e) {
       print('[BagRepository] Erro ao buscar bag por EPC: $e');
       return Left(BagReadError());
+    }
+  }
+
+    @override
+  Future<void> deleteBagStatusByBagId({
+    required String epc,
+  }) async {
+    try {
+      await remote.deleteBagStatusByBagId(epc);
+    } catch (e) {
+      print('[BagRepository] Erro ao buscar bag por EPC: $e');
+      Left(BagReadError());
     }
   }
 }
