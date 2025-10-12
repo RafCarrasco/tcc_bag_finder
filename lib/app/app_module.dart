@@ -149,7 +149,7 @@ class AppModule extends Module {
     r.child('/login', child: (_) => const LoginLandingPage(), children: [
       ChildRoute('/sign-in', child: (_) => const SignInPage()),
       ChildRoute('/sign-up', child: (_) => const SignUpPage()),
-      ChildRoute('/forgot-password', child: (_) => ForgotPasswordPage()),
+      ChildRoute('/forgot-password', child: (_) => const ForgotPasswordPage()),
     ]);
 
     r.child('/admin/:adminId', child: (_) {
@@ -178,7 +178,7 @@ class AppModule extends Module {
       final id = r.args.params['travelerId'];
       return LandingTravelerPage(travelerId: id);
     }, children: [
-      ChildRoute('/home', child: (_) => const HomeTravelerPage()),
+      ChildRoute('/home', child: (_) => HomeTravelerPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/history-panel/', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/profile/', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),

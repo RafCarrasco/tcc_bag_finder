@@ -1,50 +1,18 @@
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
-import '../entity/bag_entity.dart';
-import '../entity/bag_status_entity.dart';
-import '../../shared/providers/traveler_provider.dart';
+import '../../core/entity/bag_status_entity.dart';
 
-class TripListWidget extends StatefulWidget {
-  final String travelerId;
-  final List<BagEntity> bags;
-
-  const TripListWidget({
-    super.key,
-    required this.travelerId,
-    required this.bags,
-  });
+class TripListWidget extends StatelessWidget {
+  const TripListWidget({super.key});
 
   @override
-  State<TripListWidget> createState() => _TripListWidgetState();
-}
-
-class _TripListWidgetState extends State<TripListWidget> {
-  final travelerProvider = Modular.get<TravelerProvider>();
-
-  DateTime get date => travelerProvider.currentTrip!.createdAt;
-  String get airportDestination =>
-      travelerProvider.currentTrip!.destination;
-  String get airportOrigin =>
-      travelerProvider.currentTrip!.origin;
-
-  @override
-  void initState() {
-    super.initState();
-    travelerProvider.checkIsTripDone(
-      trip: travelerProvider.currentTrip!,
-    );
-  }
-
-    @override
   Widget build(BuildContext context) {
-    return Consumer<TravelerProvider>(
+    return Consumer<RfidBagProvider>(
       builder: (context, provider, _) {
-        if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        final bags = provider.bags;
 
-        if (provider.bagStatus == null || provider.bagStatus!.isEmpty) {
+        if (bags.isEmpty) {
           return const Center(
             child: Text(
               "Nenhuma bagagem encontrada.",
@@ -53,12 +21,13 @@ class _TripListWidgetState extends State<TripListWidget> {
           );
         }
 
-        final bags = provider.bagStatus!;
-
         return ListView.builder(
           itemCount: bags.length,
           itemBuilder: (context, index) {
             final bag = bags[index];
+            print(
+              "Bag ${bag.printedCode} - Status: ${bag.status}, Destino: ${bag.destination}, Conexão: ${bag.flightConnection}",
+            );
             return _buildBagCard(bag);
           },
         );
@@ -71,41 +40,65 @@ class _TripListWidgetState extends State<TripListWidget> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
-      child: ListTile(
-        leading: Icon(
-          Icons.luggage,
-          color: _getStatusColor(bag.status),
-          size: 40,
-        ),
-        title: Text(
-          bag.printedCode ?? "Código desconhecido",
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Status: ${bag.status ?? 'Indefinido'}"),
-            Text("Destino: ${bag.destination ?? 'N/A'}"),
-            Text("Conexão: ${bag.flightConnection ?? 'N/A'}"),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: ListTile(
+          leading: Icon(
+            Icons.luggage,
+            color: _getStatusColor(bag.status),
+            size: 40,
+          ),
+          title: Text(
+            _formatText(bag.printedCode, fallback: "Código desconhecido"),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                "Status: ${_formatText(bag.status)}",
+                style: const TextStyle(color: Colors.black87, fontSize: 14),
+              ),
+              Text(
+                "Destino: ${_formatText(bag.destination)}",
+                style: const TextStyle(color: Colors.black87, fontSize: 14),
+              ),
+              Text(
+                "Conexão: ${_formatText(bag.flightConnection)}",
+                style: const TextStyle(color: Colors.black87, fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  // 🔹 Retorna cor do ícone com base no status
   Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'checked_in':
+    switch (status?.toUpperCase()) {
+      case 'CHECKED_IN':
         return Colors.orange;
-      case 'in_transit':
+      case 'IN_TRANSIT':
         return Colors.blue;
-      case 'arrived':
+      case 'ARRIVED':
         return Colors.green;
-      case 'lost':
-        return Colors.red;
+      case 'READY_FOR_PICKUP':
+        return Colors.purple;
+      case 'COLLECTED':
+        return Colors.grey;
       default:
         return Colors.grey;
     }
   }
 
+  // 🔹 Garante que texto nulo ou vazio mostre algo legível
+  String _formatText(String? text, {String fallback = 'N/A'}) {
+    if (text == null || text.trim().isEmpty) return fallback;
+    return text;
+  }
 }

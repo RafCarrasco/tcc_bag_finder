@@ -71,6 +71,21 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
       final data = jsonDecode(message);
       final epc = data['epc'] as String?;
 
+      if (epc != null && data['status'] == 'NAO_CADASTRADA') {
+        if (_controller.codeTags.contains(epc)) {
+          GlobalSnackBar.warning(
+              'TAG ${epc.substring(0, 8)}... já foi lida e adicionada!');
+          return;
+        }
+        setState(() {
+          _addBagSlot(epc);
+        });
+        GlobalSnackBar.success(
+            'Nova bagagem adicionada e TAG lida: ${epc.substring(0, 8)}...');
+      } else if (epc != null && data['status'] != 'NAO_CADASTRADA') {
+        GlobalSnackBar.error(
+            'Erro: A TAG ${epc.substring(0, 8)}... já está vinculada e em trânsito.');
+      }
     } catch (e) {
       GlobalSnackBar.error('Erro ao processar mensagem do WebSocket: $e');
     }

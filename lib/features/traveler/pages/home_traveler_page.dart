@@ -1,164 +1,99 @@
-import 'package:bag_finder/shared/providers/traveler_provider.dart';
+import 'package:bag_finder/features/collaborator/controllers/init_user_trip_controller.dart';
+import 'package:bag_finder/infra/repositories/bag_repository_impl.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
-import '../../../core/entity/bag_entity.dart';
-import '../../../core/entity/trip_entity.dart';
-import '../../../core/enums/bag_status_enum.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_colors.dart';
-import '../../../core/utils/global_snackbar.dart';
+import '../../../core/utils/app_dimensions.dart';
+import '../../../core/widgets/appbar/history_app_bar_widget.dart';
+import '../../../core/widgets/trip_list_widget.dart';
 
 class HomeTravelerPage extends StatefulWidget {
-  const HomeTravelerPage({super.key});
+  final String travelerId;
+
+  const HomeTravelerPage({
+    super.key,
+    required this.travelerId,
+  });
 
   @override
   State<HomeTravelerPage> createState() => _HomeTravelerPageState();
 }
 
 class _HomeTravelerPageState extends State<HomeTravelerPage> {
+  final userProvider = Modular.get<UserProvider>();
+  late WebSocketChannel _channel;
+  bool isLoading = true;
+  late RfidBagProvider _rfidProvider;
+
   @override
   void initState() {
     super.initState();
-    final travelerProvider = context.read<TravelerProvider>();
-    travelerProvider.fetchCurrentTrip();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    final baseUrl = dotenv.env['BASE_URL']!;
+    final wsUrl = baseUrl.replaceFirst('http', 'ws');
+    final channel = WebSocketChannel.connect(Uri.parse(wsUrl));
+
+    // inicializa o provider com repositório injetado
+    final bagRepository = Modular.get<BagRepositoryImpl>();
+
+    _rfidProvider = RfidBagProvider(
+      channel: channel,
+      baseUrl: baseUrl,
+      bagRepository: bagRepository,
+    );
+
+    // carrega bags do usuário
+    await _rfidProvider.loadUserBags(widget.travelerId);
+
+    setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final travelerProvider = context.watch<TravelerProvider>();
-    final TripEntity? trip = travelerProvider.currentTrip;
-
-    if (trip == null) {
+    if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    final bags = trip.bags ?? [];
-
-    if (bags.isEmpty) {
-      return const Scaffold(
-        body: Center(child: Text('Nenhuma bagagem cadastrada nesta viagem.')),
-      );
-    }
-
-    final hasConnection = trip.connection != null && trip.connection!.isNotEmpty;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Minhas Bagagens'),
-        backgroundColor: AppColors.primary,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ListView.builder(
-          itemCount: bags.length,
-          itemBuilder: (context, index) {
-            final bag = bags[index];
-
-            if (bag.status == BagStatusEnum.NAO_CADASTRADA) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                GlobalSnackBar.warning(
-                  'Mala ${bag.printedCode ?? bag.id} não está cadastrada!',
-                );
-              });
-            }
-
-            return _buildBagCard(context, bag, hasConnection, trip.connection);
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBagCard(BuildContext context, BagEntity bag, bool hasConnection, String? connectionName) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildStatusIcon(bag.status),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Código: ${bag.printedCode ?? "N/A"}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 6),
-                  Text('Status: ${bag.status.toLiteral()}'),
-                  Text('Criada em: ${bag.createdAt.toLocal()}'),
-                  if (hasConnection)
-                    Text('Conexão: ${connectionName ?? "Desconhecida"}'),
-                  const SizedBox(height: 8),
-                  if (bag.status == BagStatusEnum.READY_FOR_PICKUP)
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          GlobalSnackBar.success('Mala ${bag.printedCode ?? bag.id} coletada!');
-                        },
-                        icon: const Icon(Icons.check),
-                        label: const Text('Coletar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+    return ChangeNotifierProvider.value(
+      value: _rfidProvider,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius:
+                  BorderRadius.circular(AppDimensions.radiusExtraLarge),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
-          ],
-        ),
+            child: HomeTravelerAppBarWidget(
+              userName: userProvider.user!.fullName,
+              hint: 'Procure sua bagagem...',
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Expanded(
+            child: TripListWidget(), // sem precisar passar travelerId
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildStatusIcon(BagStatusEnum status) {
-    IconData icon;
-    Color color;
-
-    switch (status) {
-      case BagStatusEnum.CHECKED_IN:
-        icon = Icons.home;
-        color = Colors.blue;
-        break;
-      case BagStatusEnum.IN_TRANSIT:
-      case BagStatusEnum.IN_TRANSIT_CONNECTION:
-        icon = Icons.flight_takeoff;
-        color = Colors.orange;
-        break;
-      case BagStatusEnum.ARRIVED_AT_CONNECTION:
-      case BagStatusEnum.ARRIVED:
-        icon = Icons.flight_land;
-        color = Colors.green;
-        break;
-      case BagStatusEnum.READY_FOR_PICKUP:
-        icon = Icons.luggage;
-        color = Colors.purple;
-        break;
-      case BagStatusEnum.COLLECTED:
-        icon = Icons.check_circle;
-        color = Colors.grey;
-        break;
-      default:
-        icon = Icons.help_outline;
-        color = Colors.red;
-    }
-
-    return CircleAvatar(
-      radius: 28,
-      backgroundColor: color.withOpacity(0.15),
-      child: Icon(icon, color: color, size: 28),
     );
   }
 }
