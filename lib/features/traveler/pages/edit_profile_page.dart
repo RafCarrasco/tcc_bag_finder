@@ -1,10 +1,10 @@
 import 'package:bag_finder/core/widgets/edit_profile_text_field.dart';
+import 'package:bag_finder/features/auth/controller/edit_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../core/widgets/appbar/profile_app_bar_widget.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/global_snackbar.dart';
-import '../../../core/entity/user_entity.dart';
 import '../../../core/utils/app_colors.dart';
 
 
@@ -22,15 +22,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _phoneController;
   late TextEditingController _cpfController;
   late TextEditingController _passwordController;
+  final travelerId = Modular.args.params['travelerId'];
 
   bool _obscurePassword = true;
 
-  // A cor primária será acessada via AppColors.primary, removendo a variável local _primaryColor
 
   @override
   void initState() {
     super.initState();
-    // Acessa o UserProvider para pré-popular os campos
     final provider = Modular.get<UserProvider>();
     final user = provider.user!;
 
@@ -51,33 +50,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
-  Future<void> _saveProfile(UserProvider provider) async {
-    if (_formKey.currentState!.validate()) {
-      final user = provider.user!;
-      final updatedUser = user.copyWith(
-        fullName: _nameController.text,
-        email: _emailController.text,
-        phone: _phoneController.text,
-        cpf: _cpfController.text,
-      );
+  Future<void> _saveProfile(EditProfileController controller) async {
+  if (controller.isLoading) return;
 
-      // Aqui, você deve incluir a lógica para atualizar a senha se _passwordController.text não estiver vazio
-      // Por enquanto, atualizamos apenas os dados do UserEntity
-      await provider.updateUser(user: updatedUser);
+  if (_formKey.currentState!.validate()) {
+    
+    final result = await controller.saveProfile(
+      fullName: _nameController.text,
+      email: _emailController.text,
+      phone: _phoneController.text,
+      cpf: _cpfController.text,
+      newPassword: _passwordController.text,
+    );
 
-      if (mounted) {
-        GlobalSnackBar.info('Perfil atualizado com sucesso!');
-        Modular.to.pop();
-      }
-    } else {
-      GlobalSnackBar.error('Por favor, preencha todos os campos obrigatórios.');
-    }
+    result.fold(
+      (failure) {
+        String message = 'Falha ao atualizar o perfil. Tente novamente.';
+        
+        GlobalSnackBar.error(message);
+      },
+      (_) {
+        if (mounted) {
+          GlobalSnackBar.info('Perfil atualizado com sucesso! 🎉');
+          Modular.to.navigate('/traveler/$travelerId/profile/');
+        }
+      },
+    );
+  } else {
+    GlobalSnackBar.error('Por favor, preencha todos os campos obrigatórios.');
   }
+}
 
   @override
   Widget build(BuildContext context) {
     final provider = Modular.get<UserProvider>();
     final user = provider.user!;
+    final editController = Modular.get<EditProfileController>(); 
+    
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -101,7 +110,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 8),
-                          // Avatar
                           Center(
                             child: CircleAvatar(
                               radius: 48,
@@ -113,8 +121,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                           ),
                           const SizedBox(height: 28),
-
-                          // DADOS PESSOAIS
                           _buildSectionTitle("Dados pessoais"),
                           EditProfileTextField(
                             label: "Nome completo",
@@ -123,7 +129,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             hint: "Digite seu nome completo",
                             validator: (value) => value!.isEmpty ? 'O nome é obrigatório' : null,
                           ),
-                          // EditProfileField já inclui SizedBox(height: 16) no final
                           EditProfileTextField(
                             label: "CPF",
                             controller: _cpfController,
@@ -141,7 +146,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
 
                           const SizedBox(height: 8), 
-                          // DADOS DE ACESSO
                           _buildSectionTitle("Dados de acesso"),
                           EditProfileTextField(
                             label: "E-mail",
@@ -151,30 +155,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) => value!.isEmpty ? 'O e-mail é obrigatório' : null,
                           ),
-                          // Campo de Senha usando o toggle de visibilidade
                           EditProfileTextField(
                             label: "Senha",
                             controller: _passwordController,
                             icon: Icons.lock,
                             hint: "Deixe em branco para manter a senha atual",
-                            isPassword: _obscurePassword, // Passa o estado atual para o widget
-                            onTogglePassword: () { // Callback para alternar o estado
+                            isPassword: _obscurePassword,
+                            onTogglePassword: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
                               });
                             },
-                            // Não adicionamos validador aqui, permitindo que a senha seja opcional
                           ),
 
                           const SizedBox(height: 24),
-                          // BOTÕES
                           Row(
                             children: [
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () => _saveProfile(provider),
+                                  onPressed: () => _saveProfile(editController),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary, // Usando AppColors.primary
+                                    backgroundColor: AppColors.primary,
                                     padding: const EdgeInsets.symmetric(vertical: 18),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -193,10 +194,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: OutlinedButton(
-                                  onPressed: () => Modular.to.pop(), // Pop é suficiente se a navegação já trouxe para cá
+                                  onPressed: () => Modular.to.navigate('/traveler/$travelerId/profile/'),
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(vertical: 18),
-                                    side: BorderSide(color: AppColors.primary), // Usando AppColors.primary
+                                    side: BorderSide(color: AppColors.primary),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -205,7 +206,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     'Cancelar',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.primary, // Usando AppColors.primary
+                                      color: AppColors.primary,
                                       fontSize: 16,
                                     ),
                                   ),
@@ -226,7 +227,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  // Mantendo _buildSectionTitle, mas usando AppColors.primary
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -240,6 +240,4 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
-  
-  // A função _buildEditableField foi removida.
 }

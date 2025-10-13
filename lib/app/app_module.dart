@@ -10,11 +10,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../features/auth/controller/sign_in_controller.dart';
 import '../features/auth/controller/sign_up_controller.dart';
 import '../features/auth/controller/auth_controller.dart';
+import 'package:bag_finder/features/auth/controller/edit_profile_controller.dart';
 import '../features/collaborator/controllers/landing_page_step_progess.dart';
 import '../features/collaborator/controllers/init_user_trip_controller.dart';
 import '../features/collaborator/controllers/init_user_trip_dropdown_controller.dart';
 import '../features/collaborator/controllers/luggage_quantity_dropdown_controller.dart';
 import '../features/admin/controllers/add_collaborator_controler.dart';
+
 
 // Datasources
 import 'package:bag_finder/data/datasources/user_remote_datasource.dart';
@@ -110,6 +112,9 @@ class AppModule extends Module {
 
 
     i.addSingleton<UserProvider>(() => UserProvider(i()));
+    i.addLazySingleton<EditProfileController>(
+  () => EditProfileController(i.get<UserProvider>())
+);
     i.addLazySingleton<AdminProvider>(() => AdminProvider(i()));
     i.addLazySingleton<TravelerProvider>(
   () => TravelerProvider(
@@ -118,6 +123,7 @@ class AppModule extends Module {
     i.get<ITripRepository>(),
     i.get<BagRepositoryImpl>(),
     i.get<IGetUserBagsUsecase>(),
+    
   ),
 );
 

@@ -16,7 +16,7 @@ class UserRemoteDataSource {
     'fullName': user.fullName.trim(),
     'email': user.email.trim().toLowerCase(),
     'password': user.password,
-    'phone': user.phone.isEmpty ? null : user.phone,
+    'phone': user.phone,
     'role': user.role.isEmpty ? 'TRAVELER' : user.role,
     'isActive': user.isActive,
   };
@@ -37,7 +37,7 @@ class UserRemoteDataSource {
   } else if (resp.statusCode == 409) {
     throw UserAlreadyInUseException();
   } else if (resp.statusCode == 400) {
-    throw Exception(err); // exibe "Campos obrigatórios ausentes: ..."
+    throw Exception(err); 
   } else {
     throw Exception('Erro (HTTP ${resp.statusCode}): $err');
   }
@@ -71,13 +71,23 @@ class UserRemoteDataSource {
     final response = await http.put(
       Uri.parse('$baseUrl/users/${user.id}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(user.toJson()),
+
+      body: jsonEncode(user.toJson()), 
     );
+    
+    final body = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+    final errMessage = (body is Map && body['error'] is String)
+        ? body['error'] as String
+        : 'Erro ao atualizar usuário';
 
     if (response.statusCode == 200) {
-      return UserEntity.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Erro ao atualizar usuário: ${response.body}');
+      return UserEntity.fromJson(body as Map<String, dynamic>);
+    } 
+    else if (response.statusCode == 409) {
+      throw UserAlreadyInUseException(); 
+    } 
+    else {
+      throw Exception('Erro ao atualizar usuário (Status ${response.statusCode}): $errMessage');
     }
   }
 
@@ -175,28 +185,23 @@ class UserRemoteDataSource {
   }) async {
     final cleanCpf = cpf.replaceAll(RegExp(r'\D'), '');
     final payload = {
-      // O seu backend deve receber esses três dados
       'email': email,
       'cpf': cleanCpf,
       'newPassword': newPassword,
     };
 
     final response = await http.post(
-      // 💡 IMPORTANTE: Este endpoint deve ser o que o seu backend usa para resetar senhas
       Uri.parse('$baseUrl/auth/reset-password'), 
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(payload),
     );
 
-    // 400, 404, 401: Erro de credencial ou validação no servidor
     if (response.statusCode == 400 || response.statusCode == 404 || response.statusCode == 401) {
       final body = jsonDecode(response.body);
-      throw Exception(body['error'] ?? 'Erro desconhecido ao redefinir.'); // Correto!
+      throw Exception(body['error'] ?? 'Erro desconhecido ao redefinir.');
     }
-    // 200 ou 204: Sucesso na redefinição
     else if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Erro ao redefinir a senha (Status ${response.statusCode}): ${response.body}');
     }
-    // Se for 200/204, o método retorna void (sucesso).
   }
 }

@@ -12,7 +12,7 @@ class EditProfileTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final VoidCallback? onTogglePassword;
 
-  const EditProfileTextField({ // Nome do construtor renomeado
+  const EditProfileTextField({
     super.key,
     required this.controller,
     required this.label,
@@ -52,8 +52,6 @@ class EditProfileTextField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: AppColors.primary),
-            // O ícone deve refletir o estado atual, ou seja, se está obscurecendo (isPassword é true), 
-            // o ícone deve ser 'visibility' para indicar que pode ser clicado para 'ver'.
             suffixIcon: onTogglePassword != null 
                 ? IconButton(
                     icon: Icon(

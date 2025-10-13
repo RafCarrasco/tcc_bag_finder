@@ -137,7 +137,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             _buildInfo(
                               "Número de celular",
-                              user.phone.isEmpty ? "Não informado" : _formatPhone(user.phone),
+                              user.phone?.isEmpty ?? true 
+                                ? "Não informado" 
+                                : _formatPhone(user.phone!),
                             ),
                             _buildInfo("Cargo", user.role.isEmpty ? "Não informado" : user.role),
                             const SizedBox(height: 12),

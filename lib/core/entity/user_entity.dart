@@ -7,9 +7,9 @@ class UserEntity
   final String id;
   final String email;
   final String fullName;
-  final String phone;
+  final String? phone;
   final String role;
-  final String password;
+  final String? password;
   final bool isActive;
   final DateTime createdAt;
   final String? cpf;
@@ -19,9 +19,9 @@ class UserEntity
     this.cpf,
     required this.email,
     required this.fullName,
-    required this.phone,
+    this.phone,
     required this.role,
-    required this.password,
+    this.password,
     required this.isActive,
     required this.createdAt,
   }) : id = id ?? _uuid.v4();
@@ -47,17 +47,22 @@ class UserEntity
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'id': id,
+      'fullName': fullName,
       'email': email,
-      'full_name': fullName,
-      'phone': phone,
-      'password': password,
+      'cpf': cpf?.replaceAll(RegExp(r'\D'), ''), 
+      'phone': phone?.isEmpty == true ? null : phone,
       'role': role,
       'isActive': isActive,
-      'createdAt': createdAt.toIso8601String(),
-      'cpf': cpf
+
     };
+    
+    if (password != null && password!.isNotEmpty) {
+      data['password'] = password;
+    }
+    
+    return data;
   }
 
   UserEntity copyWith({

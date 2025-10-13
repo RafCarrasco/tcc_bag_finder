@@ -12,7 +12,7 @@ class TravelerEntity extends UserEntity {
     required super.phone,
     required super.role,
     super.cpf,
-    required super.password, // obrigatório
+    required super.password,
     required super.isActive,
     required DateTime super.createdAt,
     this.bags = const [],

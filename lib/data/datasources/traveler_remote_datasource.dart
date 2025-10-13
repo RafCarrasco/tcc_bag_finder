@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 class TravelerRemoteDataSource {
-    // final String baseUrl = dotenv.env['BASE_URL']!;
     final String baseUrl;
 
   TravelerRemoteDataSource({required this.baseUrl});
@@ -71,8 +70,6 @@ class TravelerRemoteDataSource {
       String cpf, String email) async {
     final cleanCpf = cpf.replaceAll(RegExp(r'\D'), '');
 
-    // 💡 Você precisará de um endpoint no backend que aceite CPF e Email.
-    // Assumindo um endpoint de busca segura:
     final response = await http.post(
       Uri.parse('$baseUrl/travelers/validate-credentials'),
       headers: {'Content-Type': 'application/json'},
@@ -83,13 +80,10 @@ class TravelerRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      // Retorna o Traveler se encontrado
       return TravelerEntity.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 404) {
-      // Retorna null se não for encontrado (CPF/Email não combinam ou não existem)
       return null;
     } else {
-      // Erro de servidor ou outro erro HTTP
       throw Exception(
           'Erro ao validar credenciais do viajante: ${response.body}');
     }

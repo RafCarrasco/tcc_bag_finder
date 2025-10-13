@@ -1,5 +1,4 @@
 import 'package:uuid/uuid.dart';
-// **Certifique-se de que estes imports existam no seu arquivo BagStatusEntity**
 import 'package:bag_finder/core/entity/bag_entity.dart'; 
 import 'package:bag_finder/core/enums/bag_status_enum.dart'; 
 
@@ -29,21 +28,18 @@ class BagStatusEntity {
   })  : id = id ?? _uuid.v4(),
         createdAt = createdAt ?? DateTime.now();
 
-  // ✅ CORREÇÃO APLICADA: Mapeando corretamente os campos que existem e setando os que não existem para null.
   factory BagStatusEntity.fromBagEntity(BagEntity bag) {
     return BagStatusEntity(
       id: bag.id,
       bagId: bag.id, 
-      status: bag.status.name, // Convertendo Enum para String
+      status: bag.status.name,
       createdAt: DateTime.now(), 
       
-      // Mapeamento dos campos que SÓ EXISTEM em BagStatusEntity (ou que não estão em BagEntity)
-      destination: null, // Campo ausente em BagEntity
-      flightConnection: null, // Campo ausente em BagEntity
-      isFinalDestination: false, // Campo ausente em BagEntity
+      destination: null,
+      flightConnection: null,
+      isFinalDestination: false,
       
-      // Mapeamento dos campos que EXISTEM em BagEntity
-      rfidTag: bag.epc, // Assumindo que rfidTag é o mesmo que epc
+      rfidTag: bag.epc,
       printedCode: bag.printedCode,
     );
   }

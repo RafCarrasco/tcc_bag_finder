@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
-import 'package:flutter/services.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
 import '../../../core/widgets/forgot_password_text_field.dart';
 import '../../../shared/providers/user_provider.dart';
-// O travelerProvider não é mais necessário aqui para o fluxo de reset.
-// import '../../../shared/providers/traveler_provider.dart'; 
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -19,15 +16,12 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  // Removendo o travelerProvider pois a lógica de reset está no userProvider
-  // final travelerProvider = Modular.get<TravelerProvider>(); 
   final userProvider = Modular.get<UserProvider>();
 
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -46,29 +40,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     setState(() => _isLoading = true);
 
-    // 1. ✅ PASSO ÚNICO: Verifica Credenciais, Checa a Role (TRAVELER) E Reseta a Senha.
-    // Usamos o método verifyTravelerCredentials apenas para checar se o usuário existe
-    // e é um TRAVELER. Se for bem-sucedido, chamamos o resetPassword.
-
     final verificationResult = await userProvider.verifyTravelerCredentials(
       email: _emailController.text,
       cpf: _cpfController.text,
     );
 
     await verificationResult.fold(
-      // Falha na verificação de credenciais/role (ex: Não é Traveler, CPF/Email inválido)
       (failure) async {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(failure.errorMessage), 
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(failure.errorMessage), backgroundColor: Colors.red),
         );
       },
-      // Sucesso na verificação (Usuário Traveler encontrado)
       (userEntity) async {
-        // 2. Tenta redefinir a senha
         final resetResult = await userProvider.resetPassword(
           email: _emailController.text,
           cpf: _cpfController.text,
@@ -78,16 +62,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         setState(() => _isLoading = false);
 
         resetResult.fold(
-          // Falha na redefinição (Ex: Erro de servidor ao atualizar o DB)
           (failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(failure.errorMessage),
-                backgroundColor: Colors.red,
-              ),
+              SnackBar(content: Text(failure.errorMessage), backgroundColor: Colors.red),
             );
           },
-          // Sucesso Total na Redefinição
           (_) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -116,7 +95,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
@@ -127,16 +105,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
                     Text(
                       localization.loginPageTitle5,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall!
-                          .copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                    AppInputTextField(
+
+                    // CPF
+                    ForgotPasswordTextField(
                       controller: _cpfController,
-                      suffixIcon: AppIconsSecondaryGrey.personIcon,
+                      prefixIcon: AppIconsPrimary.personIcon,
                       hint: 'Digite seu CPF',
                       isPassword: false,
                       fieldType: 'cpf',
@@ -144,9 +123,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
-                    AppInputTextField(
+
+                    // E-mail
+                    ForgotPasswordTextField(
                       controller: _emailController,
-                      suffixIcon: AppIconsSecondaryGrey.emailIcon,
+                      prefixIcon: AppIconsPrimary.emailIcon,
                       hint: localization.emailForContactPlaceholder,
                       isPassword: false,
                       fieldType: 'email',
@@ -162,9 +143,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
-                    AppInputTextField(
+
+                    // Nova senha
+                    ForgotPasswordTextField(
                       controller: _newPasswordController,
-                      suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                      prefixIcon: AppIconsPrimary.passwordIcon,
                       hint: 'Nova senha',
                       isPassword: true,
                       fieldType: '',
@@ -180,9 +163,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
-                    AppInputTextField(
+
+                    // Confirmar senha
+                    ForgotPasswordTextField(
                       controller: _confirmPasswordController,
-                      suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                      prefixIcon: AppIconsPrimary.passwordIcon,
                       hint: 'Confirmar senha',
                       isPassword: true,
                       fieldType: '',
@@ -194,7 +179,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 100),
+
+                    const SizedBox(height: 80),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -216,6 +202,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
+
                     TextButton(
                       onPressed: () => Modular.to.navigate('/login/sign-in'),
                       child: Text(

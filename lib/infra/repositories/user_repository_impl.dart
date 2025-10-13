@@ -47,15 +47,17 @@ Future<Either<AuthFailure, UserEntity>> addUser({required UserEntity user}) asyn
   }
 
   @override
-  Future<Either<Failure, UserEntity>> updateUser(
-      {required UserEntity user}) async {
-    try {
-      final result = await remote.updateUser(user);
-      return Right(result);
-    } catch (e) {
-      return Left(UnknownError());
-    }
+Future<Either<Failure, UserEntity>> updateUser(
+    {required UserEntity user}) async {
+  try {
+    final result = await remote.updateUser(user);
+    return Right(result);
+  } on UserAlreadyInUseException {
+    return Left(UserAlreadyInUse());
+  } catch (e) {
+    return Left(UnknownError(errorMessage: 'Falha ao atualizar o perfil.'));
   }
+}
 
   @override
   Future<Either<Failure, void>> deleteUser({required String id}) async {
@@ -143,17 +145,14 @@ Future<Either<Failure, void>> resetPassword({
   required String newPassword,
 }) async {
   try {
-    // Chama o DataSource para fazer a requisição HTTP de atualização
     await remote.resetPassword(
       email: email,
       cpf: cpf,
       newPassword: newPassword,
     );
-    // Retorna sucesso (void)
     return const Right(null);
   } catch (e) {
     print('[UserRepository] Erro ao redefinir senha: $e');
-    // Retorna uma falha genérica de autenticação ou de servidor
     return Left(ResetPasswordFailure());
   }
 }

@@ -50,7 +50,7 @@ class _PasswordDisplayFieldState extends State<PasswordDisplayField> {
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingSmall),
-            child: AppIconsSecondaryGrey.passwordIcon, // Confirme que esse ícone existe
+            child: AppIconsSecondaryGrey.passwordIcon,
           ),
           prefixIconConstraints: const BoxConstraints(
             minWidth: AppDimensions.iconMedium,

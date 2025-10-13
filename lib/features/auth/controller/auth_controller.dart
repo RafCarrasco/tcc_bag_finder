@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import '../../../core/entity/user_entity.dart';
 import '../../../core/failures/failure.dart';
 import '../../../infra/repositories/user_repository_impl.dart';
+import 'package:flutter/widgets.dart';
 
 class AuthService extends ChangeNotifier {
   final UserRepositoryImpl repository;
@@ -73,8 +74,17 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _user = null;
-    await _clearUserFromStorage();
-    notifyListeners();
+  _user = null;
+  await _clearUserFromStorage();
+
+  if (!kIsWeb) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (hasListeners) {
+             notifyListeners();
+        }
+    });
+  } else { 
+      notifyListeners();
   }
+}
 }
