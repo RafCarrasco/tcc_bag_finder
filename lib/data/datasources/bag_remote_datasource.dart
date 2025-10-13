@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 import '../../core/entity/bag_entity.dart';
 import '../../core/entity/bag_status_entity.dart';
@@ -52,17 +51,17 @@ class BagRemoteDataSource {
     }
   }
 
-  Future<void> updateBag(BagEntity bag) async {
-    final response = await client.put( 
-      Uri.parse('$baseUrl/bags/${bag.id}'),
+  Future<void> updateBag(String bagId) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/bags/$bagId'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(bag.toJson()),
     );
 
     if (response.statusCode != 200) {
       throw Exception('Erro ao atualizar bag: ${response.statusCode} - ${response.body}');
     }
   }
+
 
   Future<void> deleteBag(String bagId) async {
     final response = await client.delete(Uri.parse('$baseUrl/bags/$bagId')); 
@@ -161,19 +160,15 @@ class BagRemoteDataSource {
       throw Exception('Erro ao buscar bag por EPC: $e');
     }
   }
-  
-  // ✅ CORREÇÃO CRÍTICA: Assinatura alterada para aceitar o 'trip' (como o Repository envia)
-  Future<void> finalizeBagCollection({required TripEntity trip}) async {
-    final response = await client.patch(
-      // ✅ CORREÇÃO NA URL: Usando trip.id, pois é uma "collection" (viagem)
-      Uri.parse('$baseUrl/trips/${trip.id}/finalize-collection'), 
-      headers: {'Content-Type': 'application/json'},
-      // Envia o corpo necessário para a API (pode ser o ID da viagem ou status)
-      body: jsonEncode({'trip_id': trip.id, 'status': 'COLLECTED'}), 
-    );
+  Future<void> deleteBagStatusByBagId(String bagId) async {
+    final response = await http.put(Uri.parse('$baseUrl/bags/status/delete/$bagId'));
 
-    if (response.statusCode != 200) {
-      throw Exception('Erro ao finalizar coleta da viagem ${trip.id}: ${response.statusCode} - ${response.body}');
+    if (response.statusCode == 200) {
+      print('Status da bag $bagId deletado com sucesso.');
+    } else if (response.statusCode == 404) {
+      print('Status $response');
+    } else {
+      throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
   }
 }

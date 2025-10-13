@@ -7,6 +7,7 @@ import 'package:bag_finder/core/utils/app_dimensions.dart';
 import 'package:bag_finder/core/widgets/bag_tracking_timeline.dart';
 import 'package:bag_finder/core/widgets/dialogs/bag_confirmation_dialog.dart';
 import 'package:bag_finder/core/widgets/dialogs/edit_bag_description_dialog.dart';
+import 'package:bag_finder/shared/providers/traveler_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -27,7 +28,7 @@ class BagItemWidget extends StatefulWidget {
   @override
   State<BagItemWidget> createState() => _BagItemWidgetState();
 }
-
+  final travelerProvider = Modular.get<TravelerProvider>();
 BagStatusEnum bagStatusFromString(String? status) {
   switch (status?.toUpperCase()) {
     case 'CHECKED_IN':
@@ -98,7 +99,6 @@ class _BagItemWidgetState extends State<BagItemWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 🔹 ÍCONE DA BAGAGEM E PRINTED CODE
                   Flexible(
                     flex: isCompactScreen ? 3 : 2,
                     child: Row(
@@ -111,7 +111,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              printedCode, // PrintedCode no header
+                              printedCode, 
                               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -122,15 +122,12 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                       ],
                     ),
                   ),
-                  
-                  // 🔹 REMOVIDA A SETA DA EXPANSÃO DO HEADER
                   const SizedBox.shrink(),
                 ],
               ),
             ),
           ),
 
-          // Título 'Ciclo de Viagem' e botão 'Ver/Ocultar Ciclo' em Row
           Padding(
             padding: const EdgeInsets.only(left: AppDimensions.paddingSmall, right: AppDimensions.paddingSmall, top: AppDimensions.paddingSmall),
             child: Row(
@@ -140,11 +137,11 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                   'Ciclo de Viagem',
                   style: titleMediumStyle!.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primary, // Cor verde/primária
+                    color: AppColors.primary, 
                   ),
                 ),
                 
-                // Botão de toggle (sem layout de botão, seta circular)
+
                 GestureDetector( 
                   onTap: widget.onToggleExpansion,
                   child: Row( 
@@ -186,16 +183,12 @@ class _BagItemWidgetState extends State<BagItemWidget> {
           Padding(
             padding: const EdgeInsets.all(AppDimensions.paddingSmall),
             child: BagTrackingTimeline(
+              bagStatus: widget.bagStatus,
               currentStatus: bagStatusFromString(widget.bagStatus.status),
               showFullTimeline: widget.isExpanded, 
             ),
           ),
           
-          // 💡 REMOVIDO: BLOCO DE ESTADO ATUAL (AMARELO) DUPLICADO
-          // Este bloco foi movido e corrigido DENTRO de BagTrackingTimeline -> _buildCompactView
-          // para evitar duplicação e garantir que o ícone e a cor estejam corretos.
-          
-          // 3. BLOCO DE INFORMAÇÕES BÁSICAS E BOTÕES (Sempre visível)
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppDimensions.paddingMedium,
@@ -204,7 +197,6 @@ class _BagItemWidgetState extends State<BagItemWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔹 Coluna de informações (Status, ID COMPLETO, Hora)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -278,35 +270,100 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                           Expanded(
                             child: TextButton(
                               style: TextButton.styleFrom(
-                                  backgroundColor: widget.bagStatus.status == BagStatusEnum.ARRIVED.name ? AppColors.primary : AppColors.secondaryGrey,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  elevation: 8,
-                                  padding: EdgeInsets.symmetric(horizontal: isCompactScreen ? 8 : 12, vertical: isCompactScreen ? 10 : 12),
+                                backgroundColor: widget.bagStatus.status == BagStatusEnum.READY_FOR_PICKUP.name
+                                    ? AppColors.primary
+                                    : AppColors.secondaryGrey,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                elevation: 8,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isCompactScreen ? 8 : 12,
+                                  vertical: isCompactScreen ? 10 : 12,
                                 ),
-                              onPressed: _isProcessing ? null : () async {
-                                  if (widget.bagStatus.status == BagStatusEnum.ARRIVED.name) {
-                                    setState(() {_isProcessing = true;});
-                                    showDialog(context: context, builder: (BuildContext context) {
-                                      return BagConfirmationDialog(bagStatus: widget.bagStatus, onConfirmArrival: () async {}, onNotArrived: () {Modular.to.pop();},);
-                                    },);
-                                    setState(() {_isProcessing = false;});
-                                  }
-                                },
-                              child: _isProcessing 
-                                  ? FittedBox(fit: BoxFit.scaleDown, child: Text('Processando...', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.secondary)),)
-                                  : Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.check, color: Colors.white, size: isCompactScreen ? 18 : AppDimensions.iconSmall),
-                                          SizedBox(width: isCompactScreen ? 4 : 8),
-                                          FittedBox(
-                                            fit: BoxFit.scaleDown,
-                                            child: Text('Confirmar', style: TextStyle(color: Colors.white, fontSize: isCompactScreen ? 14 : AppDimensions.fontSmall, fontWeight: FontWeight.bold)),
-                                          ),
-                                        ],
+                              ),
+                              onPressed: _isProcessing
+                                  ? null
+                                  : () async {
+                                      if (widget.bagStatus.status == BagStatusEnum.READY_FOR_PICKUP.name) {
+                                        setState(() {
+                                          _isProcessing = true;
+                                        });
+
+                                        try {
+
+                                          // 🔹 3. Mostra o diálogo de confirmação
+                                          if (context.mounted) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return BagConfirmationDialog(
+                                                  bagStatus: widget.bagStatus,
+                                                  onConfirmArrival: () async {
+                                                    Modular.to.pop(); // Fecha o diálogo
+                                                    await travelerProvider.deleteBagStatusByBagId(widget.bagStatus.bagId);
+                                                    await travelerProvider.updateBag(widget.bagStatus.bagId);
+                                                  },
+                                                  onNotArrived: () {
+                                                    Modular.to.pop();
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          }
+                                        } catch (e) {
+                                          print('Erro ao processar bag: $e');
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Erro ao processar bag: $e'),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                        } finally {
+                                          if (mounted) {
+                                            setState(() {
+                                              _isProcessing = false;
+                                            });
+                                          }
+                                        }
+                                      }
+                                    },
+                              child: _isProcessing
+                                  ? FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        'Processando...',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .copyWith(color: AppColors.secondary),
                                       ),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.check,
+                                            color: Colors.white,
+                                            size: isCompactScreen ? 18 : AppDimensions.iconSmall),
+                                        SizedBox(width: isCompactScreen ? 4 : 8),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            'Confirmar',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: isCompactScreen
+                                                  ? 14
+                                                  : AppDimensions.fontSmall,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
+
                         ],
                       )
                     : Align(

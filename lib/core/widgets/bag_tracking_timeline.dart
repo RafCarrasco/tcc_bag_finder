@@ -1,22 +1,20 @@
+import 'package:bag_finder/core/entity/bag_status_entity.dart';
 import 'package:flutter/material.dart';
 import '../../../core/enums/bag_status_enum.dart';
 import '../../../core/utils/app_colors.dart';
-// Note: Assumindo que AppTextStyles está definido no seu projeto
-// Se não estiver, substitua por Theme.of(context).textTheme.bodyMedium!
-// import '../../../core/utils/app_text_styles.dart'; // Removido para evitar erros de importação não definido
 
 class BagTrackingTimeline extends StatefulWidget {
+  final BagStatusEntity? bagStatus;
   final BagStatusEnum currentStatus;
   final bool hasConnection;
   final bool showFullTimeline;
-  // REMOVIDO: final VoidCallback? onTogglePressed; // Agora é tratado pelo BagItemWidget
 
   const BagTrackingTimeline({
     super.key,
+    required this.bagStatus,
     required this.currentStatus,
     this.hasConnection = false,
-    required this.showFullTimeline, // Mantido como required para controle externo
-    // REMOVIDO: this.onTogglePressed, 
+    required this.showFullTimeline,
   });
 
   @override
@@ -26,23 +24,24 @@ class BagTrackingTimeline extends StatefulWidget {
 class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
   
   List<_TimelineStep> get _steps {
-    if (widget.hasConnection) {
+    if (widget.bagStatus == null) {
       return [
         _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
         _TimelineStep("Em Trânsito (1º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
         _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
         _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
         _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
-        _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
         _TimelineStep("Retirada", Icons.check_circle, BagStatusEnum.COLLECTED),
+        _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
       ];
     } else {
       return [
         _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
         _TimelineStep("Em Trânsito", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
+        _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
+        _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
         _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
         _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
-        _TimelineStep("Retirada", Icons.check_circle, BagStatusEnum.COLLECTED),
       ];
     }
   }
@@ -52,10 +51,8 @@ class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
   }
 
   Color _getColor(int index, int currentIndex) {
-    // Note: Usando Color.fromARGB(255, 255, 193, 7) para simular o "âmbar"
     const Color amberColor = Color.fromARGB(255, 255, 193, 7); 
     
-    // Note: Assumindo que AppColors.primary é a cor de sucesso (verde/azul)
     final Color primaryColor = AppColors.primary;
 
     if (index < currentIndex) return primaryColor;
@@ -74,7 +71,6 @@ class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
     return "Ponto ainda não verificado";
   }
 
-  // O _buildHeader FOI REMOVIDO PARA SER INSERIDO NO BagItemWidget
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +81,6 @@ class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // O título "Ciclo de Viagem" e o botão de alternância foram movidos para o BagItemWidget.
 
         AnimatedCrossFade(
           duration: const Duration(milliseconds: 300),
@@ -114,7 +109,6 @@ class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               step.title,
-                              // Note: Usando TextTheme como fallback para AppTextStyles
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: color, fontSize: isCompactScreen ? 13 : 14),
                             ),
                           ),
@@ -152,26 +146,25 @@ class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
         border: Border.all(color: color, width: 1),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Espaça texto e ícone
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 🔹 Texto "Estado atual: [Status]" (Label bold, Status normal)
           Flexible( 
             child: FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
-              child: RichText( // Usando RichText para aplicar estilos diferentes
+              child: RichText(
                 text: TextSpan(
-                  style: TextStyle( // Estilo base
+                  style: TextStyle(
                     color: color,
                     fontSize: isCompactScreen ? 14 : 16,
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: 'Estado atual: ', // "Estado atual:" em bold
+                      text: 'Estado atual: ',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: step.title, // Status (e.g., "Retirada") sem bold
+                      text: step.title,
                       style: TextStyle(fontWeight: FontWeight.normal),
                     ),
                   ],
@@ -179,7 +172,6 @@ class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
               ),
             ),
           ),
-          // 🔹 Ícone da direita (o ícone original do passo atual)
           Icon(step.icon, color: color, size: isCompactScreen ? 22 : 26),
         ],
       ),

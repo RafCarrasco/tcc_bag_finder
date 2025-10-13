@@ -25,6 +25,18 @@ class BagRepositoryImpl implements IBagRepository {
   }
 
   @override
+  Future<Either<BagFailure, List<BagEntity>>> getBagsByEPC({
+    required String epc,
+  }) async {
+    try {
+      final result = await remote.getBagsByEPC(epc);
+      return Right(result);
+    } catch (e) {
+      return Left(BagFailure(errorMessage: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<BagFailure, List<BagEntity>>> getBagsById(
       {required String bagId}) async {
     try {
@@ -36,12 +48,11 @@ class BagRepositoryImpl implements IBagRepository {
   }
 
   @override
-  Future<Either<BagFailure, void>> updateBag({required BagEntity bag}) async {
+  Future<void> updateBag({required String bag}) async {
     try {
       await remote.updateBag(bag);
-      return const Right(null);
     } catch (e) {
-      return Left(BagUpdateError());
+      Left(BagUpdateError());
     }
   }
 
@@ -102,10 +113,8 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
-
-  @override
   Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId(
-      {required String tripId}) async {
+    {required String tripId}) async {
     try {
       final result = await remote.getBagsByTripId(tripId);
       return Right(result);
@@ -115,9 +124,8 @@ class BagRepositoryImpl implements IBagRepository {
     }
   }
 
-  @override
   Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById(
-      {required String userId}) async {
+    {required String userId}) async {
     try {
       final result = await remote.getBagsStatusById(userId);
       return Right(result);
@@ -126,26 +134,28 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
-
-  // ✅ CORREÇÃO: Mapeia BagStatusEntity (retorno do remote) para BagEntity (requisito do IBagRepository)
-  @override
-  Future<Either<BagFailure, List<BagEntity>>> getBagsByEPC({
+    @override
+  Future<Either<BagFailure, BagStatusEntity>> findBagByEpc({
     required String epc,
   }) async {
     try {
-      // 1. Busca a BagStatusEntity (que é o que remote.findBagByEpc retorna)
-      final BagStatusEntity bagStatus = await remote.findBagByEpc(epc);
-
-      // 2. Mapeamento: Converte a BagStatusEntity para BagEntity
-      // **NOTA:** BagEntity.fromStatusEntity PRECISA ser definido na classe BagEntity.
-      final BagEntity bagEntity = BagEntity.fromStatusEntity(bagStatus);
-
-      // 3. Retorna a BagEntity encontrada dentro de uma lista, conforme exigido pela interface
-      return Right([bagEntity]);
-
+      final result = await remote.findBagByEpc(epc);
+      return Right(result);
     } catch (e) {
       print('[BagRepository] Erro ao buscar bag por EPC: $e');
       return Left(BagReadError());
+    }
+  }
+
+    @override
+  Future<void> deleteBagStatusByBagId({
+    required String epc,
+  }) async {
+    try {
+      await remote.deleteBagStatusByBagId(epc);
+    } catch (e) {
+      print('[BagRepository] Erro ao buscar bag por EPC: $e');
+      Left(BagReadError());
     }
   }
 }
