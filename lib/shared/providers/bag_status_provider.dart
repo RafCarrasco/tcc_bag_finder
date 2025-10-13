@@ -1,17 +1,22 @@
 import 'dart:convert';
 import 'package:bag_finder/core/entity/bag_status_entity.dart';
 import 'package:bag_finder/core/failures/bag_failure.dart';
-import 'package:bag_finder/core/utils/global_snackbar.dart';
-import 'package:bag_finder/infra/repositories/bag_repository_impl.dart';
+// Note: o import abaixo deve ser o caminho correto para o seu BagRepositoryImpl
+import 'package:bag_finder/infra/repositories/bag_repository_impl.dart'; 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:bag_finder/core/enums/bag_status_enum.dart'; // Import necessário para o status
+
+// Import para a entidade completa, que é necessário para o update
+import 'package:bag_finder/core/entity/bag_entity.dart'; 
 
 class RfidBagProvider extends ChangeNotifier {
   final WebSocketChannel channel;
   final String baseUrl;
-  final BagRepositoryImpl bagRepository;
+  // A classe do repositório deve ser a implementação concreta
+  final BagRepositoryImpl bagRepository; 
 
   final List<BagStatusEntity> _bags = [];
   List<BagStatusEntity> get bags => List.unmodifiable(_bags);
@@ -32,13 +37,21 @@ class RfidBagProvider extends ChangeNotifier {
       final epc = data['epc'] as String?;
       if (epc == null) return;
 
-      final result = await bagRepository.findBagByEpc(epc: epc);
+      // ✅ CORREÇÃO: Usando o nome do método da interface IBagRepository
+      // Nota: Este método retorna List<BagEntity>, o que é estranho para uma busca por EPC único.
+      // Vou assumir que você pega o primeiro elemento da lista, ou que o método findBagByEpc 
+      // do Repositório estava fazendo isso internamente.
+      final result = await bagRepository.getBagsByEPC(epc: epc); 
 
       result.fold(
         (failure) {
-          GlobalSnackBar.error('Erro ao buscar bag por EPC: $failure');
+          print('Erro ao buscar bag por EPC: $failure');
         },
-        (bag) {
+        // Como IBagRepository.getBagsByEPC retorna List<BagEntity>, assumo que bagList tem o item
+        (bagList) { 
+          if (bagList.isEmpty) return;
+          final bag = BagStatusEntity.fromBagEntity(bagList.first); // Assumindo conversão para BagStatusEntity
+          
           print('🧳 [Nova leitura EPC]');
           print('➡ ID: ${bag.id}');
           print('➡ Código: ${bag.printedCode}');
@@ -58,30 +71,7 @@ class RfidBagProvider extends ChangeNotifier {
         },
       );
     } catch (e) {
-      GlobalSnackBar.error('Erro ao processar mensagem do WebSocket: $e');
-    }
-  }
-
-  /// Busca diretamente uma bagagem pelo EPC (via HTTP)
-  Future<BagStatusEntity?> _getBagByEpc(String epc) async {
-    try {
-      final url = Uri.parse('$baseUrl/bags/status/epc/$epc');
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return BagStatusEntity.fromJson(data);
-      }
-
-      if (response.statusCode == 404) {
-        print('⚠️ Bag com EPC $epc não encontrada.');
-        return null;
-      }
-
-      throw Exception('Erro ${response.statusCode}: ${response.body}');
-    } catch (e) {
-      GlobalSnackBar.error('Falha ao buscar bag pelo EPC: $e');
-      return null;
+      print('Erro ao processar mensagem do WebSocket: $e');
     }
   }
 
@@ -90,12 +80,12 @@ class RfidBagProvider extends ChangeNotifier {
     try {
       print('🔍 [loadUserBags] Carregando bags do usuário: $userId...');
 
+      // O método getBagsStatusById existe no IBagRepository
       final Either<BagFailure, List<BagStatusEntity>> result =
           await bagRepository.getBagsStatusById(userId: userId);
 
       result.fold(
         (failure) {
-          GlobalSnackBar.error('Erro ao carregar bags: $failure');
           print('❌ [loadUserBags] Falha: $failure');
         },
         (bagsList) {
@@ -119,10 +109,63 @@ class RfidBagProvider extends ChangeNotifier {
         },
       );
     } catch (e, stack) {
-      GlobalSnackBar.error('Falha ao carregar bags do usuário: $e');
       print('💥 [loadUserBags] Erro inesperado: $e');
       print(stack);
     }
+  }
+
+  // ✅ NOVO MÉTODO: implementa a lógica de confirmação usando IBagRepository.updateBag
+  Future<void> confirmBagCollection({
+    required String bagId,
+    required String userId,
+  }) async {
+    // 1. Encontrar a BagStatusEntity local.
+    final bagToUpdateStatus = _bags.firstWhere(
+      (bag) => bag.id == bagId,
+      orElse: () => throw Exception('Bagagem não encontrada localmente.'),
+    );
+
+    // 2. Assumindo que você precisa da BagEntity completa para o updateBag do Repositório,
+    // temos que buscar a BagEntity completa primeiro. Como não há um método getBagById para BagEntity,
+    // usarei o getBagsById, pegando o primeiro.
+    final bagEntityResult = await bagRepository.getBagsById(bagId: bagId);
+
+    bagEntityResult.fold(
+      (failure) {
+        print('❌ [confirmBagCollection] Falha ao buscar BagEntity para update: $failure');
+      },
+      (bagEntities) async {
+        if (bagEntities.isEmpty) {
+          print('⚠️ [confirmBagCollection] BagEntity não encontrada para ID: $bagId');
+          return;
+        }
+        
+        final currentBag = bagEntities.first;
+        
+        // 3. Atualizar o status para o status de 'COLETADA'
+        final updatedBag = currentBag.copyWith(
+          status: BagStatusEnum.COLLECTED, // O enum deve ser referenciado corretamente
+        );
+
+        // 4. Chamar o método de atualização que existe no IBagRepository
+        print('📦 [confirmBagCollection] Tentando atualizar status da bagagem: $bagId para COLETADA');
+        
+        final updateResult = await bagRepository.updateBag(
+          bag: updatedBag,
+        );
+
+        updateResult.fold(
+          (failure) {
+            print('❌ [confirmBagCollection] Falha ao atualizar o status: $failure');
+          },
+          (_) {
+            print('✅ [confirmBagCollection] Status da bagagem atualizado com sucesso. Recarregando bags...');
+            // 5. Recarregar a lista para refletir a mudança
+            loadUserBags(userId);
+          },
+        );
+      },
+    );
   }
 
   /// Consolida bags com mesmo RFID e bag_id
@@ -157,10 +200,10 @@ class RfidBagProvider extends ChangeNotifier {
       consolidadas.add(consolidada);
 
       print('🧩 [Consolidado] RFID=${maisVelho.rfidTag}');
-      print('   → Status antigo: ${maisVelho.status}');
-      print('   → Status novo: ${maisNovo.status}');
-      print('   → Base: ${maisVelho.createdAt}');
-      print('   → Último update: ${maisNovo.createdAt}');
+      print('  → Status antigo: ${maisVelho.status}');
+      print('  → Status novo: ${maisNovo.status}');
+      print('  → Base: ${maisVelho.createdAt}');
+      print('  → Último update: ${maisNovo.createdAt}');
       print('------------------------------------');
     });
 

@@ -1,3 +1,5 @@
+import 'package:bag_finder/core/entity/bag_status_entity.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:dartz/dartz.dart';
 
 import '../core/entity/bag_entity.dart';
@@ -42,5 +44,15 @@ abstract class IBagRepository {
   Future<Either<BagFailure, List<BagEntity>>> getUserActiveBagsById({
     required String userId,
     required String bagId,
+  });
+
+  // 💡 ADICIONADO: Método para buscar bags pelo ID da viagem
+  Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId({
+    required String tripId,
+  });
+  
+  // 💡 ADICIONADO: Método para buscar status (usado na listagem de malas ativas)
+  Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById({
+    required String userId,
   });
 }

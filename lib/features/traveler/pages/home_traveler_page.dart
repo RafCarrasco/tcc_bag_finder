@@ -1,174 +1,146 @@
-import 'package:bag_finder/core/entity/bag_status_entity.dart';
-import 'package:bag_finder/core/enums/bag_status_enum.dart';
-import 'package:flutter/material.dart';
-import 'package:bag_finder/core/widgets/bag_item_widget.dart';
+// lib/pages/home_traveler_page.dart
 
+import 'package:bag_finder/core/widgets/bag_item_widget.dart';
+import 'package:bag_finder/infra/repositories/bag_repository_impl.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import '../../../shared/providers/user_provider.dart';
+import '../../../core/utils/app_dimensions.dart';
+import '../../../core/widgets/appbar/history_app_bar_widget.dart'; // Assumindo este é o HomeTravelerAppBarWidget
 
 class HomeTravelerPage extends StatefulWidget {
   final String travelerId;
 
-  const HomeTravelerPage({super.key, required this.travelerId});
+  const HomeTravelerPage({
+    super.key,
+    required this.travelerId,
+  });
 
   @override
   State<HomeTravelerPage> createState() => _HomeTravelerPageState();
 }
 
 class _HomeTravelerPageState extends State<HomeTravelerPage> {
-  final List<BagStatusEntity> _bagStatuses = [];
-  bool showTimeline = false;
+  final userProvider = Modular.get<UserProvider>();
+  bool isLoading = true;
+  late RfidBagProvider _rfidProvider; 
 
-  void _onRFIDRead(String bagId, BagStatusEnum newStatus) {
-    // Simula uma leitura POST do leitor RFID
+  final Map<String, bool> _isBagExpanded = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    final baseUrl = dotenv.env['BASE_URL']!;
+    final wsUrl = baseUrl.replaceFirst('http', 'ws');
+    final channel = WebSocketChannel.connect(Uri.parse(wsUrl));
+
+    final bagRepository = Modular.get<BagRepositoryImpl>();
+
+    _rfidProvider = RfidBagProvider(
+      channel: channel,
+      baseUrl: baseUrl,
+      bagRepository: bagRepository,
+    );
+
+    await _rfidProvider.loadUserBags(widget.travelerId);
+
+    setState(() => isLoading = false);
+  }
+
+  bool _getIsExpanded(String bagId) {
+    // Usa o ID da bagagem para rastrear a expansão.
+    return _isBagExpanded.putIfAbsent(bagId, () => false); 
+  }
+
+  void _toggleExpansion(String bagId) {
     setState(() {
-      showTimeline = true;
-      _bagStatuses.add(
-        BagStatusEntity(
-          bagId: bagId,
-          status: newStatus.toLiteral(),
-        ),
-      );
+      _isBagExpanded[bagId] = !(_isBagExpanded[bagId] ?? false);
     });
-  }
-
-  Widget _buildTimeline() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: _bagStatuses.length,
-        itemBuilder: (context, index) {
-          final bagStatus = _bagStatuses[index];
-          final statusEnum = BagStatusEnum.values.firstWhere(
-            (e) => e.toLiteral() == bagStatus.status,
-            orElse: () => BagStatusEnum.CHECKED_IN,
-          );
-
-          return _buildTimelineItem(statusEnum, index == _bagStatuses.length - 1);
-        },
-      ),
-    );
-  }
-
-  Widget _buildTimelineItem(BagStatusEnum status, bool isLast) {
-    final color = isLast ? Colors.green : Colors.grey;
-    final icon = _getStatusIcon(status);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Descrição do status à esquerda
-          Expanded(
-            child: Text(
-              status.toLiteral(),
-              style: TextStyle(
-                color: color,
-                fontSize: 16,
-                fontWeight: isLast ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ),
-          // Ícone à direita
-          Icon(icon, color: color, size: 24),
-        ],
-      ),
-    );
-  }
-
-  IconData _getStatusIcon(BagStatusEnum status) {
-    switch (status) {
-      case BagStatusEnum.CHECKED_IN:
-        return Icons.home;
-      case BagStatusEnum.IN_TRANSIT:
-        return Icons.flight_takeoff;
-      case BagStatusEnum.ARRIVED:
-        return Icons.flight_land;
-      case BagStatusEnum.READY_FOR_PICKUP:
-        return Icons.luggage;
-      case BagStatusEnum.COLLECTED:
-        return Icons.check_circle;
-      default:
-        return Icons.circle_outlined;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    if (isLoading || userProvider.user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Bag Finder'),
-        backgroundColor: Colors.teal,
-        elevation: 4,
-      ),
-      body: Center(
-        child: Container(
-          width: 400,
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 12,
-                offset: Offset(0, 4),
-              )
-            ],
-          ),
+    return ChangeNotifierProvider.value(
+      value: _rfidProvider,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7FA),
+        body: SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Olá, traveler 1 👋',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal[700],
-                ),
-              ),
-              const SizedBox(height: 20),
-              if (showTimeline)
-                _buildTimeline()
-              else
-                Column(
-                  children: [
-                    const Text(
-                      'Nenhum status disponível ainda.',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.wifi_tethering),
-                      label: const Text('Simular leitura RFID'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        // Exemplo de simulação de mudança de status
-                        final simulatedStatus = [
-                          BagStatusEnum.CHECKED_IN,
-                          BagStatusEnum.IN_TRANSIT,
-                          BagStatusEnum.ARRIVED,
-                          BagStatusEnum.READY_FOR_PICKUP,
-                          BagStatusEnum.COLLECTED,
-                        ];
-                        final next = simulatedStatus[
-                            (_bagStatuses.length) % simulatedStatus.length];
-                        _onRFIDRead('BAG123', next);
-                      },
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusExtraLarge),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
                     ),
                   ],
                 ),
+                // Assumindo que HomeTravelerAppBarWidget é o widget correto para a AppBar.
+                child: HomeTravelerAppBarWidget(
+                  userName: userProvider.user!.fullName, 
+                  hint: 'Procure sua bagagem...',
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // 💡 NOVO: Centraliza e limita a largura da lista de cards para 400px
+              Expanded(
+                child: Center( // Centraliza o conteúdo (em telas largas)
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 400, // Limita a largura a 400px
+                    ),
+                    child: Consumer<RfidBagProvider>(
+                      builder: (context, provider, _) {
+                        if (provider.bags.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'Nenhuma bagagem encontrada.',
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(12),
+                          itemCount: provider.bags.length,
+                          itemBuilder: (context, index) {
+                            final bag = provider.bags[index];
+                            final bagId = bag.id; 
+                            final isExpanded = _getIsExpanded(bagId);
+                            
+                            // Passa os parâmetros de expansão para o BagItemWidget.
+                            return BagItemWidget(
+                              bagStatus: bag,
+                              isExpanded: isExpanded,
+                              onToggleExpansion: () => _toggleExpansion(bagId),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -260,7 +260,6 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                 fieldType: 'rfid',
                                 isRequired: true,
                               ),
-                              // 2. CAMPO PRINTED CODE (Manual)
                               InitUserTripTextField(
                                 controller: _printedCodeControllers[index],
                                 prefixIcon: AppIconsSecondaryGrey.idCardIcon,

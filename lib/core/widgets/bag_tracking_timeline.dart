@@ -1,100 +1,196 @@
-// lib/core/widgets/bag_tracking_timeline.dart
 import 'package:flutter/material.dart';
-import 'package:bag_finder/core/enums/bag_status_enum.dart';
-import 'package:bag_finder/core/utils/app_dimensions.dart';
+import '../../../core/enums/bag_status_enum.dart';
+import '../../../core/utils/app_colors.dart';
+// Note: Assumindo que AppTextStyles está definido no seu projeto
+// Se não estiver, substitua por Theme.of(context).textTheme.bodyMedium!
+// import '../../../core/utils/app_text_styles.dart'; // Removido para evitar erros de importação não definido
 
-class BagTrackingTimelineVertical extends StatelessWidget {
-  final List<BagStatusEnum> statuses;
-  final BagStatusEnum? current;
+class BagTrackingTimeline extends StatefulWidget {
+  final BagStatusEnum currentStatus;
+  final bool hasConnection;
+  final bool showFullTimeline;
+  // REMOVIDO: final VoidCallback? onTogglePressed; // Agora é tratado pelo BagItemWidget
 
-  const BagTrackingTimelineVertical({
+  const BagTrackingTimeline({
     super.key,
-    required this.statuses,
-    this.current,
+    required this.currentStatus,
+    this.hasConnection = false,
+    required this.showFullTimeline, // Mantido como required para controle externo
+    // REMOVIDO: this.onTogglePressed, 
   });
 
-  Color _colorFor(BagStatusEnum status, BagStatusEnum? current) {
-    if (current == null) return Colors.grey;
-    if (status == current) return Colors.orange;
-    if (status.index < current.index) return Colors.green;
-    return Colors.grey;
-  }
+  @override
+  State<BagTrackingTimeline> createState() => _BagTrackingTimelineState();
+}
 
-  IconData _iconFor(BagStatusEnum status) {
-    switch (status) {
-      case BagStatusEnum.CHECKED_IN:
-        return Icons.home;
-      case BagStatusEnum.IN_TRANSIT:
-        return Icons.flight_takeoff;
-      case BagStatusEnum.ARRIVED:
-        return Icons.flight_land;
-      case BagStatusEnum.READY_FOR_PICKUP:
-        return Icons.luggage;
-      default:
-        return Icons.adjust;
+class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
+  
+  List<_TimelineStep> get _steps {
+    if (widget.hasConnection) {
+      return [
+        _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
+        _TimelineStep("Em Trânsito (1º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
+        _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
+        _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
+        _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
+        _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
+        _TimelineStep("Retirada", Icons.check_circle, BagStatusEnum.COLLECTED),
+      ];
+    } else {
+      return [
+        _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
+        _TimelineStep("Em Trânsito", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
+        _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
+        _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
+        _TimelineStep("Retirada", Icons.check_circle, BagStatusEnum.COLLECTED),
+      ];
     }
   }
 
+  int _getCurrentIndex() {
+    return _steps.indexWhere((s) => s.status == widget.currentStatus);
+  }
+
+  Color _getColor(int index, int currentIndex) {
+    // Note: Usando Color.fromARGB(255, 255, 193, 7) para simular o "âmbar"
+    const Color amberColor = Color.fromARGB(255, 255, 193, 7); 
+    
+    // Note: Assumindo que AppColors.primary é a cor de sucesso (verde/azul)
+    final Color primaryColor = AppColors.primary;
+
+    if (index < currentIndex) return primaryColor;
+    if (index == currentIndex) return amberColor; 
+    return Colors.grey;
+  }
+
+  String _getSubtitle(int index, int currentIndex, bool isLastGreen) {
+    if (index < currentIndex) {
+      if (currentIndex == _steps.length - 1 && index == currentIndex - 1) {
+        return "Última localização";
+      }
+      return "Ponto verificado";
+    }
+    if (index == currentIndex) return "Próxima localização";
+    return "Ponto ainda não verificado";
+  }
+
+  // O _buildHeader FOI REMOVIDO PARA SER INSERIDO NO BagItemWidget
+
   @override
   Widget build(BuildContext context) {
-    if (statuses.isEmpty) return const SizedBox.shrink();
+    final currentIndex = _getCurrentIndex();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompactScreen = screenWidth < 600;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: List.generate(statuses.length, (i) {
-        final status = statuses[i];
-        final color = _colorFor(status, current);
-        final isLast = i == statuses.length - 1;
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // O título "Ciclo de Viagem" e o botão de alternância foram movidos para o BagItemWidget.
 
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // descrição à esquerda
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10, horizontal: AppDimensions.paddingSmall),
-                child: Text(
-                  status.toLiteral(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight:
-                        status == current ? FontWeight.bold : FontWeight.w600,
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 300),
+          crossFadeState: widget.showFullTimeline
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          firstChild: Column(
+            children: List.generate(_steps.length, (index) {
+              final step = _steps[index];
+              final color = _getColor(index, currentIndex);
+              final subtitle = _getSubtitle(index, currentIndex, currentIndex > 0);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(step.icon, color: color, size: isCompactScreen ? 20 : 24),
+                    const SizedBox(width: 10),
+                    Expanded( 
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FittedBox( 
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              step.title,
+                              // Note: Usando TextTheme como fallback para AppTextStyles
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: color, fontSize: isCompactScreen ? 13 : 14),
+                            ),
+                          ),
+                          FittedBox( 
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              subtitle,
+                              style: TextStyle(fontSize: isCompactScreen ? 11 : 12, color: Colors.black54),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+          secondChild: _buildCompactView(currentIndex, isCompactScreen),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCompactView(int currentIndex, bool isCompactScreen) {
+    final step = _steps.isEmpty || currentIndex < 0 ? _TimelineStep("Status Indefinido", Icons.help_outline, BagStatusEnum.NAO_CADASTRADA) : _steps[currentIndex];
+    final color = _getColor(currentIndex, currentIndex);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color, width: 1),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Espaça texto e ícone
+        children: [
+          // 🔹 Texto "Estado atual: [Status]" (Label bold, Status normal)
+          Flexible( 
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: RichText( // Usando RichText para aplicar estilos diferentes
+                text: TextSpan(
+                  style: TextStyle( // Estilo base
                     color: color,
+                    fontSize: isCompactScreen ? 14 : 16,
                   ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Estado atual: ', // "Estado atual:" em bold
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: step.title, // Status (e.g., "Retirada") sem bold
+                      style: TextStyle(fontWeight: FontWeight.normal),
+                    ),
+                  ],
                 ),
               ),
             ),
-
-            // conector + ícone à direita
-            Column(
-              children: [
-                // ícone
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _iconFor(status),
-                    size: 20,
-                    color: color,
-                  ),
-                ),
-                // conector vertical (se não for o último)
-                if (!isLast)
-                  Container(
-                    width: 2,
-                    height: 36,
-                    margin: const EdgeInsets.only(top: 4),
-                    color: Colors.grey.shade300,
-                  ),
-              ],
-            ),
-          ],
-        );
-      }),
+          ),
+          // 🔹 Ícone da direita (o ícone original do passo atual)
+          Icon(step.icon, color: color, size: isCompactScreen ? 22 : 26),
+        ],
+      ),
     );
   }
+}
+
+class _TimelineStep {
+  final String title;
+  final IconData icon;
+  final BagStatusEnum status;
+
+  _TimelineStep(this.title, this.icon, this.status);
 }

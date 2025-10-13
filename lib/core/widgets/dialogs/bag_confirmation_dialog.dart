@@ -1,5 +1,9 @@
 import 'package:bag_finder/core/entity/bag_status_entity.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
+import 'package:bag_finder/shared/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:provider/provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 
@@ -17,6 +21,10 @@ class BagConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rfidProvider = Provider.of<RfidBagProvider>(context, listen: false); 
+    final userProvider = Modular.get<UserProvider>();
+    final userId = userProvider.user?.id;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
@@ -81,7 +89,6 @@ class BagConfirmationDialog extends StatelessWidget {
                   'Status:',
                   bagStatus.status,
                 ),
-                
               ],
             ),
           ),
@@ -119,7 +126,18 @@ class BagConfirmationDialog extends StatelessWidget {
                 ),
                 Expanded(
                   child: TextButton(
-                    onPressed: onConfirmArrival,
+                    onPressed: () async {
+                      Modular.to.pop(); // Fecha o dialog
+                      if (userId != null) {
+                        // 💡 CHAMADA FINAL: Dispara a lógica de coleta no Provider
+                        await rfidProvider.confirmBagCollection(
+                          bagId: bagStatus.id,
+                          userId: userId,
+                        );
+                      }
+                      // Chama a função opcional para notificar o widget pai (se necessário)
+                      onConfirmArrival.call();
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppDimensions.paddingMedium,

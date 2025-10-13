@@ -25,18 +25,6 @@ class BagRepositoryImpl implements IBagRepository {
   }
 
   @override
-  Future<Either<BagFailure, List<BagEntity>>> getBagsByEPC({
-    required String epc,
-  }) async {
-    try {
-      final result = await remote.getBagsByEPC(epc);
-      return Right(result);
-    } catch (e) {
-      return Left(BagFailure(errorMessage: e.toString()));
-    }
-  }
-
-  @override
   Future<Either<BagFailure, List<BagEntity>>> getBagsById(
       {required String bagId}) async {
     try {
@@ -114,8 +102,10 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
+
+  @override
   Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId(
-    {required String tripId}) async {
+      {required String tripId}) async {
     try {
       final result = await remote.getBagsByTripId(tripId);
       return Right(result);
@@ -125,8 +115,9 @@ class BagRepositoryImpl implements IBagRepository {
     }
   }
 
+  @override
   Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById(
-    {required String userId}) async {
+      {required String userId}) async {
     try {
       final result = await remote.getBagsStatusById(userId);
       return Right(result);
@@ -135,13 +126,23 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
-    @override
-  Future<Either<BagFailure, BagStatusEntity>> findBagByEpc({
+
+  // ✅ CORREÇÃO: Mapeia BagStatusEntity (retorno do remote) para BagEntity (requisito do IBagRepository)
+  @override
+  Future<Either<BagFailure, List<BagEntity>>> getBagsByEPC({
     required String epc,
   }) async {
     try {
-      final result = await remote.findBagByEpc(epc);
-      return Right(result);
+      // 1. Busca a BagStatusEntity (que é o que remote.findBagByEpc retorna)
+      final BagStatusEntity bagStatus = await remote.findBagByEpc(epc);
+
+      // 2. Mapeamento: Converte a BagStatusEntity para BagEntity
+      // **NOTA:** BagEntity.fromStatusEntity PRECISA ser definido na classe BagEntity.
+      final BagEntity bagEntity = BagEntity.fromStatusEntity(bagStatus);
+
+      // 3. Retorna a BagEntity encontrada dentro de uma lista, conforme exigido pela interface
+      return Right([bagEntity]);
+
     } catch (e) {
       print('[BagRepository] Erro ao buscar bag por EPC: $e');
       return Left(BagReadError());
