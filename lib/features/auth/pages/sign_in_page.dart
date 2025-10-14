@@ -30,18 +30,28 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 350,
-            child: Image.asset(
-              'assets/images/bagfinder-login.png',
-              filterQuality: FilterQuality.high,
-              fit: BoxFit.fitWidth,
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 800;
+              return SizedBox(
+                width: isDesktop
+                    ?400 
+                    : double.infinity,
+                height: isDesktop
+                    ? 350
+                    : MediaQuery.of(context).size.height * 0.35,
+                child: Image.asset(
+                  'assets/images/bagfinder-login.png',
+                  fit: BoxFit.cover,
+                ),
+              );
+            },
           ),
           SizedBox(
             height: 30,
@@ -171,7 +181,6 @@ class _SignInPageState extends State<SignInPage> {
                       TextButton(
                         onPressed: () {
                           Modular.to.navigate(
-                            
                             '/login/sign-up',
                           );
                         },
