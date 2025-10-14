@@ -82,6 +82,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
     return ChangeNotifierProvider<RfidBagProvider>.value(
       value: _rfidProvider,
       child: Scaffold(
+        extendBody: true,
         backgroundColor: const Color(0xFFF5F7FA),
         body: SafeArea(
           child: Consumer<RfidBagProvider>(

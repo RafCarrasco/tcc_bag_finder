@@ -38,7 +38,7 @@ class _SignInPageState extends State<SignInPage> {
           SizedBox(
             height: 350,
             child: Image.asset(
-              'images/bagfinder-login.png',
+              'assets/images/bagfinder-login.png',
               filterQuality: FilterQuality.high,
               fit: BoxFit.fitWidth,
             ),

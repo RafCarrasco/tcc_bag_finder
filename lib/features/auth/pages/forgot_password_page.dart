@@ -8,8 +8,6 @@ import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/app_text_styles.dart';
 import '../../../core/widgets/forgot_password_text_field.dart';
 import '../../../shared/providers/user_provider.dart';
-// O travelerProvider não é mais necessário aqui para o fluxo de reset.
-// import '../../../shared/providers/traveler_provider.dart'; 
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -19,8 +17,7 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  // Removendo o travelerProvider pois a lógica de reset está no userProvider
-  // final travelerProvider = Modular.get<TravelerProvider>(); 
+
   final userProvider = Modular.get<UserProvider>();
 
   final TextEditingController _cpfController = TextEditingController();
@@ -46,17 +43,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     setState(() => _isLoading = true);
 
-    // 1. ✅ PASSO ÚNICO: Verifica Credenciais, Checa a Role (TRAVELER) E Reseta a Senha.
-    // Usamos o método verifyTravelerCredentials apenas para checar se o usuário existe
-    // e é um TRAVELER. Se for bem-sucedido, chamamos o resetPassword.
-
     final verificationResult = await userProvider.verifyTravelerCredentials(
       email: _emailController.text,
       cpf: _cpfController.text,
     );
 
     await verificationResult.fold(
-      // Falha na verificação de credenciais/role (ex: Não é Traveler, CPF/Email inválido)
       (failure) async {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -66,9 +58,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ),
         );
       },
-      // Sucesso na verificação (Usuário Traveler encontrado)
       (userEntity) async {
-        // 2. Tenta redefinir a senha
         final resetResult = await userProvider.resetPassword(
           email: _emailController.text,
           cpf: _cpfController.text,
@@ -78,7 +68,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         setState(() => _isLoading = false);
 
         resetResult.fold(
-          // Falha na redefinição (Ex: Erro de servidor ao atualizar o DB)
           (failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -87,7 +76,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             );
           },
-          // Sucesso Total na Redefinição
           (_) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -120,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'images/group-interrogation.png',
+                      'assets/images/group-interrogation.png',
                       height: 220,
                       filterQuality: FilterQuality.high,
                     ),

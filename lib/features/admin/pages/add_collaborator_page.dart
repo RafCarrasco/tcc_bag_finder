@@ -160,7 +160,7 @@ class _AddCollaboratorPageState extends State<AddCollaboratorPage> {
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          final currentUser = auth_provider.user;
+                          final currentUser = provider.user;
                           if (currentUser == null ||currentUser is! AdminEntity) {
                             GlobalSnackBar.error('Administrador inválido.');
                             return;

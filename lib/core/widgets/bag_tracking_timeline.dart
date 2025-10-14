@@ -23,28 +23,38 @@ class BagTrackingTimeline extends StatefulWidget {
 
 class _BagTrackingTimelineState extends State<BagTrackingTimeline> {
   
-  List<_TimelineStep> get _steps {
-    if (widget.bagStatus == null) {
-      return [
-        _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
-        _TimelineStep("Em Trânsito (1º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
-        _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
-        _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
-        _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
-        _TimelineStep("Retirada", Icons.check_circle, BagStatusEnum.COLLECTED),
-        _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
-      ];
-    } else {
-      return [
-        _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
-        _TimelineStep("Em Trânsito", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
-        _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
-        _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
-        _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
-        _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
-      ];
-    }
+List<_TimelineStep> get _steps {
+  if (widget.bagStatus == null) {
+    return [
+      _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
+      _TimelineStep("Em Trânsito (1º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
+      _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
+      _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
+      _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
+      _TimelineStep("Retirada", Icons.check_circle, BagStatusEnum.COLLECTED),
+      _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
+    ];
   }
+
+  final hasConnection = widget.bagStatus?.flightConnection != null;
+  if (hasConnection) {
+    return [
+      _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
+      _TimelineStep("Em Trânsito (1º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
+      _TimelineStep("Chegada (Conexão)", Icons.flight_land, BagStatusEnum.ARRIVED_AT_CONNECTION),
+      _TimelineStep("Em Trânsito (2º Trecho)", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT_CONNECTION),
+      _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
+      _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
+    ];
+  } else {
+    return [
+      _TimelineStep("Registrada", Icons.home, BagStatusEnum.CHECKED_IN),
+      _TimelineStep("Em Trânsito", Icons.flight_takeoff, BagStatusEnum.IN_TRANSIT),
+      _TimelineStep("Chegada no Destino", Icons.flight_land, BagStatusEnum.ARRIVED),
+      _TimelineStep("Pronta para Retirada", Icons.luggage, BagStatusEnum.READY_FOR_PICKUP),
+    ];
+  }
+}
 
   int _getCurrentIndex() {
     return _steps.indexWhere((s) => s.status == widget.currentStatus);

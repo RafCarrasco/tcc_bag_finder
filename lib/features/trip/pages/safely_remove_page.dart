@@ -22,7 +22,7 @@ class SafelyRemovePage extends StatelessWidget {
         children: [
           SizedBox(
             child: Image.asset(
-              'images/two-persons.png',
+              'assets/images/two-persons.png',
               filterQuality: FilterQuality.high,
             ),
           ),
