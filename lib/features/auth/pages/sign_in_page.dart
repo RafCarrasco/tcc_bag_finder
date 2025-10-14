@@ -29,6 +29,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -38,7 +39,7 @@ class _SignInPageState extends State<SignInPage> {
           SizedBox(
             height: 350,
             child: Image.asset(
-              'images/bagfinder-login.png',
+              'assets/images/bagfinder-login.png',
               filterQuality: FilterQuality.high,
               fit: BoxFit.fitWidth,
             ),
@@ -122,41 +123,13 @@ class _SignInPageState extends State<SignInPage> {
             ),
           ),
           SizedBox(
-            height: 50,
+            height: 20,
           ),
           Column(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ConstrainedBox(constraints:const BoxConstraints(maxWidth: 400),
-                child: Row(
-                children: [
-                  const Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Colors.grey,
-                      endIndent: 20,
-                      indent: 20,
-                    ),
-                  ),
-                  Text(
-                    'ou',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                  ),
-                  const Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Colors.grey,
-                      endIndent: 20,
-                      indent: 20,
-                    ),
-                  ),
-                ],
-              ),
-              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -173,7 +146,6 @@ class _SignInPageState extends State<SignInPage> {
                       TextButton(
                         onPressed: () {
                           Modular.to.navigate(
-                            
                             '/login/sign-up',
                           );
                         },
@@ -188,7 +160,41 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ],
                   ),
-                  Column(
+                  SizedBox(
+                    height: 5,
+                  ),
+                  ConstrainedBox(constraints:const BoxConstraints(maxWidth: 400),
+                    child: Row(
+                    children: [
+                      const Expanded(
+                        child: Divider(
+                          thickness: 1,
+                          color: Colors.grey,
+                          endIndent: 20,
+                          indent: 20,
+                        ),
+                      ),
+                      Text(
+                        'ou',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              color: AppColors.secondaryGrey,
+                            ),
+                      ),
+                      const Expanded(
+                        child: Divider(
+                          thickness: 1,
+                          color: Colors.grey,
+                          endIndent: 20,
+                          indent: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [

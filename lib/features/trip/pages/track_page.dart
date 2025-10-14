@@ -26,7 +26,7 @@ class TrackPage extends StatelessWidget {
           children: [
             SizedBox(
               child: Image.asset(
-                'images/luggage-two-persons.png',
+                'assets/images/luggage-two-persons.png',
                 filterQuality: FilterQuality.high,
               ),
             ),

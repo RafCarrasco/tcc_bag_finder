@@ -98,7 +98,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'images/group-interrogation.png',
+                      'assets/images/group-interrogation.png',
                       height: 220,
                       filterQuality: FilterQuality.high,
                     ),

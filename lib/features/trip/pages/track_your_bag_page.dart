@@ -22,7 +22,7 @@ class TrackYourBagPage extends StatelessWidget {
         children: [
           SizedBox(
             child: Image.asset(
-              'images/flying-around.png',
+              'assets/images/flying-around.png',
               filterQuality: FilterQuality.high,
             ),
           ),

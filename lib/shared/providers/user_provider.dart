@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:bag_finder/core/failures/auth_failure.dart';
+import 'package:bag_finder/features/auth/controller/auth_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import '../../core/entity/user_entity.dart';
 import '../../core/failures/failure.dart';
 import '../../infra/repositories/user_repository_impl.dart';
@@ -18,12 +20,13 @@ class UserProvider extends ChangeNotifier {
   UserEntity? get user => _user;
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _user != null;
-
+  final auth_provider=Modular.get<AuthService>();
+  
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
   }
-    Future<void> _saveUserToStorage(UserEntity user) async {
+  Future<void> _saveUserToStorage(UserEntity user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("user", jsonEncode(user.toJson()));
   }

@@ -55,7 +55,7 @@ class _SignUpPageState extends State<SignUpPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 450),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     Image.asset(
                       'images/bagfinder-sign-up.png',
-                      height: 220,
+                      height: 200,
                       filterQuality: FilterQuality.high,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
@@ -142,7 +142,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
 
-                    // Senha
                     SignUpTextField(
                       controller: _passwordController,
                       prefixIcon: (AppIconsSecondaryGrey.passwordIcon.icon),
@@ -197,6 +196,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         TextButton(
                           onPressed: () => Modular.to.navigate('/login/sign-in'),
                           child: Text(
+                            textAlign: TextAlign.center,
                             localization.loginPageClickHere,
                             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                   fontWeight: FontWeight.bold,

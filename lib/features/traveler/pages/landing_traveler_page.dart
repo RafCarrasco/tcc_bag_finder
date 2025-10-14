@@ -40,6 +40,7 @@ class _LandingTravelerPageState extends State<LandingTravelerPage> {
         )
       ],
       child: Scaffold(
+        extendBody: true,
         bottomNavigationBar: HomeTravelerBottomNavigation(
           selectedIndex: _selectedIndex,
           onItemTapped: _onItemTapped,

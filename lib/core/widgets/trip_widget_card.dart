@@ -153,36 +153,40 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     ),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Printed Code: ${bag.printedCode ?? '-'}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                      Expanded( // <- ADICIONE AQUI
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Printed Code: ${bag.printedCode ?? '-'}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.visible, // permite quebra de linha
+                              softWrap: true, // garante quebra natural
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Criada em: $bagDate',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
+                            const SizedBox(height: 4),
+                            Text(
+                              'Criada em: $bagDate',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       const Icon(
                         Icons.luggage,
                         color: Colors.teal,
                         size: 28,
                       ),
                     ],
-                  ),
+                  )
                 );
               }),
             ],
