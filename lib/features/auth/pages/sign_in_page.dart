@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../controller/sign_in_controller.dart';
@@ -29,203 +30,214 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    
+    final media = MediaQuery.of(context).size;
+    const double horizontalPadding = 24.0;
+    const double maxWidth = 400;
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 350,
-            child: Image.asset(
-              'assets/images/bagfinder-login.png',
-              filterQuality: FilterQuality.high,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Text(
-            AppLocalizations.of(context)!.loginPageTitle,
-            style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-                 textAlign: TextAlign.center
-          ),
-          const SizedBox(height: AppDimensions.verticalSpaceMedium),
-          SizedBox(
-            height: 30,
-          ),
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                SizedBox(
-                  width: 400,
-                  child: LoginTextField(
-                    onChanged: signInController.setEmail,
-                    suffixIcon: AppIconsSecondaryGrey.emailIcon,
-                    hint: AppLocalizations.of(context)!.emailPlaceholder,
-                    isPassword: false,
-                    fieldType: 'email',
-                    isRequired: true,
-                  ),
-                ),
-                const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                SizedBox(
-                  width: 400,
-                  child: LoginTextField(
-                  onChanged: signInController.setPassword,
-                  suffixIcon: AppIconsSecondaryGrey.passwordIcon,
-                  hint: AppLocalizations.of(context)!.passwordPlaceholder,
-                  isPassword: true,
-                  fieldType: '',
-                  isRequired: true,
-                ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          SizedBox(
-            width: 400,
-            child: ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final result = await provider.login(
-                    email: signInController.email!,
-                    password: signInController.password!,
-                  );
-                  result.fold(
-                    (failure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erro: ${failure.toString()}')),
-                      );
-                    },
-                    (user) {
-                      if (user != null) {
-                        Modular.to.navigate(
-                          '/${user.role.toLowerCase()}/${user.id}/home',
-                        );
-                      }
-                    },
-                  );
-                }
-              },
-              child: Text(
-                AppLocalizations.of(context)!.loginPageButtonLogin,
-                style: AppTextStyles.button,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: Colors.white,
+      
+      // 1. AnnotatedRegion: Configura a barra de status para ter fundo e ícones corretos
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+        
+        // 2. Container: Garante que o fundo total (incluindo área insegura) seja branco
+        child: Container(
+          color: Colors.white,
+          width: double.infinity,
+          height: double.infinity,
+          
+          child: SafeArea( 
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.loginPageDoesntHaveAccount,
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Modular.to.navigate(
-                            '/login/sign-up',
-                          );
-                        },
-                        child: Text(
-                          AppLocalizations.of(context)!.signUpPageButtonSignUp,
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                fontWeight: FontWeight.bold,
-                                decorationColor: AppColors.primary,
-                                decorationThickness: 2,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // --- IMAGEM DE TOPO (35% da tela) ---
                   SizedBox(
-                    height: 5,
+                    width: double.infinity,
+                    height: media.height * 0.35,
+                    child: Image.asset(
+                      'assets/images/bagfinder-login.png',
+                      filterQuality: FilterQuality.high,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  ConstrainedBox(constraints:const BoxConstraints(maxWidth: 400),
-                    child: Row(
-                    children: [
-                      const Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Colors.grey,
-                          endIndent: 20,
-                          indent: 20,
-                        ),
-                      ),
-                      Text(
-                        'ou',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: AppColors.secondaryGrey,
+
+                  const SizedBox(height: 30),
+
+                  // 3. Conteúdo Principal Centralizado e com Padding
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: maxWidth),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.loginPageTitle,
+                            style: Theme.of(context)
+                                .textTheme
+                                .displayLarge!
+                                .copyWith(fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                          
+                          // --- FORMULÁRIO ---
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                LoginTextField(
+                                  onChanged: signInController.setEmail,
+                                  suffixIcon: AppIconsSecondaryGrey.emailIcon,
+                                  hint: AppLocalizations.of(context)!.emailPlaceholder,
+                                  isPassword: false,
+                                  fieldType: 'email',
+                                  isRequired: true,
+                                ),
+                                const SizedBox(height: AppDimensions.verticalSpaceLarge),
+                                LoginTextField(
+                                  onChanged: signInController.setPassword,
+                                  suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                                  hint: AppLocalizations.of(context)!.passwordPlaceholder,
+                                  isPassword: true,
+                                  fieldType: '',
+                                  isRequired: true,
+                                ),
+                              ],
                             ),
-                      ),
-                      const Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Colors.grey,
-                          endIndent: 20,
-                          indent: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.loginPageAlreadyHaveAccount,
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: AppColors.secondaryGrey,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Modular.to.navigate('/login/forgot-password');
-                        },
-                        child: Text(
-                          AppLocalizations.of(context)!.loginPageRecoverAccess,
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                fontWeight: FontWeight.bold,
-                                decorationColor: AppColors.primary,
-                                decorationThickness: 2,
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          // --- BOTÃO LOGIN ---
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: isLoginButtonEnabled() ? () async {
+                                if (_formKey.currentState!.validate()) {
+                                  final result = await provider.login(
+                                    email: signInController.email!,
+                                    password: signInController.password!,
+                                  );
+                                  result.fold(
+                                    (failure) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Erro: ${failure.errorMessage}'),
+                                        ),
+                                      );
+                                    },
+                                    (user) {
+                                      if (user != null) {
+                                        Modular.to.navigate(
+                                          '/${user.role.toLowerCase()}/${user.id}/home',
+                                        );
+                                      }
+                                    },
+                                  );
+                                }
+                              } : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                        ),
+                              child: Text(
+                                AppLocalizations.of(context)!.loginPageButtonLogin,
+                                style: AppTextStyles.button,
+                              ),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 30),
+
+                          // --- LINKS (Rodapé) ---
+                          Column(
+                            children: [
+                              // Cadastre-se
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.loginPageDoesntHaveAccount,
+                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.secondaryGrey),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Modular.to.navigate('/login/sign-up');
+                                    },
+                                    child: Text(
+                                      AppLocalizations.of(context)!.signUpPageButtonSignUp,
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            decorationColor: AppColors.primary,
+                                            decorationThickness: 2,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              
+                              const SizedBox(height: 10),
+                              
+                              // Divisor 'ou'
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Expanded(child: Divider(thickness: 1, color: Colors.grey, endIndent: 10, indent: 10)),
+                                  Text('ou', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.secondaryGrey)),
+                                  const Expanded(child: Divider(thickness: 1, color: Colors.grey, endIndent: 10, indent: 10)),
+                                ],
+                              ),
+                              
+                              const SizedBox(height: 10),
+                              
+                              // Recuperar Acesso
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.loginPageAlreadyHaveAccount,
+                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.secondaryGrey),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Modular.to.navigate('/login/forgot-password');
+                                    },
+                                    child: Text(
+                                      AppLocalizations.of(context)!.loginPageRecoverAccess,
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            decorationColor: AppColors.primary,
+                                            decorationThickness: 2,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          
+                          const SizedBox(height: 40),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ],
-          )
-        ],
+            ),
+          ),
+        ),
       ),
-      )
     );
   }
 }
