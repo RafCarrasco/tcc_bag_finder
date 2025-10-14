@@ -29,7 +29,10 @@ class RfidBagProvider extends ChangeNotifier {
   void _onMessage(dynamic message) async {
     try {
       final data = jsonDecode(message);
-      final epc = data['epc'] as String?;
+      final epcOriginal = data['epc'] as String?;
+      final epc = (epcOriginal != null && epcOriginal.length > 4)
+          ? epcOriginal.substring(0, epcOriginal.length - 4)
+          : epcOriginal;
       if (epc == null) return;
 
       final result = await bagRepository.findBagByEpc(epc: epc);

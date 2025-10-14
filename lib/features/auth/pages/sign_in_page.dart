@@ -30,39 +30,35 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context).size;
+
     const double horizontalPadding = 24.0;
     const double maxWidth = 400;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      
-      // 1. AnnotatedRegion: Configura a barra de status para ter fundo e ícones corretos
+
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light.copyWith(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
         ),
-        
-        // 2. Container: Garante que o fundo total (incluindo área insegura) seja branco
         child: Container(
           color: Colors.white,
           width: double.infinity,
           height: double.infinity,
-          
-          child: SafeArea( 
+
+          child: SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // --- IMAGEM DE TOPO (35% da tela) ---
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final isDesktop = constraints.maxWidth > 800;
                       return SizedBox(
                         width: isDesktop
-                            ?400 
+                            ? 400
                             : double.infinity,
                         height: isDesktop
                             ? 350
@@ -77,7 +73,6 @@ class _SignInPageState extends State<SignInPage> {
 
                   const SizedBox(height: 30),
 
-                  // 3. Conteúdo Principal Centralizado e com Padding
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
                     child: ConstrainedBox(
@@ -95,14 +90,16 @@ class _SignInPageState extends State<SignInPage> {
                           ),
 
                           const SizedBox(height: AppDimensions.verticalSpaceLarge),
-                          
-                          // --- FORMULÁRIO ---
+
                           Form(
                             key: _formKey,
                             child: Column(
                               children: [
                                 LoginTextField(
-                                  onChanged: signInController.setEmail,
+                                  onChanged: (value) {
+                                    signInController.setEmail(value);
+                                    setState(() {}); 
+                                  },
                                   suffixIcon: AppIconsSecondaryGrey.emailIcon,
                                   hint: AppLocalizations.of(context)!.emailPlaceholder,
                                   isPassword: false,
@@ -111,7 +108,10 @@ class _SignInPageState extends State<SignInPage> {
                                 ),
                                 const SizedBox(height: AppDimensions.verticalSpaceLarge),
                                 LoginTextField(
-                                  onChanged: signInController.setPassword,
+                                  onChanged: (value) {
+                                    signInController.setPassword(value);
+                                    setState(() {}); 
+                                  },
                                   suffixIcon: AppIconsSecondaryGrey.passwordIcon,
                                   hint: AppLocalizations.of(context)!.passwordPlaceholder,
                                   isPassword: true,
@@ -124,7 +124,6 @@ class _SignInPageState extends State<SignInPage> {
 
                           const SizedBox(height: 40),
 
-                          // --- BOTÃO LOGIN ---
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -165,13 +164,10 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                           ),
-                          
-                          const SizedBox(height: 30),
 
-                          // --- LINKS (Rodapé) ---
+                          const SizedBox(height: 30),
                           Column(
                             children: [
-                              // Cadastre-se
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -194,10 +190,9 @@ class _SignInPageState extends State<SignInPage> {
                                   ),
                                 ],
                               ),
-                              
+
                               const SizedBox(height: 10),
-                              
-                              // Divisor 'ou'
+
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -206,10 +201,9 @@ class _SignInPageState extends State<SignInPage> {
                                   const Expanded(child: Divider(thickness: 1, color: Colors.grey, endIndent: 10, indent: 10)),
                                 ],
                               ),
-                              
+
                               const SizedBox(height: 10),
-                              
-                              // Recuperar Acesso
+
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -234,7 +228,7 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ],
                           ),
-                          
+
                           const SizedBox(height: 40),
                         ],
                       ),

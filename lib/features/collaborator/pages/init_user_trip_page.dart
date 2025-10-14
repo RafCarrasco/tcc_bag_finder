@@ -69,7 +69,10 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
   void _handleRfidMessage(String message) {
     try {
       final data = jsonDecode(message);
-      final epc = data['epc'] as String?;
+      final epcOriginal = data['epc'] as String?;
+      final epc = (epcOriginal != null && epcOriginal.length > 4)
+          ? epcOriginal.substring(0, epcOriginal.length - 4)
+          : epcOriginal;
 
       if (epc != null && data['status'] == 'NAO_CADASTRADA') {
         if (_controller.codeTags.contains(epc)) {
