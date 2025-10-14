@@ -69,7 +69,6 @@ class TravelerRepositoryImpl implements ITravelerRepository {
       final result = await remote.getTravelerByCpfAndEmail(cpf, email);
       return Right(result);
     } catch (e) {
-      // Retorna TravelerReadError em caso de falha de comunicação/servidor
       return Left(TravelerReadError());
     }
   }

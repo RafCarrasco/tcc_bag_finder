@@ -6,7 +6,7 @@ class ReportEntity {
 
   final String id;
   final String description;
-  final String userId; // Apenas o ID do usuário
+  final String userId; 
   final BagEntity bagEntity;
 
   ReportEntity({

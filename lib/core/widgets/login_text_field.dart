@@ -1,98 +1,92 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_dimensions.dart';
-import '../utils/app_text_styles.dart';
-import '../utils/user_validation_mixin.dart';
+import '../../core/utils/app_colors.dart';
+import '../../core/utils/app_text_styles.dart';
 
 class LoginTextField extends StatefulWidget {
-  final Icon suffixIcon;
   final String hint;
+  final Function(String) onChanged;
   final bool isPassword;
-  final String fieldType;
   final bool isRequired;
-  final void Function(String)? onChanged;
+  final String fieldType;
+  final IconData? prefixIcon;
+  final Widget? suffixIcon;
 
   const LoginTextField({
     super.key,
     required this.hint,
-    this.onChanged,
-    required this.isPassword,
-    required this.fieldType,
-    required this.isRequired,
-    required this.suffixIcon,
+    required this.onChanged,
+    this.isPassword = false,
+    this.isRequired = false,
+    this.fieldType = '',
+    this.prefixIcon,
+    this.suffixIcon,
   });
 
   @override
   State<LoginTextField> createState() => _LoginTextFieldState();
 }
 
-class _LoginTextFieldState extends State<LoginTextField> with ValidationMixin {
-  bool _obscureText = true;
+class _LoginTextFieldState extends State<LoginTextField> {
+  bool _obscureText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword;
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator: (value) {
-        return validateField(
-          value,
-          widget.hint,
-          widget.fieldType,
-          widget.isRequired,
-        );
-      },
-      obscureText: widget.isPassword ? _obscureText : false,
       onChanged: widget.onChanged,
+      obscureText: _obscureText,
+      keyboardType: widget.fieldType == 'email'
+          ? TextInputType.emailAddress
+          : TextInputType.text,
+      validator: (value) {
+        if (widget.isRequired && (value == null || value.isEmpty)) {
+          return 'Campo obrigatório';
+        }
+        return null;
+      },
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.paddingSmall,
-          vertical: AppDimensions.paddingSmall,
+        prefixIcon: Icon(
+          widget.prefixIcon ?? (widget.isPassword ? Icons.lock_outline : Icons.email_outlined),
+          color: AppColors.primary,
         ),
-        fillColor: AppColors.textFieldBackground,
-        filled: true,
-        border: const OutlineInputBorder(),
-        hintText: widget.hint,
-        hintStyle: TextStyle(
-          color: AppColors.secondaryGrey,
-          fontSize: AppDimensions.fontMedium,
-        ),
-        suffixIconColor: AppColors.secondaryGrey,
         suffixIcon: widget.isPassword
-          ? IconButton(
-              icon: Icon(
-                _obscureText ? Icons.visibility_off : Icons.visibility,
-                color: AppColors.secondaryGrey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
-            )
-          : widget.suffixIcon,
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: AppColors.secondaryGrey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
+        hintText: widget.hint,
+        hintStyle: AppTextStyles.bodyText1.copyWith(
+          color: AppColors.secondaryGrey,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 20,
+        ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          borderSide: BorderSide.none
+          borderSide: BorderSide(color: AppColors.primary, width: 1.2),
+          borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          borderSide: BorderSide(
-            color: AppColors.primary,
-            width: 1.5,
-          ),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(10),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          borderSide: BorderSide(
-            color: AppColors.error,
-            width: 1.5,
-          ),
-        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
-      style: AppTextStyles.titleMedium.copyWith(
-        color: AppColors.secondaryGrey,
-        fontWeight: FontWeight.bold,
-      ),
+      style: AppTextStyles.bodyText1.copyWith(fontSize: 16),
     );
   }
 }
-

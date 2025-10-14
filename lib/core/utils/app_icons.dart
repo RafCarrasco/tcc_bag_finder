@@ -15,6 +15,12 @@ class AppIconsPrimary {
         size: AppDimensions.iconMedium,
         color: AppColors.primary,
       );
+  
+  static Icon get emailIcon => Icon(
+        Icons.email,
+        size: AppDimensions.iconMedium,
+        color: AppColors.primary,
+      );
 
   static Icon get searchIcon => Icon(
         Icons.search,
@@ -34,11 +40,6 @@ class AppIconsPrimary {
         color: AppColors.primary,
       );
 
-  static Icon get emailIcon => Icon(
-        Icons.email,
-        size: AppDimensions.iconMedium,
-        color: AppColors.primary,
-      );
 
   static Icon get passwordIcon => Icon(
         Icons.lock,

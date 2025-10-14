@@ -45,6 +45,5 @@ abstract class IUserRepository {
     required String newPassword,
   });
 
-  // Método usado para checar a role (TRAVELER)
   Future<Either<Failure, UserEntity?>> getUserByCpf({required String cpf});
 }

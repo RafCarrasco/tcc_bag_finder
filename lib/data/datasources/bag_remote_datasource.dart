@@ -7,11 +7,13 @@ import '../../core/enums/bag_status_enum.dart';
 
 class BagRemoteDataSource {
   final String baseUrl;
+  final http.Client client; 
 
-  BagRemoteDataSource({required this.baseUrl});
+  BagRemoteDataSource({required this.baseUrl, http.Client? client}) 
+      : client = client ?? http.Client();
 
   Future<BagEntity> addBag(BagEntity bag) async {
-    final response = await http.post(
+    final response = await client.post( 
       Uri.parse('$baseUrl/bags'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(bag.toJson()),
@@ -24,7 +26,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagEntity>> getBagsByEPC(String epc) async {
-    final response = await http.get(Uri.parse('$baseUrl/bags/epc/$epc'));
+    final response = await client.get(Uri.parse('$baseUrl/bags/epc/$epc')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -37,7 +39,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagEntity>> getBagsById(String bagId) async {
-    final response = await http.get(Uri.parse('$baseUrl/bags/$bagId'));
+    final response = await client.get(Uri.parse('$baseUrl/bags/$bagId')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -62,7 +64,7 @@ class BagRemoteDataSource {
 
 
   Future<void> deleteBag(String bagId) async {
-    final response = await http.delete(Uri.parse('$baseUrl/bags/$bagId'));
+    final response = await client.delete(Uri.parse('$baseUrl/bags/$bagId')); 
 
     if (response.statusCode != 200) {
       throw Exception('Erro ao deletar bag: ${response.statusCode} - ${response.body}');
@@ -70,7 +72,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagEntity>> getBagsByUserId(String userId) async {
-    final response = await http.get(Uri.parse('$baseUrl/users/$userId/bags'));
+    final response = await client.get(Uri.parse('$baseUrl/users/$userId/bags')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -81,7 +83,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagEntity>> getBagsByStatus(BagStatusEnum status) async {
-    final response = await http.get(Uri.parse('$baseUrl/bags/status/${status.name}'));
+    final response = await client.get(Uri.parse('$baseUrl/bags/status/${status.name}')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -92,7 +94,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagEntity>> getCurrentTripBagsById(TripEntity trip, String bagId) async {
-    final response = await http.get(Uri.parse('$baseUrl/trips/${trip.id}/bags/$bagId'));
+    final response = await client.get(Uri.parse('$baseUrl/trips/${trip.id}/bags/$bagId')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -105,7 +107,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagEntity>> getUserActiveBagsById(String userId, String bagId) async {
-    final response = await http.get(Uri.parse('$baseUrl/users/$userId/bags/$bagId/active'));
+    final response = await client.get(Uri.parse('$baseUrl/users/$userId/bags/$bagId/active')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -118,7 +120,7 @@ class BagRemoteDataSource {
   }
   
   Future<List<BagEntity>> getBagsByTripId(String tripId) async {
-    final response = await http.get(Uri.parse('$baseUrl/bags/trips/$tripId'));
+    final response = await client.get(Uri.parse('$baseUrl/bags/trips/$tripId')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -129,7 +131,7 @@ class BagRemoteDataSource {
   }
 
   Future<List<BagStatusEntity>> getBagsStatusById(String userId) async {
-    final response = await http.get(Uri.parse('$baseUrl/bags/status/user/$userId'));
+    final response = await client.get(Uri.parse('$baseUrl/bags/status/user/$userId')); 
 
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
@@ -140,10 +142,11 @@ class BagRemoteDataSource {
       throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
   }
+  
   Future<BagStatusEntity> findBagByEpc(String epc) async {
     try {
       final url = Uri.parse('$baseUrl/bags/status/epc/$epc');
-      final response = await http.get(url);
+      final response = await client.get(url); 
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

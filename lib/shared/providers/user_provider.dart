@@ -187,24 +187,20 @@ class UserProvider extends ChangeNotifier {
   }) async {
     _setLoading(true);
 
-    // Tenta encontrar o usuário no repositório (que busca no banco)
     final cpfResult = await repository.getUserByCpf(cpf: cpf);
 
     _setLoading(false);
     
     return cpfResult.fold(
-      (failure) => Left(failure), // Falha na busca (ex: erro de rede)
+      (failure) => Left(failure),
       (user) {
         if (user == null) {
-          // Garanta que você tem a classe UserNotFound
           return Left(UserNotFound()); 
         }
         
-        // **LÓGICA CRÍTICA:** Checa se a role é 'TRAVELER' E se o email combina
         if (user.role == 'TRAVELER' && user.email.toLowerCase() == email.toLowerCase()) {
-          return Right(user); // Válido: É um Traveler e os dados batem
+          return Right(user); 
         } else {
-          // Garanta que você tem a classe InvalidCredentials (adicionada no passo 3 da resposta anterior)
           return Left(InvalidCredentials()); 
         }
       },
@@ -234,7 +230,6 @@ class UserProvider extends ChangeNotifier {
       
       _setLoading(false);
       
-      // Retorna 'true' se o repositório retornar sucesso (Right)
       return result.fold(
         (failure) => Left(failure),
         (_) => const Right(true),

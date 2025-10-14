@@ -11,7 +11,7 @@ class CollaboratorEntity extends UserEntity {
     required super.fullName,
     required super.phone,
     required super.role,
-    required super.password, // <- obrigatório
+    required super.password,
     required super.isActive,
     required DateTime super.createdAt,
   }) : super(id: id);

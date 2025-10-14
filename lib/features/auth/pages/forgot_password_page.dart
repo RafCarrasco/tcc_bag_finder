@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
-import 'package:flutter/services.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
@@ -17,14 +16,12 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-
   final userProvider = Modular.get<UserProvider>();
 
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -52,10 +49,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       (failure) async {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(failure.errorMessage), 
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(failure.errorMessage), backgroundColor: Colors.red),
         );
       },
       (userEntity) async {
@@ -70,10 +64,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         resetResult.fold(
           (failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(failure.errorMessage),
-                backgroundColor: Colors.red,
-              ),
+              SnackBar(content: Text(failure.errorMessage), backgroundColor: Colors.red),
             );
           },
           (_) {
@@ -104,7 +95,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
@@ -115,16 +105,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
                     Text(
                       localization.loginPageTitle5,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall!
-                          .copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
+
+                    // CPF
                     ForgotPasswordTextField(
                       controller: _cpfController,
-                      suffixIcon: AppIconsSecondaryGrey.personIcon,
+                      prefixIcon: AppIconsPrimary.personIcon,
                       hint: 'Digite seu CPF',
                       isPassword: false,
                       fieldType: 'cpf',
@@ -132,9 +123,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
+
+                    // E-mail
                     ForgotPasswordTextField(
                       controller: _emailController,
-                      suffixIcon: AppIconsSecondaryGrey.emailIcon,
+                      prefixIcon: AppIconsPrimary.emailIcon,
                       hint: localization.emailForContactPlaceholder,
                       isPassword: false,
                       fieldType: 'email',
@@ -150,9 +143,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
+
+                    // Nova senha
                     ForgotPasswordTextField(
                       controller: _newPasswordController,
-                      suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                      prefixIcon: AppIconsPrimary.passwordIcon,
                       hint: 'Nova senha',
                       isPassword: true,
                       fieldType: '',
@@ -168,9 +163,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       },
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
+
+                    // Confirmar senha
                     ForgotPasswordTextField(
                       controller: _confirmPasswordController,
-                      suffixIcon: AppIconsSecondaryGrey.passwordIcon,
+                      prefixIcon: AppIconsPrimary.passwordIcon,
                       hint: 'Confirmar senha',
                       isPassword: true,
                       fieldType: '',
@@ -182,7 +179,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 100),
+
+                    const SizedBox(height: 80),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -204,6 +202,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
+
                     TextButton(
                       onPressed: () => Modular.to.navigate('/login/sign-in'),
                       child: Text(

@@ -1,232 +1,243 @@
+import 'package:bag_finder/core/widgets/edit_profile_text_field.dart';
+import 'package:bag_finder/features/auth/controller/edit_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../../admin/controllers/update_controller.dart';
-import '../../../core/entity/user_entity.dart';
+import '../../../core/widgets/appbar/profile_app_bar_widget.dart';
 import '../../../shared/providers/user_provider.dart';
-import '../../../core/utils/app_colors.dart';
-import '../../../core/utils/app_dimensions.dart';
-import '../../../core/utils/app_icons.dart';
 import '../../../core/utils/global_snackbar.dart';
-import '../../../core/widgets/custom_text_form_field_widget.dart';
-import '../../../core/widgets/profile_banner_widget.dart';
+import '../../../core/utils/app_colors.dart';
+
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({
-    super.key,
-  });
+  const EditProfilePage({super.key});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  UpdateController updateController = Modular.get<UpdateController>();
-  UserProvider provider = Modular.get<UserProvider>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _cpfController;
+  late TextEditingController _passwordController;
+  final travelerId = Modular.args.params['travelerId'];
+
+  bool _obscurePassword = true;
+
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = Modular.get<UserProvider>();
+    final user = provider.user!;
+
+    _nameController = TextEditingController(text: user.fullName);
+    _emailController = TextEditingController(text: user.email);
+    _phoneController = TextEditingController(text: user.phone);
+    _cpfController = TextEditingController(text: user.cpf ?? '');
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _cpfController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProfile(EditProfileController controller) async {
+  if (controller.isLoading) return;
+
+  if (_formKey.currentState!.validate()) {
+    
+    final result = await controller.saveProfile(
+      fullName: _nameController.text,
+      email: _emailController.text,
+      phone: _phoneController.text,
+      cpf: _cpfController.text,
+      newPassword: _passwordController.text,
+    );
+
+    result.fold(
+      (failure) {
+        String message = 'Falha ao atualizar o perfil. Tente novamente.';
+        
+        GlobalSnackBar.error(message);
+      },
+      (_) {
+        if (mounted) {
+          GlobalSnackBar.info('Perfil atualizado com sucesso! 🎉');
+          Modular.to.navigate('/traveler/$travelerId/profile/');
+        }
+      },
+    );
+  } else {
+    GlobalSnackBar.error('Por favor, preencha todos os campos obrigatórios.');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          width: double.infinity,
-          color: AppColors.primary,
-          padding: const EdgeInsets.only(
-            top: AppDimensions.paddingMedium,
-            left: AppDimensions.paddingSmall,
-            right: AppDimensions.paddingSmall,
-            bottom: AppDimensions.paddingSmall,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {
-                  Modular.to.pushNamed(
-                    '/profile/${provider.user!.id}',
-                  );
-                },
-                padding: EdgeInsets.zero,
-                icon: Icon(
-                  Icons.arrow_back,
-                  size: AppDimensions.iconLarge,
-                  color: AppColors.secondary,
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Salvar Perfil',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: AppColors.secondary,
-                          fontSize: AppDimensions.fontLarge,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingMedium,
+    final provider = Modular.get<UserProvider>();
+    final user = provider.user!;
+    final editController = Modular.get<EditProfileController>(); 
+    
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ProfileTravelerAppBarWidget(
+              userName: user.fullName.isEmpty ? "Usuário" : user.fullName,
+              hint: '',
             ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Center(
-                      child: UserAvatarWidget(
-                        name: provider.user!.fullName,
-                        isLarge: true,
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+                          Center(
+                            child: CircleAvatar(
+                              radius: 48,
+                              backgroundColor: AppColors.primary.withOpacity(0.5),
+                              child: Text(
+                                user.fullName.isNotEmpty ? user.fullName[0] : "U",
+                                style: const TextStyle(fontSize: 40, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          _buildSectionTitle("Dados pessoais"),
+                          EditProfileTextField(
+                            label: "Nome completo",
+                            controller: _nameController,
+                            icon: Icons.person,
+                            hint: "Digite seu nome completo",
+                            validator: (value) => value!.isEmpty ? 'O nome é obrigatório' : null,
+                          ),
+                          EditProfileTextField(
+                            label: "CPF",
+                            controller: _cpfController,
+                            icon: Icons.badge,
+                            hint: "Digite seu CPF",
+                            keyboardType: TextInputType.number,
+                            validator: (value) => value!.isEmpty ? 'O CPF é obrigatório' : null,
+                          ),
+                          EditProfileTextField(
+                            label: "Telefone",
+                            controller: _phoneController,
+                            icon: Icons.phone,
+                            hint: "Digite seu número de telefone",
+                            keyboardType: TextInputType.phone,
+                          ),
+
+                          const SizedBox(height: 8), 
+                          _buildSectionTitle("Dados de acesso"),
+                          EditProfileTextField(
+                            label: "E-mail",
+                            controller: _emailController,
+                            icon: Icons.email,
+                            hint: "Digite seu e-mail",
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) => value!.isEmpty ? 'O e-mail é obrigatório' : null,
+                          ),
+                          EditProfileTextField(
+                            label: "Senha",
+                            controller: _passwordController,
+                            icon: Icons.lock,
+                            hint: "Deixe em branco para manter a senha atual",
+                            isPassword: _obscurePassword,
+                            onTogglePassword: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () => _saveProfile(editController),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Salvar',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () => Modular.to.navigate('/traveler/$travelerId/profile/'),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    side: BorderSide(color: AppColors.primary),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Cancelar',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primary,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CustomTextFormField(
-                          hintText: provider.user!.fullName,
-                          prefixIcon: AppIconsSecondaryGrey.personIcon,
-                          isPassword: false,
-                          onChanged: (value) {
-                            updateController.setFullName(
-                              fullName: value,
-                            );
-                          },
-                          fieldType: 'fullname',
-                          isRequired: false,
-                        ),
-                        CustomTextFormField(
-                          hintText: provider.user!.email,
-                          onChanged: (value) {
-                            updateController.setEmail(
-                              email: value,
-                            );
-                          },
-                          prefixIcon: AppIconsSecondaryGrey.emailIcon,
-                          isPassword: false,
-                          fieldType: 'email',
-                          isRequired: false,
-                        ),
-                        CustomTextFormField(
-                          hintText: provider.user!.phone,
-                          prefixIcon: AppIconsSecondaryGrey.phoneIcon,
-                          isPassword: false,
-                          fieldType: 'phone',
-                          onChanged: (value) {
-                            updateController.setPhone(
-                              phone: value,
-                            );
-                          },
-                          isRequired: false,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    UserEntity user = provider.user!;
-                                    await provider.updateUser(
-                                      user: user.copyWith(
-                                        fullName: updateController.fullName,
-                                        email: updateController.email,
-                                        phone: updateController.phone,                                       
-                                      ),
-                                    );
-                                    GlobalSnackBar.info(
-                                      'Perfil atualizado com sucesso!',
-                                    );
-
-                                    Modular.to.navigate(
-                                      '/user/profile',
-                                    );
-                                  } else {
-                                    GlobalSnackBar.error(
-                                      'Por favor, preencha todos os campos',
-                                    );
-                                  }
-                                },
-                                child: Text(
-                                  'Salvar Perfil',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                        color: AppColors.secondary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(
-                                    AppColors.error,
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    provider.logout();
-                                    GlobalSnackBar.info(
-                                      'Logout realizado com sucesso!',
-                                    );
-
-                                    Modular.to.navigate(
-                                      '/login/sign-in',
-                                    );
-                                  } else {
-                                    GlobalSnackBar.error(
-                                      'Erro ao sair. Por favor, tente novamente',
-                                    );
-                                  }
-                                },
-                                child: Text(
-                                  'Logout',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                        color: AppColors.secondary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: 18,
+          color: AppColors.primary,
+        ),
+      ),
     );
   }
 }

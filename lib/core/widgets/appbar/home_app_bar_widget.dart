@@ -29,6 +29,11 @@ class HomeTravelerAppBarWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Image.asset(
+            'assets/images/logo_appbar.png',
+            height: 50,
+            filterQuality: FilterQuality.high,
+          ),
           HomeWelcomeUserWidget(
             userName: userName,
           ),

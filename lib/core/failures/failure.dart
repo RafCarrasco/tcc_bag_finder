@@ -42,10 +42,11 @@ class UnknownError extends Failure {
   final StackTrace? stackTrace;
 
   UnknownError({
+    String? errorMessage, 
     this.stackTrace,
   }) : super(
           stackTrace: stackTrace,
-          errorMessage: 'Falha desconhecida',
+          errorMessage: errorMessage ?? 'Falha desconhecida',
         );
 }
 

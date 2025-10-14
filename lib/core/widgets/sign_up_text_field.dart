@@ -4,37 +4,37 @@ import '../utils/app_text_styles.dart';
 import '../utils/app_dimensions.dart';
 import '../utils/user_validation_mixin.dart';
 
-class ForgotPasswordTextField extends StatefulWidget {
-  final TextEditingController? controller;
-  final Widget? prefixIcon;
-  final bool isPassword;
+class SignUpTextField extends StatefulWidget {
   final String hint;
-  final String fieldType;
+  final Function(String) onChanged;
+  final bool isPassword;
   final bool isRequired;
-  final Function(String)? onChanged;
+  final String fieldType;
+  final IconData? prefixIcon;
+  final TextEditingController? controller;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
 
-  const ForgotPasswordTextField({
+  const SignUpTextField({
     super.key,
-    this.controller,
     required this.hint,
-    this.prefixIcon,
+    required this.onChanged,
     this.isPassword = false,
-    this.fieldType = 'default',
     this.isRequired = true,
-    this.onChanged,
+    this.fieldType = '',
+    this.prefixIcon,
+    this.controller,
     this.keyboardType,
     this.validator,
   });
 
   @override
-  State<ForgotPasswordTextField> createState() => _ForgotPasswordTextFieldState();
+  State<SignUpTextField> createState() => _SignUpTextFieldState();
 }
 
-class _ForgotPasswordTextFieldState extends State<ForgotPasswordTextField>
+class _SignUpTextFieldState extends State<SignUpTextField>
     with ValidationMixin {
-  bool _obscureText = true;
+  bool _obscureText = false;
 
   @override
   void initState() {
@@ -46,8 +46,8 @@ class _ForgotPasswordTextFieldState extends State<ForgotPasswordTextField>
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
-      obscureText: widget.isPassword ? _obscureText : false,
       onChanged: widget.onChanged,
+      obscureText: _obscureText,
       keyboardType: widget.keyboardType ??
           (widget.fieldType == 'email'
               ? TextInputType.emailAddress
@@ -60,16 +60,16 @@ class _ForgotPasswordTextFieldState extends State<ForgotPasswordTextField>
                 widget.isRequired,
               ),
       decoration: InputDecoration(
-        prefixIcon: widget.prefixIcon ??
-        Icon(
-          widget.isPassword ? Icons.lock_outline : Icons.email_outlined,
+        prefixIcon: Icon(
+          widget.prefixIcon ??
+              (widget.isPassword ? Icons.lock_outline : Icons.person_outline),
           color: AppColors.primary,
         ),
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: AppColors.primary,
+                  color: AppColors.secondaryGrey,
                 ),
                 onPressed: () {
                   setState(() {
@@ -80,7 +80,7 @@ class _ForgotPasswordTextFieldState extends State<ForgotPasswordTextField>
             : null,
         hintText: widget.hint,
         hintStyle: AppTextStyles.bodyText1.copyWith(
-          color: AppColors.primary,
+          color: AppColors.secondaryGrey,
         ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 18,

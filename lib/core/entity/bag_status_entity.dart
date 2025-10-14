@@ -1,4 +1,6 @@
 import 'package:uuid/uuid.dart';
+import 'package:bag_finder/core/entity/bag_entity.dart'; 
+import 'package:bag_finder/core/enums/bag_status_enum.dart'; 
 
 class BagStatusEntity {
   static const Uuid _uuid = Uuid();
@@ -25,6 +27,22 @@ class BagStatusEntity {
     this.isFinalDestination = false,
   })  : id = id ?? _uuid.v4(),
         createdAt = createdAt ?? DateTime.now();
+
+  factory BagStatusEntity.fromBagEntity(BagEntity bag) {
+    return BagStatusEntity(
+      id: bag.id,
+      bagId: bag.id, 
+      status: bag.status.name,
+      createdAt: DateTime.now(), 
+      
+      destination: null,
+      flightConnection: null,
+      isFinalDestination: false,
+      
+      rfidTag: bag.epc,
+      printedCode: bag.printedCode,
+    );
+  }
 
   BagStatusEntity copyWith({
     String? id,

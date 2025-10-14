@@ -99,7 +99,6 @@ class _BagItemWidgetState extends State<BagItemWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 🔹 ÍCONE DA BAGAGEM E PRINTED CODE
                   Flexible(
                     flex: isCompactScreen ? 3 : 2,
                     child: Row(
@@ -112,7 +111,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              printedCode, // PrintedCode no header
+                              printedCode, 
                               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -123,7 +122,6 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                       ],
                     ),
                   ),
-
                   const SizedBox.shrink(),
                 ],
               ),
@@ -139,11 +137,11 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                   'Ciclo de Viagem',
                   style: titleMediumStyle!.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primary, // Cor verde/primária
+                    color: AppColors.primary, 
                   ),
                 ),
                 
-                // Botão de toggle (sem layout de botão, seta circular)
+
                 GestureDetector( 
                   onTap: widget.onToggleExpansion,
                   child: Row( 
