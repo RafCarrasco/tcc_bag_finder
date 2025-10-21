@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
@@ -69,19 +70,22 @@ class _SignUpPageState extends State<SignUpPage> {
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
                     Text(
                       localization.loginPageTitle2,
-                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       localization.loginPageTitle2SecondLine,
-                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: AppDimensions.verticalSpaceExtraLarge),
+                    const SizedBox(
+                        height: AppDimensions.verticalSpaceExtraLarge),
 
                     // CPF
                     SignUpTextField(
@@ -93,6 +97,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       isRequired: true,
                       keyboardType: TextInputType.number,
                       onChanged: (value) => signUpController.setCpf(value),
+                      inputFormatters: [
+                        MaskTextInputFormatter(
+                          mask: '###.###.###-##',
+                          filter: {"#": RegExp(r'[0-9]')},
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
 
@@ -118,6 +128,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       isRequired: true,
                       keyboardType: TextInputType.phone,
                       onChanged: (value) => signUpController.setPhone(value),
+                      inputFormatters: [
+                        MaskTextInputFormatter(
+                          mask: '(##) #####-####',
+                          filter: {"#": RegExp(r'[0-9]')},
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
 
@@ -189,20 +205,23 @@ class _SignUpPageState extends State<SignUpPage> {
                       children: [
                         Text(
                           localization.loginPageAlreadyHaveAccount,
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                color: AppColors.secondaryGrey,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    color: AppColors.secondaryGrey,
+                                  ),
                         ),
                         TextButton(
-                          onPressed: () => Modular.to.navigate('/login/sign-in'),
+                          onPressed: () =>
+                              Modular.to.navigate('/login/sign-in'),
                           child: Text(
                             textAlign: TextAlign.center,
                             localization.loginPageClickHere,
-                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: AppColors.primary,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: AppColors.primary,
+                                    ),
                           ),
                         ),
                       ],

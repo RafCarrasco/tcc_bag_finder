@@ -53,11 +53,6 @@ class _HomeCollaboratorBottomNavigationState
           '/collaborator/${widget.collaboratorId}/search-company-trips',
         );
         break;
-      case 3:
-        Modular.to.pushNamed(
-          '/profile/${widget.collaboratorId}',
-        );
-        break;
     }
   }
 

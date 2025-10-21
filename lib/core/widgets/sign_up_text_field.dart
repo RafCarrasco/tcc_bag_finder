@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
 import '../utils/app_colors.dart';
 import '../utils/app_text_styles.dart';
 import '../utils/app_dimensions.dart';
@@ -14,6 +17,7 @@ class SignUpTextField extends StatefulWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
 
   const SignUpTextField({
     super.key,
@@ -26,6 +30,7 @@ class SignUpTextField extends StatefulWidget {
     this.controller,
     this.keyboardType,
     this.validator,
+    this.inputFormatters,
   });
 
   @override
@@ -42,6 +47,32 @@ class _SignUpTextFieldState extends State<SignUpTextField>
     _obscureText = widget.isPassword;
   }
 
+  List<TextInputFormatter> _getFormatters() {
+    if (widget.inputFormatters != null) {
+      return widget.inputFormatters!;
+    }
+
+    switch (widget.fieldType.toLowerCase()) {
+      case 'cpf':
+        return [
+          MaskTextInputFormatter(
+            mask: '###.###.###-##',
+            filter: {"#": RegExp(r'[0-9]')},
+          ),
+        ];
+      case 'telefone':
+      case 'celular':
+        return [
+          MaskTextInputFormatter(
+            mask: '(##) #####-####',
+            filter: {"#": RegExp(r'[0-9]')},
+          ),
+        ];
+      default:
+        return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -52,6 +83,7 @@ class _SignUpTextFieldState extends State<SignUpTextField>
           (widget.fieldType == 'email'
               ? TextInputType.emailAddress
               : TextInputType.text),
+      inputFormatters: _getFormatters(),
       validator: widget.validator ??
           (value) => validateField(
                 value,
