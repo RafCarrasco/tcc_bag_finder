@@ -233,39 +233,6 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                 widget.bagStatus.status != BagStatusEnum.COLLECTED.name 
                     ? Row(
                         children: [
-                          // 🔹 Botão Editar
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  elevation: 8,
-                                  padding: EdgeInsets.symmetric(horizontal: isCompactScreen ? 8 : 12, vertical: isCompactScreen ? 10 : 12),
-                                ),
-                                onPressed: () async {
-                                  showDialog(context: context, builder: (BuildContext context) {
-                                    return EditBagDescriptionDialog(bagStatus: widget.bagStatus, onEditConfirmation: (text) async {}, onNotArrived: () {Modular.to.pop();},);
-                                  },);
-                                  setState(() {_isProcessing = false;});
-                                },
-                                child: _isProcessing 
-                                    ? FittedBox(fit: BoxFit.scaleDown, child: Text('Processando...', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.secondary)),)
-                                    : Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.edit, color: Colors.white, size: isCompactScreen ? 18 : AppDimensions.iconSmall),
-                                            SizedBox(width: isCompactScreen ? 4 : 8),
-                                            FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Text('Editar', style: TextStyle(color: Colors.white, fontSize: isCompactScreen ? 14 : AppDimensions.fontSmall, fontWeight: FontWeight.bold)),
-                                            ),
-                                          ],
-                                        ),
-                              ),
-                            ),
-                          ),
                           // 🔹 Botão Confirmar
                           Expanded(
                             child: TextButton(

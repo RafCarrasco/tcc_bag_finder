@@ -70,6 +70,25 @@ class TravelerProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> getTravelerHistoryByLocation(String travelerId,String location) async {
+    _setLoading(true);
+    final result =
+        await tripRepository.getTravelerHistoryByLocation(
+          travelerId: travelerId,location: location
+          );
+
+    result.fold(
+      (failure) {
+        _history = [];
+      },
+      (history) {
+        _history = history;
+      },
+    );
+    notifyListeners();
+    _setLoading(false);
+  }
+
   Future<void> checkIsTripDone({required TripEntity trip}) async {
     // final result = await repository.isTripDone(tripId: trip.id);
     // result.fold(

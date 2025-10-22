@@ -1,3 +1,4 @@
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:bag_finder/shared/providers/trip_provider.dart';
@@ -10,9 +11,11 @@ import 'home_search_field_widget.dart';
 
 class TravelerBagHistorySearchFieldWidget extends StatefulWidget {
   final String hint;
+  final RfidBagProvider bagStatusProvider;
   const TravelerBagHistorySearchFieldWidget({
     super.key,
     required this.hint,
+   required this.bagStatusProvider
   });
 
   @override
@@ -34,9 +37,6 @@ class _TravelerBagHistorySearchFieldWidgetState extends State<TravelerBagHistory
         HomeSearchFieldWidget(
           hint: widget.hint,
           onChanged: (value) async {
-            await tripProvider.getTripById(
-              value,
-            );
           },
         ),
         IconButton(

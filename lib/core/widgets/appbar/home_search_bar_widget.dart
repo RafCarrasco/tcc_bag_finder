@@ -11,9 +11,11 @@ import 'home_search_field_widget.dart';
 
 class HomeSearchBarWidget extends StatefulWidget {
   final String hint;
+  final String userId;
   const HomeSearchBarWidget({
     super.key,
     required this.hint,
+    required this.userId,
   });
 
   @override
@@ -35,10 +37,11 @@ class _HomeSearchBarWidgetState extends State<HomeSearchBarWidget> {
         HomeSearchFieldWidget(
           hint: widget.hint,
           onChanged: (value) async {
-            // await travelerProvider.getCurrentTripBagsById(
-            //   trip: travelerProvider.currentTrip!,
-            //   bagId: value,
-            // );
+            if (value.trim().isEmpty){
+              await travelerProvider.getTravelerHistory(widget.userId);
+            }else{
+              await travelerProvider.getTravelerHistoryByLocation(widget.userId, value);
+            }
           },
         ),
         IconButton(

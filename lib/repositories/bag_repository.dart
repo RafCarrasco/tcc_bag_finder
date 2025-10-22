@@ -55,4 +55,9 @@ abstract class IBagRepository {
   Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById({
     required String userId,
   });
+
+  Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusByPrinted({
+    required String printed,
+    required String userId
+  });
 }
