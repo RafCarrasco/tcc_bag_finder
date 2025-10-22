@@ -1,5 +1,6 @@
 import 'package:bag_finder/data/datasources/trip_remote_datasource.dart';
 import 'package:bag_finder/infra/repositories/trip_repository_impl.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:bag_finder/shared/providers/traveler_provider.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -16,7 +17,6 @@ import '../features/collaborator/controllers/init_user_trip_controller.dart';
 import '../features/collaborator/controllers/init_user_trip_dropdown_controller.dart';
 import '../features/collaborator/controllers/luggage_quantity_dropdown_controller.dart';
 import '../features/admin/controllers/add_collaborator_controler.dart';
-
 
 // Datasources
 import 'package:bag_finder/data/datasources/user_remote_datasource.dart';
@@ -79,18 +79,23 @@ class AppModule extends Module {
 
     final String baseUrl = dotenv.env['BASE_URL']!;
 
-    i.addLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource(baseUrl: baseUrl));
+    i.addLazySingleton<UserRemoteDataSource>(
+        () => UserRemoteDataSource(baseUrl: baseUrl));
     i.addLazySingleton<TripRemoteDataSource>(() => TripRemoteDataSource(
           baseUrl: baseUrl,
           travelerRepository: i.get<TravelerRepositoryImpl>(),
         ));
-    i.addLazySingleton<AdminRemoteDataSource>(() => AdminRemoteDataSource(baseUrl: baseUrl));
-    i.addLazySingleton<TravelerRemoteDataSource>(() => TravelerRemoteDataSource(baseUrl: baseUrl));
-    i.addLazySingleton<CollaboratorRemoteDataSource>(() => CollaboratorRemoteDataSource(
-          baseUrl: baseUrl,
-          travelerRepository: i.get<TravelerRepositoryImpl>(),
-        ));
-    i.addLazySingleton<BagRemoteDataSource>(() => BagRemoteDataSource(baseUrl: baseUrl));
+    i.addLazySingleton<AdminRemoteDataSource>(
+        () => AdminRemoteDataSource(baseUrl: baseUrl));
+    i.addLazySingleton<TravelerRemoteDataSource>(
+        () => TravelerRemoteDataSource(baseUrl: baseUrl));
+    i.addLazySingleton<CollaboratorRemoteDataSource>(
+        () => CollaboratorRemoteDataSource(
+              baseUrl: baseUrl,
+              travelerRepository: i.get<TravelerRepositoryImpl>(),
+            ));
+    i.addLazySingleton<BagRemoteDataSource>(
+        () => BagRemoteDataSource(baseUrl: baseUrl));
 
     i.addSingleton<Logger>(() => Logger());
     i.addLazySingleton<UserRepositoryImpl>(() => UserRepositoryImpl(i()));
@@ -98,51 +103,56 @@ class AppModule extends Module {
     i.addLazySingleton<ITripRepository>(() => TripRepositoryImpl(i()));
     i.addLazySingleton<IAdminRepository>(() => AdminRepositoryImpl(i()));
     i.addLazySingleton<IBagRepository>(() => BagRepositoryImpl(i()));
-    i.addLazySingleton<ICollaboratorRepository>(() => CollaboratorRepositoryImpl(i()));
-    i.addLazySingleton<CollaboratorRepositoryImpl>(() => CollaboratorRepositoryImpl(i()));
+    i.addLazySingleton<ICollaboratorRepository>(
+        () => CollaboratorRepositoryImpl(i()));
+    i.addLazySingleton<CollaboratorRepositoryImpl>(
+        () => CollaboratorRepositoryImpl(i()));
     i.addLazySingleton<BagRepositoryImpl>(() => BagRepositoryImpl(i()));
-    i.addLazySingleton<TravelerRepositoryImpl>(() => TravelerRepositoryImpl(i()));
+    i.addLazySingleton<TravelerRepositoryImpl>(
+        () => TravelerRepositoryImpl(i()));
 
     i.addLazySingleton<AddBagUsecase>(() => AddBagUsecase(repository: i()));
-    i.addLazySingleton<IUpdateUserUsecase>(() => UpdateUserUsecase(repository: i()));
-    i.addLazySingleton<IDeleteUserUsecase>(() => DeleteUserUsecase(repository: i()));
+    i.addLazySingleton<IUpdateUserUsecase>(
+        () => UpdateUserUsecase(repository: i()));
+    i.addLazySingleton<IDeleteUserUsecase>(
+        () => DeleteUserUsecase(repository: i()));
     i.addLazySingleton<IGetUserBagsUsecase>(
       () => GetUserBagsUsecase(repository: i.get<IBagRepository>()),
     );
 
-
     i.addSingleton<UserProvider>(() => UserProvider(i()));
     i.addLazySingleton<EditProfileController>(
-  () => EditProfileController(i.get<UserProvider>())
-);
+        () => EditProfileController(i.get<UserProvider>()));
     i.addLazySingleton<AdminProvider>(() => AdminProvider(i()));
     i.addLazySingleton<TravelerProvider>(
-  () => TravelerProvider(
-    i.get<TravelerRepositoryImpl>(),
-    i.get<AuthService>(),
-    i.get<ITripRepository>(),
-    i.get<BagRepositoryImpl>(),
-    i.get<IGetUserBagsUsecase>(),
-    
-  ),
-);
+      () => TravelerProvider(
+        i.get<TravelerRepositoryImpl>(),
+        i.get<AuthService>(),
+        i.get<ITripRepository>(),
+        i.get<BagRepositoryImpl>(),
+        i.get<IGetUserBagsUsecase>(),
+      ),
+    );
 
     i.addLazySingleton<TripProvider>(
-  () => TripProvider(
-    i.get<TripRepositoryImpl>(),
-    i.get<AuthService>(),
-    i.get<TripRemoteDataSource>(),
-  ),
-);
+      () => TripProvider(
+        i.get<TripRepositoryImpl>(),
+        i.get<AuthService>(),
+        i.get<TripRemoteDataSource>(),
+      ),
+    );
 
     i.addLazySingleton<CollaboratorProvider>(() => CollaboratorProvider(i()));
 
     i.addLazySingleton<SignInController>(() => SignInController());
     i.addLazySingleton<SignUpController>(() => SignUpController());
     i.addLazySingleton<InitUserTripController>(() => InitUserTripController());
-    i.addLazySingleton<InitUserTripDropdownController>(() => InitUserTripDropdownController());
-    i.addLazySingleton<LuggageQuantityDropdownController>(() => LuggageQuantityDropdownController());
-    i.addLazySingleton<AddCollaboratorController>(() => AddCollaboratorController());
+    i.addLazySingleton<InitUserTripDropdownController>(
+        () => InitUserTripDropdownController());
+    i.addLazySingleton<LuggageQuantityDropdownController>(
+        () => LuggageQuantityDropdownController());
+    i.addLazySingleton<AddCollaboratorController>(
+        () => AddCollaboratorController());
     i.addLazySingleton<AuthService>(() => AuthService(i()));
     i.addLazySingleton<LandingPageStepProgess>(LandingPageStepProgess.new);
   }
@@ -162,12 +172,19 @@ class AppModule extends Module {
       final id = r.args.params['adminId'];
       return LandingAdminPage(adminId: id);
     }, children: [
-      ChildRoute('/home', child: (_) => HomeAdminPage(adminId: r.args.params['adminId'])),
-      ChildRoute('/add-collaborator', child: (_) => const AddCollaboratorPage()),
-      ChildRoute('/collaborator-panel', child: (_) => CollaboratorPanelPage(adminId: r.args.params['adminId'])),
-      ChildRoute('/trip-collaborator-panel', child: (_) => TripCollaboratorPanelPage(adminId: r.args.params['adminId'])),
+      ChildRoute('/home',
+          child: (_) => HomeAdminPage(adminId: r.args.params['adminId'])),
+      ChildRoute('/add-collaborator',
+          child: (_) => const AddCollaboratorPage()),
+      ChildRoute('/collaborator-panel',
+          child: (_) =>
+              CollaboratorPanelPage(adminId: r.args.params['adminId'])),
+      ChildRoute('/trip-collaborator-panel',
+          child: (_) =>
+              TripCollaboratorPanelPage(adminId: r.args.params['adminId'])),
       ChildRoute('/trip-collaborator-panel/:collaboratorId',
-          child: (_) => CollaboratorTripsPanelPage(collaboratorId: r.args.params['collaboratorId'])),
+          child: (_) => CollaboratorTripsPanelPage(
+              collaboratorId: r.args.params['collaboratorId'])),
     ]);
 
     r.child('/collaborator/:collaboratorId', child: (_) {
@@ -177,15 +194,20 @@ class AppModule extends Module {
       ChildRoute('/home', child: (_) => const HomeCollaboratorPage()),
       ChildRoute('/init-user-trip', child: (_) => const InitUserTripPage()),
       ChildRoute('/search-company-trips',
-          child: (_) => SearchCompanyTripPage(collaboratorId: r.args.params['collaboratorId'])),
+          child: (_) => SearchCompanyTripPage(
+              collaboratorId: r.args.params['collaboratorId'])),
     ]);
 
     r.child('/traveler/:travelerId', child: (_) {
       final id = r.args.params['travelerId'];
       return LandingTravelerPage(travelerId: id);
     }, children: [
-      ChildRoute('/home', child: (_) => HomeTravelerPage(travelerId: r.args.params['travelerId'])),
-      ChildRoute('/history-panel/', child: (_) => TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/home',
+          child: (_) =>
+              HomeTravelerPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/history-panel/',
+          child: (_) =>
+              TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/profile/', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),
     ]);

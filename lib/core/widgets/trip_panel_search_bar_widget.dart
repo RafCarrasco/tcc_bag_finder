@@ -31,14 +31,18 @@ class _TripPanelSearchBarWidgetState extends State<TripPanelSearchBarWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-          HomeSearchFieldWidget(
-            hint: 'Procure as viagens do passageiro (ID)...',
-            onChanged: (text) async {
+        HomeSearchFieldWidget(
+          hint: 'Procure as viagens do passageiro (Nome)...',
+          onChanged: (text) async {
+            if (text.trim().isEmpty) {
+              await collaboratorProvider.getAllTrips();
+            } else {
               await collaboratorProvider.getAllTripsByTravelerFullName(
                 fullName: text,
               );
-            },
-          ),
+            }
+          },
+        ),
         IconButton(
           icon: Icon(
             Icons.filter_list,

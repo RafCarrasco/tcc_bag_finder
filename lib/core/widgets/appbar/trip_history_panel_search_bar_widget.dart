@@ -1,7 +1,6 @@
-import 'package:bag_finder/shared/providers/trip_provider.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import '../../../shared/providers/traveler_provider.dart';
+import 'package:provider/provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/objects/filter_option_object.dart';
@@ -10,9 +9,11 @@ import 'home_search_field_widget.dart';
 
 class TripHistoryPanelSearchBarWidget extends StatefulWidget {
   final String hint;
+  final String travelerId;
   const TripHistoryPanelSearchBarWidget({
     super.key,
     required this.hint,
+    required this.travelerId
   });
 
   @override
@@ -27,70 +28,63 @@ class _TripHistoryPanelSearchBarWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final travelerProvider = Modular.get<TravelerProvider>();
-    final tripProvider = Modular.get<TripProvider>();
-
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: HomeSearchFieldWidget(
-            hint: widget.hint,
-            onChanged: (text) async {
-              await tripProvider.getTripById(
-                text
-              );
-            },
-          ),
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.filter_list,
-            size: AppDimensions.iconLarge,
-            color: AppColors.secondary,
-          ),
-          onPressed: () => showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            useRootNavigator: true,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppDimensions.radiusLarge),
+    return Consumer<RfidBagProvider>(
+      builder: (context, bagStatusProvider, _) {
+        return Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: HomeSearchFieldWidget(
+                hint: widget.hint,
+                onChanged: (text) async {
+                  if (text.trim().isEmpty) {
+                    await bagStatusProvider.loadUserBags(widget.travelerId);
+                  } else {
+                    await bagStatusProvider.loadBagsByPrinted(
+                      text,
+                      widget.travelerId,
+                    );
+                  }
+                },
               ),
             ),
-            builder: (context) => FilterSidebar(
-              options: [
-                FilterOption(
-                  icon: Icons.calendar_month,
-                  label: 'Data de cadastro',
-                  onTap: () {
-                    tripProvider.orderTripsByCreatedTime(
-                    );
-                    setState(() {
-                      isAscendingByCreatedTime = !isAscendingByCreatedTime;
-                    });
-                  },
-                  iconColor: AppColors.secondary,
+            IconButton(
+              icon: Icon(
+                Icons.filter_list,
+                size: AppDimensions.iconLarge,
+                color: AppColors.secondary,
+              ),
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                useRootNavigator: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(AppDimensions.radiusLarge),
+                  ),
                 ),
-                // FilterOption(
-                //   icon: Icons.check_circle,
-                //   label: 'Data de atualização',
-                //   onTap: () {
-                //     tripProvider.orderTripsByUpdatedTime(
-                //     );
-                //     setState(() {
-                //       isAscendingByUpdatedTime = !isAscendingByUpdatedTime;
-                //     });
-                //   },
-                //   iconColor: AppColors.secondary,
-                // ),
-              ],
+                builder: (context) => FilterSidebar(
+                  options: [
+                    FilterOption(
+                      icon: Icons.calendar_month,
+                      label: 'Data de cadastro',
+                      onTap: () {
+                        setState(() {
+                          isAscendingByCreatedTime =
+                              !isAscendingByCreatedTime;
+                        });
+                      },
+                      iconColor: AppColors.secondary,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

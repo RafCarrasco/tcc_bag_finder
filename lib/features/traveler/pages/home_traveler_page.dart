@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_dimensions.dart';
-import '../../../core/widgets/appbar/history_app_bar_widget.dart';
+import '../../../core/widgets/appbar/home_app_bar_widget.dart';
 
 class HomeTravelerPage extends StatefulWidget {
   final String travelerId;
@@ -69,53 +69,58 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
     _channel.sink.close();
     _rfidProvider.dispose();
     super.dispose();
+    _rfidProvider.loadUserBags(widget.travelerId);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading || userProvider.user == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+@override
+Widget build(BuildContext context) {
+  if (isLoading || userProvider.user == null) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
 
-    return ChangeNotifierProvider<RfidBagProvider>.value(
-      value: _rfidProvider,
-      child: Scaffold(
-        extendBody: true,
-        backgroundColor: const Color(0xFFF5F7FA),
-        body: SafeArea(
-          child: Consumer<RfidBagProvider>(
-            builder: (context, provider, _) {
-              return Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusExtraLarge),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: HomeTravelerAppBarWidget(
-                      userName: userProvider.user!.fullName,
-                      hint: 'Procure sua bagagem...',
-                    ),
+  return ChangeNotifierProvider<RfidBagProvider>.value(
+    value: _rfidProvider,
+    child: Scaffold(
+      extendBody: true,
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusExtraLarge),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
                   ),
-                  const SizedBox(height: 10),
-                Consumer<RfidBagProvider>(
-                  builder: (context, provider, child) {
-                    _rfidProvider.loadUserBags(widget.travelerId);
-                    return Expanded(
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 400),
-                          child: provider.bags.isEmpty
+                ],
+              ),
+              child: HomeTravelerAppBarWidget(
+                userId: widget.travelerId,
+                userName: userProvider.user!.fullName,
+                hint: 'Procure sua bagagem...',
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // 🔹 O Consumer cuida apenas da parte que depende do provider
+            Expanded(
+              child: Consumer<RfidBagProvider>(
+                builder: (context, provider, child) {
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: provider.isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : provider.bags.isEmpty
                               ? const Center(
                                   child: Text(
                                     'Nenhuma bagagem encontrada.',
@@ -127,25 +132,26 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                                   itemCount: provider.bags.length,
                                   itemBuilder: (context, index) {
                                     final bag = provider.bags[index];
-                                    final isExpanded = _getIsExpanded(bag.id);
+                                    final isExpanded =
+                                        _getIsExpanded(bag.id);
                                     return BagItemWidget(
                                       bagStatus: bag,
                                       isExpanded: isExpanded,
-                                      onToggleExpansion: () => _toggleExpansion(bag.id),
+                                      onToggleExpansion: () =>
+                                          _toggleExpansion(bag.id),
                                     );
                                   },
                                 ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                ],
-              );
-            },
-          ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

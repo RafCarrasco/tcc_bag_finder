@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_text_styles.dart';
 import '../utils/app_dimensions.dart';
@@ -14,6 +15,7 @@ class ForgotPasswordTextField extends StatefulWidget {
   final Function(String)? onChanged;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
 
   const ForgotPasswordTextField({
     super.key,
@@ -26,6 +28,7 @@ class ForgotPasswordTextField extends StatefulWidget {
     this.onChanged,
     this.keyboardType,
     this.validator,
+    this.inputFormatters
   });
 
   @override
@@ -47,6 +50,7 @@ class _ForgotPasswordTextFieldState extends State<ForgotPasswordTextField>
     return TextFormField(
       controller: widget.controller,
       obscureText: widget.isPassword ? _obscureText : false,
+      inputFormatters: widget.inputFormatters,
       onChanged: widget.onChanged,
       keyboardType: widget.keyboardType ??
           (widget.fieldType == 'email'

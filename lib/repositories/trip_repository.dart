@@ -30,10 +30,11 @@ abstract class ITripRepository {
     required bool? isDone,
   });
 
-  Future<Either<TripFailure, List<TripEntity>>> getTripsById({
-    required String tripId,
-  });
   Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistory({
     required String travelerId,
+  });
+  Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistoryByLocation({
+    required String travelerId,
+    required String location
   });
 }

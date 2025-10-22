@@ -61,16 +61,6 @@ class TripProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<void> getTripById(String tripId) async {
-    _setLoading(true);
-    final result = await repository.getTripsById(tripId: tripId);
-    result.fold(
-      (failure) => _trips = [],
-      (list) => _trips = list,
-    );
-    _setLoading(false);
-  }
-
   void orderTripsByCreatedTime({bool ascending = true}) {
     if (_trips == null) return;
     _trips!.sort((a, b) =>

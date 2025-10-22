@@ -1,10 +1,11 @@
-import 'package:bag_finder/core/widgets/trip_widget_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:provider/provider.dart';
 import '../../../shared/providers/traveler_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../core/utils/app_dimensions.dart';
-import '../../../core/widgets/appbar/home_app_bar_widget.dart';
+import '../../../core/widgets/appbar/history_app_bar_widget.dart';
+import '../../../core/widgets/trip_widget_card.dart';
 
 class TravelerBagHistoryPage extends StatefulWidget {
   final String travelerId;
@@ -19,7 +20,6 @@ class TravelerBagHistoryPage extends StatefulWidget {
 }
 
 class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
-  final travelerProvider = Modular.get<TravelerProvider>();
   final userProvider = Modular.get<UserProvider>();
   bool isLoading = true;
 
@@ -30,6 +30,7 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
   }
 
   Future<void> init() async {
+    final travelerProvider = Modular.get<TravelerProvider>();
     await travelerProvider.getTravelerHistory(widget.travelerId);
     if (mounted) setState(() => isLoading = false);
   }
@@ -37,7 +38,6 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final userName = userProvider.user?.fullName ?? 'Viajante';
-    final history = travelerProvider.history;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -57,35 +57,46 @@ class _TravelerBagHistoryPageState extends State<TravelerBagHistoryPage> {
                 ),
               ],
             ),
-            child: HomeTravelerAppBarWidget(
+            child: HomeHistoryTravelerAppBarWidget(
+              userId: userProvider.user?.id ?? '',
               userName: userName,
               hint: 'Pesquise sua viagem...',
             ),
           ),
           Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : history.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'Nenhuma viagem passada encontrada.',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                      )
-                    : Center(
-                        child: SizedBox(
-                          width: 700, // centraliza em telas grandes
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(24),
-                            itemCount: history.length,
-                            itemBuilder: (context, index) {
-                              final trip = history[index];
-                              return TripCardWidget(trip: trip);
-                            },
-                          ),
-                        ),
+            child: Consumer<TravelerProvider>(
+              builder: (context, travelerProvider, _) {
+                final history = travelerProvider.history;
+                final isLoadingProvider = travelerProvider.isLoading;
+                if (isLoading || isLoadingProvider) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (history.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'Nenhuma viagem passada encontrada.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
+                    ),
+                  );
+                }
+                return Center(
+                  child: SizedBox(
+                    width: 700,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(24),
+                      itemCount: history.length,
+                      itemBuilder: (context, index) {
+                        final trip = history[index];
+                        return TripCardWidget(trip: trip);
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

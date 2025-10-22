@@ -47,7 +47,6 @@ class CollaboratorRemoteDataSource {
   }
   Future<List<TripEntity>> getAllTripsByTravelerFullName(String fullName) async {
     final response = await http.get(Uri.parse('$baseUrl/trips/name/$fullName'));
-
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
       return list

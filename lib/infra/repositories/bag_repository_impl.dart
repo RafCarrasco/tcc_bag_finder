@@ -134,7 +134,19 @@ class BagRepositoryImpl implements IBagRepository {
       return Left(BagReadError());
     }
   }
-    @override
+
+  Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusByPrinted(
+    {required String printed,required String userId}) async {
+    try {
+      final result = await remote.getBagsStatusByPrinted(printed,userId);
+      return Right(result);
+    } catch (e) {
+      print(e);
+      return Left(BagReadError());
+    }
+  }
+
+  @override
   Future<Either<BagFailure, BagStatusEntity>> findBagByEpc({
     required String epc,
   }) async {

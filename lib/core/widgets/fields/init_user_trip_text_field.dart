@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_dimensions.dart';
 import '../../utils/app_text_styles.dart';
@@ -11,6 +12,8 @@ class InitUserTripTextField extends StatefulWidget {
   final String fieldType;
   final bool isRequired;
   final void Function(String)? onChanged;
+  final List<TextInputFormatter>? inputFormatters; // <-- novo
+  final TextInputType? keyboardType;
 
   final TextEditingController? controller;
 
@@ -23,6 +26,8 @@ class InitUserTripTextField extends StatefulWidget {
 	required this.fieldType,
 	required this.isRequired,
 	this.controller,
+  this.inputFormatters, // <-- novo
+  this.keyboardType,
   });
 
   @override
@@ -39,9 +44,9 @@ class _InitUserTripTextFieldState extends State<InitUserTripTextField>
 		top: AppDimensions.paddingSmall,
 	  ),
 	  child: TextFormField(
-		// 💡 CORREÇÃO 2: VINCULAÇÃO DO CONTROLLER. 
-		// Isso permite que o WebSocket preencha o campo.
 		controller: widget.controller, 
+    inputFormatters: widget.inputFormatters,
+    keyboardType: widget.keyboardType,
 
 		validator: (value) {
 		  final error = validateField(

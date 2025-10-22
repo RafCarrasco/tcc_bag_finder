@@ -4,7 +4,6 @@ import '../../core/entity/trip_history_entity.dart';
 import '../../core/failures/trip_failure.dart';
 import '../../repositories/trip_repository.dart';
 import '../../data/datasources/trip_remote_datasource.dart';
-import '../../infra/repositories/traveler_repository_impl.dart';
 
 class TripRepositoryImpl implements ITripRepository {
   final TripRemoteDataSource remote;
@@ -28,17 +27,6 @@ class TripRepositoryImpl implements ITripRepository {
   Future<Either<TripFailure, List<TripEntity>>> getAllTrips() async {
     try {
       final result = await remote.getAllTrips();
-      return Right(result);
-    } catch (e) {
-      return Left(TripReadError());
-    }
-  }
-
-  @override
-  Future<Either<TripFailure, TripEntity?>> getTripById(
-      {required String id}) async {
-    try {
-      final result = await remote.getTripById(id);
       return Right(result);
     } catch (e) {
       return Left(TripReadError());
@@ -92,18 +80,6 @@ class TripRepositoryImpl implements ITripRepository {
   }
 
   @override
-  Future<Either<TripFailure, List<TripEntity>>> getTripsById({
-    required String tripId,
-  }) async {
-    try {
-      final result = await remote.getTripsById(tripId);
-      return Right(result);
-    } catch (e) {
-      return Left(TripReadError());
-    }
-  }
-
-  @override
   Future<Either<TripFailure, List<TripEntity>>> getTripsByStatusAndId({
     required bool? isDone,
     required String travelerId,
@@ -135,6 +111,20 @@ class TripRepositoryImpl implements ITripRepository {
       final result = await remote.getTravelerHistory(travelerId);
       return Right(result);
     } catch (e) {
+      print(e);
+      return Left(TripReadError());
+    }
+  }
+
+  @override
+  Future<Either<TripFailure, List<TripHistoryEntity>>> getTravelerHistoryByLocation({
+    required String travelerId,required String location
+  }) async {
+    try {
+      final result = await remote.getTravelerHistoryByLocation(travelerId,location);
+      return Right(result);
+    } catch (e) {
+      print(e);
       return Left(TripReadError());
     }
   }

@@ -99,19 +99,24 @@ class TripRemoteDataSource {
     }
   }
 
-  Future<List<TripEntity>> getTripsById(String tripId) async {
-    final response = await http.get(Uri.parse('$baseUrl/trips/id/$tripId'));
-
-    if (response.statusCode == 200) {
-      final list = jsonDecode(response.body) as List;
-      return list.map((e) => TripEntity.fromJson(e)).toList();
-    } else {
-      throw Exception('Erro ao buscar viagens por ID: ${response.body}');
-    }
-  }
 
   Future<List<TripHistoryEntity>> getTravelerHistory(String travelerId) async {
     final url = Uri.parse('$baseUrl/trips/$travelerId/history');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      final history = jsonList.map((e) => TripHistoryEntity.fromJson(e)).toList();
+
+      return history;
+    } else {
+      throw Exception('Erro ao buscar histórico: ${response.body}');
+    }
+  }
+
+  Future<List<TripHistoryEntity>> getTravelerHistoryByLocation(
+    String travelerId,String location
+    ) async {
+    final url = Uri.parse('$baseUrl/trips/search/$travelerId/$location');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);

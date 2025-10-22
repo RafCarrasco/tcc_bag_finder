@@ -42,9 +42,10 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
     required String fullName,
   }) async {
     try {
-      final result = await remote.getAllTripsByResponsible(fullName);
+      final result = await remote.getAllTripsByTravelerFullName(fullName);
       return Right(result);
     } catch (e) {
+      print(e);
       return Left(CollaboratorTripsError());
     }
   }
@@ -65,8 +66,6 @@ class CollaboratorRepositoryImpl implements ICollaboratorRepository {
       await remote.insertTag(tag);
       return const Right(unit);
     } catch (e) {
-      print(e);
-      print('erroTAg');
       return Left(CollaboratorTripsError());
     }
   }

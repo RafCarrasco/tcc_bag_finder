@@ -141,10 +141,27 @@ class BagRemoteDataSource {
     } else {
       throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
+
+  }
+  
+  Future<List<BagStatusEntity>> getBagsStatusByPrinted(String printed, String userId) async {
+    final response = await client.get(Uri.parse('$baseUrl/bags/status/printed/$printed/user/$userId'));
+
+    if (response.statusCode == 200) {
+      final list = jsonDecode(response.body) as List;
+      return list.map((e) => BagStatusEntity.fromJson(e)).toList();
+    } else if (response.statusCode == 404) {
+      return [];
+    } else {
+      throw Exception(
+        'Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}',
+      );
+    }
   }
   
   Future<BagStatusEntity> findBagByEpc(String epc) async {
     try {
+      print(epc);
       final url = Uri.parse('$baseUrl/bags/status/epc/$epc');
       final response = await client.get(url); 
 
@@ -152,11 +169,15 @@ class BagRemoteDataSource {
         final data = jsonDecode(response.body);
         return BagStatusEntity.fromJson(data);
       } else if (response.statusCode == 404) {
+        print('erro 400');
         throw Exception('Bag com EPC $epc não encontrada.');
       } else {
+        print('erro 500');
         throw Exception('Erro ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
+      print('erro 600');
+      print(e);
       throw Exception('Erro ao buscar bag por EPC: $e');
     }
   }

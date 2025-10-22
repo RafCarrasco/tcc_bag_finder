@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:bag_finder/l10n/app_localizations.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_dimensions.dart';
 import '../../../core/utils/app_icons.dart';
@@ -21,7 +22,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -49,7 +51,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       (failure) async {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(failure.errorMessage), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text(failure.errorMessage), backgroundColor: Colors.red),
         );
       },
       (userEntity) async {
@@ -64,7 +67,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         resetResult.fold(
           (failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failure.errorMessage), backgroundColor: Colors.red),
+              SnackBar(
+                  content: Text(failure.errorMessage),
+                  backgroundColor: Colors.red),
             );
           },
           (_) {
@@ -105,9 +110,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
                     Text(
                       localization.loginPageTitle5,
-                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceLarge),
@@ -121,6 +127,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       fieldType: 'cpf',
                       isRequired: true,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        MaskTextInputFormatter(
+                          mask: '###.###.###-##',
+                          filter: {"#": RegExp(r'[0-9]')},
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppDimensions.verticalSpaceMedium),
 

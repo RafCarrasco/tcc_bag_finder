@@ -1,16 +1,11 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:bag_finder/core/entity/tag_entity.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../../auth/controller/sign_up_controller.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../controllers/init_user_trip_controller.dart';
-import '../../../core/entity/bag_entity.dart';
-import '../../../core/entity/trip_description_entity.dart';
-import '../../../core/entity/trip_entity.dart';
-import '../../../core/enums/bag_status_enum.dart';
 import '../../../shared/providers/collaborator_provider.dart';
 import '../../../shared/providers/trip_provider.dart';
 import '../../../shared/providers/user_provider.dart';
@@ -44,9 +39,15 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
   final _printedCodeControllers = <TextEditingController>[];
   int _currentBagCount = 0;
 
+
   @override
   void initState() {
     super.initState();
+    _controller.codeTags.clear();
+    _controller.printedCodes.clear();
+    _tagControllers.clear();
+    _printedCodeControllers.clear();
+    _currentBagCount = 0;
     final baseUrl = dotenv.env['BASE_URL']!;
     final wsUrl = baseUrl.replaceFirst('http', 'ws');
     _channel = WebSocketChannel.connect(
@@ -194,6 +195,13 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                         InitUserTripTextField(
                           prefixIcon: AppIconsSecondaryGrey.idCardIcon,
                           hintText: 'CPF',
+                          inputFormatters: [
+                            MaskTextInputFormatter(
+                              mask: '###.###.###-##',
+                              filter: {"#": RegExp(r'[0-9]')},
+                            ),
+                          ],
+                          keyboardType: TextInputType.number,
                           onChanged: (cpf) {
                             _controller.setCpf(cpf: cpf);
                           },
@@ -322,7 +330,7 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
                                   "cpf": _controller.cpf,
                                   "origin": _controller.airportOrigin,
                                   "connection": _controller.connection,
-                                  "destination": _controller.destination, 
+                                  "destination": _controller.destination,
                                   "bags": bagsData,
                                 };
 
@@ -333,7 +341,14 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
 
                                   GlobalSnackBar.success(
                                       "Viagem e bagagens vinculadas com sucesso!");
-
+                                      
+                                  setState(() {
+                                    _controller.codeTags.clear();
+                                    _controller.printedCodes.clear();
+                                    _tagControllers.clear();
+                                    _printedCodeControllers.clear();
+                                    _currentBagCount = 0;
+                                  });
                                   // Navegação após sucesso
                                   Modular.to.pushNamed(
                                     '/collaborator/${userProvider.user!.id}/home',

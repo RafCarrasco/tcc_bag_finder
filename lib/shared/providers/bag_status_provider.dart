@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:bag_finder/core/entity/bag_entity.dart';
 import 'package:bag_finder/core/entity/bag_status_entity.dart';
-import 'package:bag_finder/core/enums/bag_status_enum.dart';
 import 'package:bag_finder/core/failures/bag_failure.dart';
 import 'package:bag_finder/infra/repositories/bag_repository_impl.dart';
 import 'package:dartz/dartz.dart';
@@ -15,44 +13,30 @@ class RfidBagProvider extends ChangeNotifier {
 
   final List<BagStatusEntity> _bags = [];
   List<BagStatusEntity> get bags => List.unmodifiable(_bags);
+  bool isLoading = false;
+  String? _lastEpc;
 
   RfidBagProvider({
     required this.channel,
     required this.baseUrl,
     required this.bagRepository,
   }) {
-    // Escuta mensagens do WebSocket
     channel.stream.listen(_onMessage);
   }
 
-  /// Trata mensagens recebidas via WebSocket (com EPC da bagagem)
   void _onMessage(dynamic message) async {
     try {
       final data = jsonDecode(message);
-      final epcOriginal = data['epc'] as String?;
-      final epc = (epcOriginal != null && epcOriginal.length > 4)
-          ? epcOriginal.substring(0, epcOriginal.length - 4)
-          : epcOriginal;
+      final epc = data['epc'] as String?;
       if (epc == null) return;
 
-      final result = await bagRepository.findBagByEpc(epc: epc);
+      if (_lastEpc != epc) {
+        _lastEpc = epc;
+        await loadBagsByPrinted(epc, 'ID_DO_USUARIO');
+      }
 
-      result.fold(
-        (failure) {
-          print('Erro ao buscar bag por EPC: $failure');
-        },
-        (bag) {
+      notifyListeners();
 
-          final index = _bags.indexWhere((b) => b.rfidTag == epc);
-          if (index != -1) {
-            _bags[index] = bag;
-          } else {
-            _bags.add(bag);
-          }
-
-          notifyListeners();
-        },
-      );
     } catch (e) {
       print('Erro ao processar mensagem do WebSocket: $e');
     }
@@ -60,7 +44,7 @@ class RfidBagProvider extends ChangeNotifier {
 
   Future<void> loadUserBags(String userId) async {
     try {
-
+      bool isLoading = true;
       final Either<BagFailure, List<BagStatusEntity>> result =
           await bagRepository.getBagsStatusById(userId: userId);
 
@@ -74,7 +58,32 @@ class RfidBagProvider extends ChangeNotifier {
           _bags
             ..clear()
             ..addAll(consolidadas);
+          bool isLoading = false;
+          notifyListeners();
+        },
+      );
+    } catch (e, stack) {
+      print('💥 [loadUserBags] Erro inesperado: $e');
+    }
+  }
 
+  Future<void> loadBagsByPrinted(String printed,String userId) async {
+    try {
+      bool isLoading = true;
+      final Either<BagFailure, List<BagStatusEntity>> result =
+          await bagRepository.getBagsStatusByPrinted(printed: printed,userId:userId);
+
+      result.fold(
+        (failure) {
+          print('❌ [loadUserBags] Falha: $failure');
+        },
+        (bagsList) {
+          final consolidadas = _consolidarBags(bagsList);
+
+          _bags
+            ..clear()
+            ..addAll(consolidadas);
+          bool isLoading = false;
           notifyListeners();
         },
       );
@@ -86,7 +95,6 @@ class RfidBagProvider extends ChangeNotifier {
   List<BagStatusEntity> _consolidarBags(List<BagStatusEntity> bags) {
     final Map<String, List<BagStatusEntity>> grouped = {};
 
-    // 🔹 Agrupa por combinação de rfidTag + bagId
     for (final bag in bags) {
       final key = '${bag.rfidTag}_${bag.bagId}';
       grouped.putIfAbsent(key, () => []);
@@ -98,16 +106,14 @@ class RfidBagProvider extends ChangeNotifier {
     grouped.forEach((key, group) {
       if (group.isEmpty) return;
 
-      // Ordena por createdAt (ascendente)
       group.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
       final maisVelho = group.first;
       final maisNovo = group.last;
 
-      // Cria nova bag com base no mais velho, mas com status do mais novo
       final consolidada = maisVelho.copyWith(
         status: maisNovo.status,
-        createdAt: maisNovo.createdAt, // registra quando o status foi atualizado
+        createdAt: maisNovo.createdAt,
       );
 
       consolidadas.add(consolidada);
