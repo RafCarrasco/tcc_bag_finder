@@ -34,37 +34,13 @@ class PopUpMenuButton extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return const AppVersionDialog(
-                    appVersion: '1.0.0',
+                    appVersion: '2.0.0',
                   );
                 },
               );
             },
             title: Text(
               'Versão do App',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'relatar',
-          child: ListTile(
-            leading: Icon(
-              Icons.report_problem,
-              color: AppColors.primary,
-              size: AppDimensions.iconMedium,
-            ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ReportProblemDialog(
-                    onConfirm: (value) {},
-                  );
-                },
-              );
-            },
-            title: Text(
-              'Relatar Problema',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),

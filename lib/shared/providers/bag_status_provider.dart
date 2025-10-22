@@ -10,6 +10,7 @@ class RfidBagProvider extends ChangeNotifier {
   final WebSocketChannel channel;
   final String baseUrl;
   final BagRepositoryImpl bagRepository;
+  final String userId;
 
   final List<BagStatusEntity> _bags = [];
   List<BagStatusEntity> get bags => List.unmodifiable(_bags);
@@ -20,6 +21,7 @@ class RfidBagProvider extends ChangeNotifier {
     required this.channel,
     required this.baseUrl,
     required this.bagRepository,
+    required this.userId
   }) {
     channel.stream.listen(_onMessage);
   }
@@ -30,13 +32,11 @@ class RfidBagProvider extends ChangeNotifier {
       final epc = data['epc'] as String?;
       if (epc == null) return;
 
-      if (_lastEpc != epc) {
-        _lastEpc = epc;
-        await loadBagsByPrinted(epc, 'ID_DO_USUARIO');
-      }
+      if (_lastEpc == epc) return;
+      _lastEpc = epc;
 
-      notifyListeners();
-
+      await loadUserBags(userId); // carrega e notifica
+      print(_bags);
     } catch (e) {
       print('Erro ao processar mensagem do WebSocket: $e');
     }
@@ -44,7 +44,10 @@ class RfidBagProvider extends ChangeNotifier {
 
   Future<void> loadUserBags(String userId) async {
     try {
-      bool isLoading = true;
+      // use o CAMPO do provider, não crie variável local
+      isLoading = true;
+      notifyListeners();
+
       final Either<BagFailure, List<BagStatusEntity>> result =
           await bagRepository.getBagsStatusById(userId: userId);
 
@@ -54,18 +57,19 @@ class RfidBagProvider extends ChangeNotifier {
         },
         (bagsList) {
           final consolidadas = _consolidarBags(bagsList);
-
           _bags
             ..clear()
             ..addAll(consolidadas);
-          bool isLoading = false;
-          notifyListeners();
         },
       );
-    } catch (e, stack) {
+    } catch (e) {
       print('💥 [loadUserBags] Erro inesperado: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners(); // sempre notifica, sucesso ou erro
     }
   }
+
 
   Future<void> loadBagsByPrinted(String printed,String userId) async {
     try {

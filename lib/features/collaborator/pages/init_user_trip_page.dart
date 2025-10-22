@@ -71,7 +71,7 @@ class _InitUserTripPageState extends State<InitUserTripPage> {
     try {
       final data = jsonDecode(message);
       final epc = data['epc'] as String?;
-
+      
       if (epc != null && data['status'] == 'NAO_CADASTRADA') {
         if (_controller.codeTags.contains(epc)) {
           GlobalSnackBar.warning(
