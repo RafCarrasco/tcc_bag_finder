@@ -7,11 +7,13 @@ import 'package:bag_finder/core/utils/app_dimensions.dart';
 import 'package:bag_finder/core/widgets/bag_tracking_timeline.dart';
 import 'package:bag_finder/core/widgets/dialogs/bag_confirmation_dialog.dart';
 import 'package:bag_finder/core/widgets/dialogs/edit_bag_description_dialog.dart';
+import 'package:bag_finder/shared/providers/bag_status_provider.dart';
 import 'package:bag_finder/shared/providers/traveler_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class BagItemWidget extends StatefulWidget {
   final BagStatusEntity bagStatus;
@@ -55,6 +57,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final rfidProvider = Provider.of<RfidBagProvider>(context, listen: false);
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompactScreen = screenWidth < 600;
 
@@ -226,8 +229,7 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                     ),
                   ],
                 ),
-                
-                // 🔹 Botões de Ação / Confirmação de Entrega (NOVA ROW ABAIXO - Evita conflito com ID)
+
                 const SizedBox(height: 12),
                 
                 widget.bagStatus.status != BagStatusEnum.COLLECTED.name 
@@ -265,9 +267,8 @@ class _BagItemWidgetState extends State<BagItemWidget> {
                                                 return BagConfirmationDialog(
                                                   bagStatus: widget.bagStatus,
                                                   onConfirmArrival: () async {
-                                                    Modular.to.pop(); // Fecha o diálogo
-                                                    await travelerProvider.deleteBagStatusByBagId(widget.bagStatus.bagId);
-                                                    await travelerProvider.updateBag(widget.bagStatus.bagId);
+                                                    Modular.to.pop();
+                                                    await rfidProvider.confirmBagCollection(widget.bagStatus.bagId);
                                                   },
                                                   onNotArrived: () {
                                                     Modular.to.pop();

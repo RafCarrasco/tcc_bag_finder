@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bag_finder/core/entity/bag_status_entity.dart';
+import 'package:bag_finder/core/enums/bag_status_enum.dart';
 import 'package:bag_finder/core/failures/bag_failure.dart';
 import 'package:bag_finder/infra/repositories/bag_repository_impl.dart';
 import 'package:dartz/dartz.dart';
@@ -15,7 +16,6 @@ class RfidBagProvider extends ChangeNotifier {
   final List<BagStatusEntity> _bags = [];
   List<BagStatusEntity> get bags => List.unmodifiable(_bags);
   bool isLoading = false;
-  String? _lastEpc;
 
   RfidBagProvider({
     required this.channel,
@@ -32,11 +32,7 @@ class RfidBagProvider extends ChangeNotifier {
       final epc = data['epc'] as String?;
       if (epc == null) return;
 
-      if (_lastEpc == epc) return;
-      _lastEpc = epc;
-
-      await loadUserBags(userId); // carrega e notifica
-      print(_bags);
+      await loadUserBags(userId);
     } catch (e) {
       print('Erro ao processar mensagem do WebSocket: $e');
     }
@@ -73,7 +69,7 @@ class RfidBagProvider extends ChangeNotifier {
 
   Future<void> loadBagsByPrinted(String printed,String userId) async {
     try {
-      bool isLoading = true;
+      isLoading = true;
       final Either<BagFailure, List<BagStatusEntity>> result =
           await bagRepository.getBagsStatusByPrinted(printed: printed,userId:userId);
 
@@ -87,7 +83,7 @@ class RfidBagProvider extends ChangeNotifier {
           _bags
             ..clear()
             ..addAll(consolidadas);
-          bool isLoading = false;
+          isLoading = false;
           notifyListeners();
         },
       );
@@ -124,5 +120,20 @@ class RfidBagProvider extends ChangeNotifier {
     });
 
     return consolidadas;
+  }
+
+  Future<void> confirmBagCollection(String bagId) async {
+    try {
+      isLoading = true;
+      await bagRepository.updateBag(bag: bagId);
+      await bagRepository.deleteBagStatusByBagId(epc :bagId);
+      _bags.removeWhere((bag) => bag.bagId == bagId);
+    } catch (e) {
+      print('Erro ao confirmar coleta: $e');
+      rethrow;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }
