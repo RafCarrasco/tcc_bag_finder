@@ -109,6 +109,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
               Expanded(
                 child: Consumer<RfidBagProvider>(
                   builder: (context, provider, _) {
+                  _rfidProvider.loadUserBags(widget.travelerId);
                     if (provider.isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     }
