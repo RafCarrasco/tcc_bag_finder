@@ -46,7 +46,7 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
       channel: _channel,
       baseUrl: baseUrl,
       bagRepository: bagRepository,
-      userId: widget.travelerId
+      userId: widget.travelerId,
     );
 
     await _rfidProvider.loadUserBags(widget.travelerId);
@@ -85,35 +85,32 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
         body: SafeArea(
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusExtraLarge),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: HomeTravelerAppBarWidget(
-                  userId: widget.travelerId,
-                  userName: userProvider.user!.fullName,
-                  hint: 'Procure sua bagagem...',
+              Material(
+                elevation: 2,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusExtraLarge),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusExtraLarge),
+                  ),
+                  child: HomeTravelerAppBarWidget(
+                    userId: widget.travelerId,
+                    userName: userProvider.user!.fullName,
+                    hint: 'Procure sua bagagem...',
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
               Expanded(
                 child: Consumer<RfidBagProvider>(
                   builder: (context, provider, _) {
-                  _rfidProvider.loadUserBags(widget.travelerId);
                     if (provider.isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    if (provider.bags.isEmpty) {
+                    final bags = provider.bags;
+                    if (bags.isEmpty) {
                       return const Center(
                         child: Text(
                           'Nenhuma bagagem encontrada.',
@@ -126,15 +123,19 @@ class _HomeTravelerPageState extends State<HomeTravelerPage> {
                         constraints: const BoxConstraints(maxWidth: 400),
                         child: ListView.builder(
                           padding: const EdgeInsets.all(12),
-                          itemCount: provider.bags.length,
+                          itemCount: bags.length,
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: true,
+                          cacheExtent: 600,
                           itemBuilder: (context, index) {
-                            final bag = provider.bags[index];
+                            final bag = bags[index];
                             final isExpanded = _getIsExpanded(bag.id);
-                            return BagItemWidget(
-                              bagStatus: bag,
-                              isExpanded: isExpanded,
-                              onToggleExpansion: () =>
-                                  _toggleExpansion(bag.id),
+                            return RepaintBoundary(
+                              child: BagItemWidget(
+                                bagStatus: bag,
+                                isExpanded: isExpanded,
+                                onToggleExpansion: () => _toggleExpansion(bag.id),
+                              ),
                             );
                           },
                         ),

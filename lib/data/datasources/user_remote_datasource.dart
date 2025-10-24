@@ -22,7 +22,7 @@ class UserRemoteDataSource {
   };
 
   final resp = await http.post(
-    Uri.parse('$baseUrl/users'),
+    Uri.parse('$baseUrl/users/${user.id}'),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode(payload),
   );
