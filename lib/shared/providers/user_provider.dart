@@ -101,6 +101,24 @@ class UserProvider extends ChangeNotifier {
     );
   }
 
+  Future<Either<Failure, UserEntity>> updasertUser({
+    required UserEntity user,
+  }) async {
+    _setLoading(true);
+    final result = await repository.updasertUser(user: user);
+    _setLoading(false);
+
+    return result.fold(
+      (failure) => Left(failure),
+      (updated) async{
+        _user = updated;
+        await _saveUserToStorage(updated);
+        notifyListeners();
+        return Right(updated);
+      },
+    );
+  }
+
   Future<Either<Failure, UserEntity>> updateUser({
     required UserEntity user,
   }) async {

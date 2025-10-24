@@ -22,7 +22,7 @@ class UserRemoteDataSource {
   };
 
   final resp = await http.post(
-    Uri.parse('$baseUrl/users/${user.id}'),
+    Uri.parse('$baseUrl/users'),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode(payload),
   );
@@ -73,6 +73,29 @@ class UserRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
 
       body: jsonEncode(user.toJson()), 
+    );
+    
+    final body = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+    final errMessage = (body is Map && body['error'] is String)
+        ? body['error'] as String
+        : 'Erro ao atualizar usuário';
+
+    if (response.statusCode == 200) {
+      return UserEntity.fromJson(body as Map<String, dynamic>);
+    } 
+    else if (response.statusCode == 409) {
+      throw UserAlreadyInUseException(); 
+    } 
+    else {
+      throw Exception('Erro ao atualizar usuário (Status ${response.statusCode}): $errMessage');
+    }
+  }
+
+  Future<UserEntity> updasertUser(UserEntity user) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/users/upsert'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(user.toJson()),
     );
     
     final body = response.body.isNotEmpty ? jsonDecode(response.body) : null;

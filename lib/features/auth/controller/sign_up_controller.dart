@@ -81,7 +81,7 @@ class SignUpController {
       cpf: _cpf,
     );
 
-    final result = await _provider.addUser(newUser);
+    final result = await _provider.updasertUser(user: newUser);
 
     result.fold(
       (failure) {

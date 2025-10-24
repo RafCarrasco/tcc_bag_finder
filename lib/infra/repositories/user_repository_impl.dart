@@ -46,18 +46,31 @@ Future<Either<AuthFailure, UserEntity>> addUser({required UserEntity user}) asyn
     }
   }
 
-  @override
-Future<Either<Failure, UserEntity>> updateUser(
-    {required UserEntity user}) async {
-  try {
-    final result = await remote.updateUser(user);
-    return Right(result);
-  } on UserAlreadyInUseException {
-    return Left(UserAlreadyInUse());
-  } catch (e) {
-    return Left(UnknownError(errorMessage: 'Falha ao atualizar o perfil.'));
+    @override
+  Future<Either<Failure, UserEntity>> updateUser(
+      {required UserEntity user}) async {
+    try {
+      final result = await remote.updateUser(user);
+      return Right(result);
+    } on UserAlreadyInUseException {
+      return Left(UserAlreadyInUse());
+    } catch (e) {
+      return Left(UnknownError(errorMessage: 'Falha ao atualizar o perfil.'));
+    }
   }
-}
+
+    @override
+  Future<Either<Failure, UserEntity>> updasertUser(
+      {required UserEntity user}) async {
+    try {
+      final result = await remote.updasertUser(user);
+      return Right(result);
+    } on UserAlreadyInUseException {
+      return Left(UserAlreadyInUse());
+    } catch (e) {
+      return Left(UnknownError(errorMessage: 'Falha ao atualizar o perfil.'));
+    }
+  }
 
   @override
   Future<Either<Failure, void>> deleteUser({required String id}) async {

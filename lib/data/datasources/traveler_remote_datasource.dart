@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/entity/traveler_entity.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 class TravelerRemoteDataSource {
