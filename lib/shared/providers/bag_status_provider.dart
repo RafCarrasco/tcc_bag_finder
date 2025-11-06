@@ -124,6 +124,23 @@ class RfidBagProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  
+  Future<String?> getBagsIdByEpc(String epc, String userId) async {
+    try {
+      final result = await bagRepository.getBagIdByEpcAndUser(epc: epc, userId: userId);
+
+      return result.fold(
+        (failure) {
+          print('Erro ao buscar Bag ID: ${failure.toString()}');
+          return null;
+        },
+        (bagId) => bagId, // bagId pode ser String? (null se não achou)
+      );
+    } catch (e) {
+      print('Erro inesperado ao tentar buscar mala por EPC e userId: $e');
+      return null;
+    }
+  }
 
   @override
   void dispose() {

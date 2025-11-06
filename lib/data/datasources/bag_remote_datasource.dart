@@ -141,7 +141,6 @@ class BagRemoteDataSource {
     } else {
       throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
-
   }
   
   Future<List<BagStatusEntity>> getBagsStatusByPrinted(String printed, String userId) async {
@@ -191,5 +190,25 @@ class BagRemoteDataSource {
     } else {
       throw Exception('Erro ao buscar bags ativas do usuário: ${response.statusCode} - ${response.body}');
     }
+  }
+  Future<String?> getBagIdByEpcAndUser(String epc, String userId) async {
+    print('------------------------------remote');
+    final url = Uri.parse('$baseUrl/bags/find/$epc/user/$userId');
+
+    try {
+      final response = await client.get(url);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['bagId'] as String?;
+      } else if (response.statusCode == 404) {
+        print('Bag não encontrada para o EPC: $epc e usuário: $userId');
+        return null;
+      } else {
+        throw Exception('Erro ${response.statusCode}: ${response.body}');
+      }
+    } catch (e) {
+      print('Erro ao buscar Bag ID por EPC e Usuário: $e');
+    }
+    return null;
   }
 }

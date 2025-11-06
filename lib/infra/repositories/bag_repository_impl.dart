@@ -170,4 +170,19 @@ class BagRepositoryImpl implements IBagRepository {
       Left(BagReadError());
     }
   }
+
+  Future<Either<BagFailure, String?>> getBagIdByEpcAndUser({
+    required String epc,
+    required String userId,
+  }) async {
+    try {
+      print('------------------------------implt');
+      final result = await remote.getBagIdByEpcAndUser(epc, userId);
+      print(result);
+      return Right(result);
+    } catch (e) {
+      print('[BagRepository] Erro ao buscar bagId por EPC e usuário: $e');
+      return Left(BagReadError());
+    }
+  }
 }

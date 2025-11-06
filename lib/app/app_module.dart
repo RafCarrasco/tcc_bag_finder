@@ -71,6 +71,7 @@ import '../features/traveler/pages/home_traveler_page.dart';
 import '../features/traveler/pages/traveler_bag_history_page.dart';
 import '../features/traveler/pages/profile_page.dart';
 import '../features/traveler/pages/edit_profile_page.dart';
+import '../features/qr/qr_scanner_page.dart';
 
 class AppModule extends Module {
   @override
@@ -208,6 +209,9 @@ class AppModule extends Module {
       ChildRoute('/history-panel/',
           child: (_) =>
               TravelerBagHistoryPage(travelerId: r.args.params['travelerId'])),
+      ChildRoute('/camera123/',
+          child: (_) =>
+              QrScannerPage(travelerId: r.args.params['travelerId'])),
       ChildRoute('/profile/', child: (_) => const ProfilePage()),
       ChildRoute('/profile/edit', child: (_) => const EditProfilePage()),
     ]);

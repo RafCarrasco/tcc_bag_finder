@@ -46,12 +46,10 @@ abstract class IBagRepository {
     required String bagId,
   });
 
-  // 💡 ADICIONADO: Método para buscar bags pelo ID da viagem
   Future<Either<BagFailure, List<BagEntity>>> getBagsByTripId({
     required String tripId,
   });
   
-  // 💡 ADICIONADO: Método para buscar status (usado na listagem de malas ativas)
   Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusById({
     required String userId,
   });
@@ -59,5 +57,9 @@ abstract class IBagRepository {
   Future<Either<BagFailure, List<BagStatusEntity>>> getBagsStatusByPrinted({
     required String printed,
     required String userId
+  });
+    Future<Either<BagFailure, String?>> getBagIdByEpcAndUser({
+    required String epc,
+    required String userId,
   });
 }

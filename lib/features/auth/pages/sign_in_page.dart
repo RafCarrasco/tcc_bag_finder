@@ -133,6 +133,7 @@ class _SignInPageState extends State<SignInPage> {
                                     email: signInController.email!,
                                     password: signInController.password!,
                                   );
+                                  print('fazendo login');
                                   result.fold(
                                     (failure) {
                                       ScaffoldMessenger.of(context).showSnackBar(

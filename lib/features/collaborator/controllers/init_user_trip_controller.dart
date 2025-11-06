@@ -6,7 +6,7 @@ class InitUserTripController {
   String _destination = '';
   String _airportOrigin = '';
   String _airportDestination = '';
-  String? _connection = null;
+  String? _connection = '';
   String _cpf = '';
   String? _description = '';
   int? _bagageQuantity = 0;

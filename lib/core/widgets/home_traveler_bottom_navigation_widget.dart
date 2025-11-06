@@ -51,6 +51,11 @@ class _HomeTravelerBottomNavigationState
           '/traveler/${widget.travelerId}/profile',
         );
         break;
+      case 3:
+        Modular.to.pushNamed(
+          '/traveler/${widget.travelerId}/camera123/',
+        );
+        break;
     }
   }
 
@@ -113,6 +118,20 @@ class _HomeTravelerBottomNavigationState
               onPressed: () => _navigateTo(
                 2,
               ),
+            ),
+            IconButton(
+              padding: EdgeInsets.zero,
+              icon: widget.selectedIndex == 3
+                  ? AppIconsSecondary.phoneIcon
+                  : AppIconsSecondaryGrey.phoneIcon,
+              iconSize: AppDimensions.iconExtraLarge,
+              color: widget.selectedIndex == 3
+                  ? AppColors.primary
+                  : AppColors.secondaryGrey,
+              onPressed: () { _navigateTo(
+                3,
+              );
+              print('error');}
             ),
           ],
         ),
